@@ -1,6 +1,7 @@
-''' Author: Juan R. Diaz Rodriguez
-last updated: 2019-05-28 JRD
+''' Author: Juan R. Diaz Rodriguez, James L. Wang
+last updated: 2019-06-18 JLW
 '''
+# TODO: add random sampling after each epoch
 
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
@@ -9,8 +10,15 @@ from utils import *
 from models import *
 import sys
 import pickle
+from timeit import default_timer as timer
+
+# if true, trains on full dataset
+full_run = False
 
 cpus = os.cpu_count()
+# Input order:    layers, batch size, learning rate, epochs, convergence
+# then all of the hidden dimensions
+# typical values: 1       100         .05              100     .1           400  20
 num_layers = int(sys.argv[1])
 batch_size = int(sys.argv[2])
 learning_rate = float(sys.argv[3])
@@ -19,7 +27,6 @@ convergence = float(sys.argv[5])
 h_dims = []
 for i in range(6, 6+num_layers, 1):
     h_dims.append(int(sys.argv[i]))
-# h1_dim = int(sys.argv[6])
 latent_dim = int(sys.argv[6+num_layers])
 
 
@@ -31,9 +38,11 @@ print('Hidden Dim = ', h_dims)
 print('Latent Dim = ', latent_dim)
 
 #separate path DB into train/test dbs for dataloader
-allseqpaths = pd.read_csv('seqDbPaths.csv')
-#allseqpaths = allseqpaths['path']
-allseqpaths = allseqpaths['path'].head(20)
+allseqpaths = pd.read_csv('seqDbPaths.csv') 
+if full_run:
+    allseqpaths = allseqpaths['path']
+else:
+    allseqpaths = allseqpaths['path'].head(40)
 train, test, out_train, out_test = train_test_split(allseqpaths, allseqpaths, test_size=0.4)
 trainpaths = pd.DataFrame(columns=['path'])
 # make dbs for dataloader
@@ -68,6 +77,7 @@ count = 0
 min_loss = 999999999
 best_iter = 0
 stats = []
+times = []
 
 cwd = os.getcwd()
 folder = os.path.join(cwd, 'results')
@@ -79,22 +89,28 @@ for epoch in range(num_epochs):
             print("Minimum loss at %i iterations." % best_iter)
             break
     else:
+        timestamps=[]
         #train
         epoch_loss = []
         train_kld = []
         train_bce = []
         train_ident = []
         for seq in trainloader:
+            timestamps.append(['batch_start', timer()]) # batch start time
             trainseq = seq.float().to(device)
             optimizer.zero_grad()
+            timestamps.append(['model_preparation', timer()])
             recon_seq, s, mu = model(trainseq)
+            timestamps.append(['forward_pass', timer()])
             bce = F.binary_cross_entropy(trainseq.float(),
                                         recon_seq.detach().float(),
                                         reduction='sum')
             kld = kl_divergence(mu, s)
             l = bce + kld
+            timestamps.append(['train_loss', timer()])
             l.backward()
             optimizer.step()
+            timestamps.append(['back_prop', timer()])
             epoch_loss.append(float(l.item()/len(trainseq)))
             train_kld.append(float(kld.item()/len(trainseq)))
             train_bce.append(float(bce.item()/len(trainseq)))
@@ -106,67 +122,79 @@ for epoch in range(num_epochs):
                 s1 = im2seq(s1)
                 s2 = im2seq(s2)
                 train_ident.append(identity(s1,s2))
+            timestamps.append(['train_ident', timer()])
         train_ident = np.mean(train_ident)
         epoch_loss = np.mean(epoch_loss)
         train_kld = np.mean(train_kld)
         train_bce = np.mean(train_bce)
-        #test
-        with torch.no_grad():
-            test_loss = []
-            test_kld = []
-            test_bce = []
-            test_ident = []
-            for seqt in testloader:
-                testseq = seqt.float().to(device)
-                recon_seq, s, mu = model(testseq)
-                bce = F.binary_cross_entropy(testseq.float(),
-                                        recon_seq.detach().float(),
-                                        reduction='sum')
-                kld = kl_divergence(mu, s)
-                l_test = bce + kld
-                test_loss.append(float(l_test.item()/len(testseq)))
-                test_kld.append(float(kld)/len(testseq))
-                test_bce.append(float(bce)/len(testseq))
-                # convert from binary to sequence
-                for s1, s2 in zip(testseq,recon_seq):
-                    s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
-                    s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
-                    s2 = binarize_image(s2)
-                    s1 = im2seq(s1)
-                    s2 = im2seq(s2)
-                    test_ident.append(identity(s1,s2))
-            # test_ident = np.mean(train_ident) # not train, but test? (vvv)
-            test_ident = np.mean(test_ident) # I thin this is what is supposed to be here?
-            test_loss = np.mean(test_loss)
-            test_kld = np.mean(test_kld)
-            test_bce = np.mean(test_bce)
-            if min_loss < test_loss:
-                count += 1 # add no-improvement count. 
-            else:
-                torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'test_loss': test_loss,
-                'test_kld': test_kld,
-                'test_bce': test_bce,
-                'train_loss': epoch_loss,
-                'train_kld': train_kld,
-                'train_bce': test_kld,
-                'test_identity':test_ident,
-                'train_identity':train_ident,
-                },
-                'best_model.pt')
-                min_loss = test_loss
-                best_iter = epoch
-                count = 0 # reset no-improvement count
-                
-                
-            # ===================log========================
-            print('iter = %i\ttrain loss = %0.4f\ttest loss = %0.4f' % (epoch, l.item(), test_loss.item()))
-            stats.append([epoch_loss,train_ident,train_kld,train_bce,
-                test_loss,test_ident,test_kld,test_bce])
+        timestamps.append(['train_mean', timer()])
+                              
+        test_loss = []
+        test_kld = []
+        test_bce = []
+        test_ident = []
+        for seqt in testloader:
+            timestamps.append(['test_start', timer()])
+            testseq = seqt.float().to(device)
+            recon_seq, s, mu = model(testseq)
+            bce = F.binary_cross_entropy(testseq.float(),
+                                    recon_seq.detach().float(),
+                                    reduction='sum')
+            kld = kl_divergence(mu, s)
+            l_test = bce + kld
+            test_loss.append(float(l_test.item()/len(testseq)))
+            test_kld.append(float(kld)/len(testseq))
+            test_bce.append(float(bce)/len(testseq))
+            timestamps.append(['test_loss', timer()])
+            # convert from binary to sequence
+            for s1, s2 in zip(testseq,recon_seq):
+                s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
+                s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
+                s2 = binarize_image(s2)
+                s1 = im2seq(s1)
+                s2 = im2seq(s2)
+                test_ident.append(identity(s1,s2))
+            timestamps.append(['test_ident', timer()])
+        # test_ident = np.mean(train_ident) # not train, but test? (vvv)
+        test_ident = np.mean(test_ident) # I think this is what is supposed to be here?
+        test_loss = np.mean(test_loss)
+        test_kld = np.mean(test_kld)
+        test_bce = np.mean(test_bce)
+        timestamps.append(['test_mean', timer()])
+        if min_loss < test_loss:
+            count += 1 # add no-improvement count. 
+            timestamps.append(['no_save', np.NaN])
+        else:
+            torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'test_loss': test_loss,
+            'test_kld': test_kld,
+            'test_bce': test_bce,
+            'train_loss': epoch_loss,
+            'train_kld': train_kld,
+            'train_bce': test_kld,
+            'test_identity':test_ident,
+            'train_identity':train_ident,
+            },
+            'best_model.pt')
+            min_loss = test_loss
+            best_iter = epoch
+            count = 0 # reset no-improvement count
+            timestamps.append(['save_model', timer()])
+        
+        
+        # ===================log========================
+        print('iter = %i\ttrain loss = %0.4f\ttest loss = %0.4f' % (epoch, l.item(), test_loss.item()))
+        stats.append({'epoch_loss':epoch_loss,'train_ident':train_ident,'train_kld':train_kld,'train_bce':train_bce,
+                      'test_loss':test_loss,'test_ident':test_ident,'test_kld':test_kld,'test_bce':test_bce})
+        timestamps = np.array(timestamps)
+        times.append(timestamps)
+        print('Timings:\n', timestamps)
+
 pickle.dump([stats], open('stats.pkl', 'wb'))
+pickle.dump([times], open('times.pkl', 'wb'))
 
 
 
