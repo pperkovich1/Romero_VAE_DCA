@@ -1,7 +1,6 @@
 ''' Author: Juan R. Diaz Rodriguez, James L. Wang
 last updated: 2019-06-18 JLW
 '''
-# TODO: add random sampling after each epoch
 
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
@@ -76,8 +75,13 @@ train_loss = []
 count = 0
 min_loss = 999999999
 best_iter = 0
+
+# network evaluation stuff
 stats = []
 times = []
+probe = iter(testloader).__next__()[0:1] # grabs a tensor from testset
+probe_amount = 50
+probe_results = [probe]
 
 cwd = os.getcwd()
 folder = os.path.join(cwd, 'results')
@@ -129,73 +133,80 @@ for epoch in range(num_epochs):
         train_bce = np.mean(train_bce)
         timestamps.append(['train_mean', timer()])
                               
-        test_loss = []
-        test_kld = []
-        test_bce = []
-        test_ident = []
-        for seqt in testloader:
-            timestamps.append(['test_start', timer()])
-            testseq = seqt.float().to(device)
-            recon_seq, s, mu = model(testseq)
-            bce = F.binary_cross_entropy(testseq.float(),
-                                    recon_seq.detach().float(),
-                                    reduction='sum')
-            kld = kl_divergence(mu, s)
-            l_test = bce + kld
-            test_loss.append(float(l_test.item()/len(testseq)))
-            test_kld.append(float(kld)/len(testseq))
-            test_bce.append(float(bce)/len(testseq))
-            timestamps.append(['test_loss', timer()])
-            # convert from binary to sequence
-            for s1, s2 in zip(testseq,recon_seq):
-                s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
-                s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
-                s2 = binarize_image(s2)
-                s1 = im2seq(s1)
-                s2 = im2seq(s2)
-                test_ident.append(identity(s1,s2))
-            timestamps.append(['test_ident', timer()])
-        # test_ident = np.mean(train_ident) # not train, but test? (vvv)
-        test_ident = np.mean(test_ident) # I think this is what is supposed to be here?
-        test_loss = np.mean(test_loss)
-        test_kld = np.mean(test_kld)
-        test_bce = np.mean(test_bce)
-        timestamps.append(['test_mean', timer()])
-        if min_loss < test_loss:
-            count += 1 # add no-improvement count. 
-            timestamps.append(['no_save', np.NaN])
-        else:
-            torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'test_loss': test_loss,
-            'test_kld': test_kld,
-            'test_bce': test_bce,
-            'train_loss': epoch_loss,
-            'train_kld': train_kld,
-            'train_bce': test_kld,
-            'test_identity':test_ident,
-            'train_identity':train_ident,
-            },
-            'best_model.pt')
-            min_loss = test_loss
-            best_iter = epoch
-            count = 0 # reset no-improvement count
-            timestamps.append(['save_model', timer()])
-        
-        
-        # ===================log========================
-        print('iter = %i\ttrain loss = %0.4f\ttest loss = %0.4f' % (epoch, l.item(), test_loss.item()))
-        stats.append({'epoch_loss':epoch_loss,'train_ident':train_ident,'train_kld':train_kld,'train_bce':train_bce,
-                      'test_loss':test_loss,'test_ident':test_ident,'test_kld':test_kld,'test_bce':test_bce})
-        timestamps = np.array(timestamps)
-        times.append(timestamps)
-        print('Timings:\n', timestamps)
+        #test
+        with torch.no_grad():
+            test_loss = []
+            test_kld = []
+            test_bce = []
+            test_ident = []
+            for seqt in testloader:
+                timestamps.append(['test_start', timer()])
+                testseq = seqt.float().to(device)
+                recon_seq, s, mu = model(testseq)
+                bce = F.binary_cross_entropy(testseq.float(),
+                                        recon_seq.detach().float(),
+                                        reduction='sum')
+                kld = kl_divergence(mu, s)
+                l_test = bce + kld
+                test_loss.append(float(l_test.item()/len(testseq)))
+                test_kld.append(float(kld)/len(testseq))
+                test_bce.append(float(bce)/len(testseq))
+                timestamps.append(['test_loss', timer()])
+                # convert from binary to sequence
+                for s1, s2 in zip(testseq,recon_seq):
+                    s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
+                    s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
+                    s2 = binarize_image(s2)
+                    s1 = im2seq(s1)
+                    s2 = im2seq(s2)
+                    test_ident.append(identity(s1,s2))
+                timestamps.append(['test_ident', timer()])
+            # test_ident = np.mean(train_ident) # not train, but test? (vvv)
+            test_ident = np.mean(test_ident) # I think this is what is supposed to be here?
+            test_loss = np.mean(test_loss)
+            test_kld = np.mean(test_kld)
+            test_bce = np.mean(test_bce)
+            timestamps.append(['test_mean', timer()])
+            probe_results.append([])
+            for i in range(probe_amount):
+                probe_results[-1].append(model(probe)[0])
+            timestamps.append(['sample_diversity', timer()])
 
-pickle.dump([stats], open('stats.pkl', 'wb'))
-pickle.dump([times], open('times.pkl', 'wb'))
+            if min_loss < test_loss:
+                count += 1 # add no-improvement count. 
+                timestamps.append(['no_save', np.NaN])
+            else:
+                torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'test_loss': test_loss,
+                'test_kld': test_kld,
+                'test_bce': test_bce,
+                'train_loss': epoch_loss,
+                'train_kld': train_kld,
+                'train_bce': test_kld,
+                'test_identity':test_ident,
+                'train_identity':train_ident,
+                },
+                'results/best_model.pt')
+                min_loss = test_loss
+                best_iter = epoch
+                count = 0 # reset no-improvement count
+                timestamps.append(['save_model', timer()])
+            
+            
+            # ===================log========================
+            print('iter = %i\ttrain loss = %0.4f\ttest loss = %0.4f' % (epoch, l.item(), test_loss.item()))
+            stats.append({'epoch_loss':epoch_loss,'train_ident':train_ident,'train_kld':train_kld,'train_bce':train_bce,
+                          'test_loss':test_loss,'test_ident':test_ident,'test_kld':test_kld,'test_bce':test_bce})
+            timestamps = np.array(timestamps)
+            times.append(timestamps)
+            print('Timings:\n', timestamps)
 
+pickle.dump(stats, open('results/stats.pkl', 'wb'))
+pickle.dump(times, open('results/times.pkl', 'wb')) 
+pickle.dump(probe_results, open('results/diversity.pkl', 'wb'))
 
 
 # store all latest space variables for all sequences in dataset.
@@ -216,8 +227,4 @@ for seqpath in allseqpaths:
         s.data.cpu().numpy(),
         mu.data.cpu().numpy(),
         model.z.data.cpu().numpy()])
-pickle.dump(latent_results,open('latent_results.pkl', 'wb'))
-
-
-
-
+pickle.dump(latent_results,open('results/latent_results.pkl', 'wb')) 
