@@ -120,7 +120,13 @@ for epoch in range(num_epochs):
             train_bce.append(float(bce.item()/len(trainseq)))
             # convert from binary to sequence
             for s1, s2 in zip(trainseq,recon_seq):
+                print('~~~~~')
+                print(len(s1))
+                print(pos_num)
+                print(s1)
                 s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
+                print(s1)
+                print(len(s1))
                 s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
                 s2 = binarize_image(s2)
                 s1 = im2seq(s1)
