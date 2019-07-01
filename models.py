@@ -219,23 +219,24 @@ class VAE_flexible(nn.Module):
 
         super(VAE_flexible, self).__init__()
         self.l = l
-        # specify layer structure
-
-        # encoder network
-        # hidden layers
+        # specify layer structure 
+        # # encoder network
+        # # # hidden layers
         hidden_sizes.insert(0, l)
-        self.fc1 = [nn.Linear(hidden_sizes[i], hidden_sizes[i+1]) for i in range(len(hidden_sizes)-1)] #self.fc1 = nn.Linear(l, hidden_size) 
-        # use for mean
+        self.fc1 = nn.ModuleList([nn.Linear(hidden_sizes[i], hidden_sizes[i+1])
+                                  for i in range(len(hidden_sizes)-1)])
+        # # # use for mean
         self.fc2m = nn.Linear(hidden_sizes[-1], latent_size) 
-        # use for standard deviation
+        # # # use for standard deviation
         self.fc2s = nn.Linear(hidden_sizes[-1], latent_size)
 
-        # decoder network
-        # hidden layers
+        # # decoder network
+        # # # hidden layers
         hidden_sizes.remove(l)
         hidden_sizes.append(latent_size)
-        self.fc3 = [nn.Linear(hidden_sizes[i+1], hidden_sizes[i]) for i in range(len(hidden_sizes)-2,-1, -1)] #self.fc3 = nn.Linear(latent_size, hidden_size)
-        # final output
+        self.fc3 = nn.ModuleList([nn.Linear(hidden_sizes[i+1], hidden_sizes[i])
+                                  for i in range(len(hidden_sizes)-2,-1, -1)])
+        # # # final output
         self.fc4 = nn.Linear(hidden_sizes[0], l)
 
         #tracking variables
@@ -266,8 +267,8 @@ class VAE_flexible(nn.Module):
         x_in: tensor - one dimensional input tensor.
         '''
         x = x_in
-        for fc, func in zip(self.fc1, self.he_funcs):
-            x = func(fc(x.float()))
+        for layer_fc, activation_func in zip(self.fc1, self.he_funcs):
+            x = activation_func(layer_fc(x.float()))
         # Reparametrization trick.
         self.log_s = self.fc2s(x.float())
         self.m = self.fc2m(x.float())

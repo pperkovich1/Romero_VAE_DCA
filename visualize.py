@@ -6,18 +6,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
 from utils import *
+import torch
 matplotlib.use('Agg')
 
-cwd = os.path.join(os.getcwd(), 'results')
+cwd = os.path.join(os.getcwd()) # , 'results')
 
 
 # options = [loss, timestamps, latent vectors, diversity]
 options_count = 4
 options = [1, 1, 1, 1] if len(sys.argv)<options_count else sys.argv[1:] 
 if not os.path.exists('stats'):
-    os.mkdir('stats')
+    os.mkdir('stats') 
+plt.figure()
 
 if int(options[0]):
+    print('Creating loss graphs')
 
     stats = os.path.join(cwd, 'stats.pkl')
     stats = pickle.load(open(stats, 'rb'))
@@ -25,13 +28,14 @@ if int(options[0]):
     stats_labels = ['epoch_loss', 'train_ident', 'train_kld', 'train_bce',
                     'test_loss', 'test_ident', 'test_kld', 'test_bce']
     for stat in stats_labels:
-        plt.figure()
+        plt.clf()
         plt.plot([data[stat] for data in stats])
         plt.title(stat)
         plt.savefig('stats/'+stat+'.png')
-        plt.close()
 
 if int(options[1]):
+    print('Calculating run times')
+
     time_file = open('stats/time_data.txt', 'a')
     time_file.write('~~~~~~~~~~~~~\n') # makes it easier to read when running multiple times
     times = os.path.join(cwd, 'times.pkl')
@@ -45,13 +49,14 @@ if int(options[1]):
         label = timestamp[0][0]
         average = np.nanmean(timestamp[1].astype(np.float))
         output = 'Average {}:'.format(label).ljust(30) + '{:10.6f}\n'.format(average)
-        print(output)
         time_file.write(output)
     time_file.close()
     
     
  
 if int(options[2]):
+    print('Graphing latent vectors')
+
     if not os.path.exists('stats/latents'):
         os.mkdir('stats/latents')
 
@@ -73,26 +78,28 @@ if int(options[2]):
         ys = []
 
         for i in range(len(S)):
-            plt.figure()
+            plt.clf()
             mu, s = MU[i], S[i]
             x = np.linspace(mu-3*s, mu+3*s, 100)
             y = scipy.stats.norm.pdf(x, mu, s)
             ys.append(y)
-
+        
+        plt.clf()
         plt.plot(x, y) 
         plt.savefig('stats/latents/{}/{}.png'.format(name, i))
-        plt.close();
 
-    plt.figure()
+    plt.clf()
     ys = np.transpose(ys)
     x = np.linspace(-1, 1, 100)
     plt.plot(x, ys)
     plt.savefig('stats/latents/{}/{}.png'.format(name, 'stacked')) 
 
 if int(options[3]):
+    print('Graphing pairwise identity over time')
+
     samples = os.path.join(cwd, 'diversity.pkl')
-    samples = pickle.load(open(samples, 'rb'))
-    # samples = [sample.numpy() for sample in samples]
+    samples = torch.load(samples, map_location='cpu')
+#    samples = pickle.load(open(samples, 'rb'))
     probe = samples[0][0].numpy()
     pos_num = len(probe)//21
     probe = np.reshape(probe, (pos_num, 21))
@@ -111,7 +118,7 @@ if int(options[3]):
             average += identity(probe, seq)
         average = average*21/len(sample)
         averages.append(average)
-    plt.figure()
+    plt.clf()
     plt.plot(averages)
     plt.title('diversity over time')
     plt.savefig('stats/diversity.png')

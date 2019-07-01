@@ -64,12 +64,12 @@ size = len(read_sequence(os.path.join(os.getcwd(), allseqpaths[0])))
 pos_num = int(size/21)
 
 # Initialize vae and start training
-if num_layers==1:
-    model = VAE(l=size, latent_size=latent_dim, hidden_size=h_dims[0]).to(device)
-elif num_layers==2:
-    model = VAE_double(l=size, latent_size=latent_dim, hidden_size_1=h_dims[0], hidden_size_2=h_dims[1]).to(device)
-else:
-    model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=h_dims).to(device)
+# if num_layers==1:
+#     model = VAE(l=size, latent_size=latent_dim, hidden_size=h_dims[0]).to(device)
+# elif num_layers==2:
+#     model = VAE_double(l=size, latent_size=latent_dim, hidden_size_1=h_dims[0], hidden_size_2=h_dims[1]).to(device)
+# else
+model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=h_dims).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 train_loss = []
 count = 0
@@ -80,13 +80,15 @@ best_iter = 0
 stats = []
 times = []
 probe = iter(testloader).__next__()[0:1] # grabs a tensor from testset
+probe = probe.to(device)
 probe_amount = 50
 probe_results = [probe]
 
 cwd = os.getcwd()
-folder = os.path.join(cwd, 'results')
-if(not os.path.exists(folder)): # added to make repeated testing on personal machine a bit easier
-	os.mkdir(os.path.join(cwd,folder))
+# folder = os.path.join(cwd, 'results')
+# if(not os.path.exists(folder)): # added to make repeated testing on personal machine a bit easier
+# 	os.mkdir(os.path.join(cwd,folder))
+
 for epoch in range(num_epochs):
     if count >= (convergence*num_epochs):
             print("Convergence at %i iterations." % epoch)
@@ -120,13 +122,7 @@ for epoch in range(num_epochs):
             train_bce.append(float(bce.item()/len(trainseq)))
             # convert from binary to sequence
             for s1, s2 in zip(trainseq,recon_seq):
-                print('~~~~~')
-                print(len(s1))
-                print(pos_num)
-                print(s1)
                 s1 = np.reshape(list(s1.cpu().data),(pos_num,21))
-                print(s1)
-                print(len(s1))
                 s2 = np.reshape(list(s2.cpu().data),(pos_num,21))
                 s2 = binarize_image(s2)
                 s1 = im2seq(s1)
@@ -195,7 +191,7 @@ for epoch in range(num_epochs):
                 'test_identity':test_ident,
                 'train_identity':train_ident,
                 },
-                'results/best_model.pt')
+                'best_model.pt')
                 min_loss = test_loss
                 best_iter = epoch
                 count = 0 # reset no-improvement count
@@ -210,9 +206,10 @@ for epoch in range(num_epochs):
             times.append(timestamps)
             print('Timings:\n', timestamps)
 
-pickle.dump(stats, open('results/stats.pkl', 'wb'))
-pickle.dump(times, open('results/times.pkl', 'wb')) 
-pickle.dump(probe_results, open('results/diversity.pkl', 'wb'))
+pickle.dump(stats, open('stats.pkl', 'wb'))
+pickle.dump(times, open('times.pkl', 'wb'))
+torch.save(probe_results, open('diversity.pkl', 'wb'))
+# pickle.dump(probe_results, open('results/diversity.pkl', 'wb'))
 
 
 # store all latest space variables for all sequences in dataset.
@@ -233,4 +230,4 @@ for seqpath in allseqpaths:
         s.data.cpu().numpy(),
         mu.data.cpu().numpy(),
         model.z.data.cpu().numpy()])
-pickle.dump(latent_results,open('results/latent_results.pkl', 'wb')) 
+pickle.dump(latent_results,open('latent_results.pkl', 'wb')) 
