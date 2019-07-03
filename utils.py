@@ -11,6 +11,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 import os
 
+
 aa2num = {'G':0,'A':1,'B':2,'D':2,'Z':3,'E':3,'K':4,'R':5,
              'H':6,'V':7,'I':8,'S':9,'T':10,'Y':11,
              'N':12,'Q':13,'W':14,'F':15,'P':16,'M':17,
@@ -144,6 +145,9 @@ def seq2bit(seq, allowed, keep_pos=None):
         seq: list - list of strings that make up the protein sequence.
         allowed: list - list of tuples. Each tuple contains all possible
         amino acids found for that position.
+        keep_pos(optional): list - index of positions to use when making a bit
+        encoded sequence. This allows for pre-filtering positions due to blank
+        percertage or any other metric.
     '''
     if keep_pos == None:
         bit_seq = np.zeros(len([len(t) for t in allowed]),dtype=np.int8)
@@ -160,6 +164,17 @@ def seq2bit(seq, allowed, keep_pos=None):
     return None
 
 def bit2seq(bit_seq, allowed, keep_pos=None):
+    '''Converts a bit-encoded sequence back to its original protein sequence.
+    Uses allowed and keep_pos(if provided) to 
+    
+    Parameters:
+        bit_seq: list - bit encoded sequence.
+        allowed: list - list of tuples. Each tuple contains all possible
+        amino acids found for that position.
+        keep_pos(optional): list - index of positions to use when making a bit
+        encoded sequence. This allows for pre-filtering positions due to blank
+        percertage or any other metric.
+    '''
     if keep_pos == None:
         seq_recon = []
         bitix = 0
@@ -271,5 +286,57 @@ def binarize_image(v):
     for i,row in enumerate(v):
         bin_v[i] = v[i] >= max(row)
     return np.array(bin_v).astype(np.int8)
+
+def get_cutoffs(msa, blank_cutoff=.7):
+    '''
+    Assumes: msa provided in column = seq, row = pos
+    '''
+    num_seqs = len(msa[0])
+    num_pos = len(msa)
+    blank_freq = np.zeros(num_pos)
+    unique_aa_num = np.zeros(num_pos)
+    for i, pos in enumerate(msa):
+        unique_aa_num[i] = len(set(pos))
+        blank_freq[i] = pos.count('-')
+    blank_freq = blank_freq/num_seqs
+    #get positions to keep
+    blank_keep = np.nonzero(blank_freq < blank_cutoff)[0] # get indices that meet our criteria
+    unique_aa = [list(set(pos)) for pos in msa] #list of [[aa's]]
+    return blank_freq, unique_aa_num, blank_keep, unique_aa #return all for future reference and backtracking
+
+def generate_limits(unique_aa_num, keep=[]):
+    lims = []
+    i = 0
+    for pos,aa_num in enumerate(unique_aa_num):
+        if pos not in keep:
+            pass
+        else:
+            lims.append([i,i+aa_num])
+            i += aa_num
+    return lims
+    
+
+def binarize_tensor(tens, lims):
+    ''' Binarizes tensor using the limits that excode each amino acid.
+    See get_cutoffs and generate_limits for details on how the limits are generated. 
+    '''
+    for lim1,lim2 in lims:
+        tens[lim1:lim2] = tens[lim1:lim2] >= torch.max(tens[lim1:lim2]).item()
+    return tens.float()
+    
+def tensor_pairwise_identity(t1, t2, lims, keep=[]):
+    # binarize, cast and copy without grad.
+    t1_clone = binarize_tensor(t1, lims).clone().detach()
+    t2_clone = binarize_tensor(t2, lims).clone().detach()
+    if len(keep) == 0: # if all should count.
+        product = t1_clone.dot(t2_clone).item()
+        return product/len(lims) #largest number in lims
+#    else:
+#        t1_clone = 
+#        t2_clone = 
+#        product = t1_clone.dot(t2_clone).item()
+#        return product/len(keep)
+    
+    
 
 

@@ -29,9 +29,11 @@ if int(options[0]):
                     'test_loss', 'test_ident', 'test_kld', 'test_bce']
     for stat in stats_labels:
         plt.clf()
+        # plt.figure()
         plt.plot([data[stat] for data in stats])
         plt.title(stat)
         plt.savefig('stats/'+stat+'.png')
+        # plt.close()
 
 if int(options[1]):
     print('Calculating run times')

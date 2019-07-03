@@ -26,7 +26,7 @@ class VAE(nn.Module):
     they need to be flattened into 1D arrays.
     '''
     def __init__(self, l, hidden_size=400, latent_size=10,
-            he1_func=nn.Sigmoid(), hd1_func=nn.Sigmoid(), out_func=nn.Softmax(dim=1)):
+            he1_func=nn.Sigmoid(), hd1_func=nn.Sigmoid(), out_func=nn.Softmax(dim=1), device = None):
 
         super(VAE, self).__init__()
         self.l = l
