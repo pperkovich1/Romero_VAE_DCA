@@ -325,12 +325,13 @@ def binarize_tensor(tens, lims):
     return tens.float()
     
 def tensor_pairwise_identity(t1, t2, lims, keep=[]):
-    # binarize, cast and copy without grad.
-    t1_clone = binarize_tensor(t1, lims).clone().detach()
-    t2_clone = binarize_tensor(t2, lims).clone().detach()
-    if len(keep) == 0: # if all should count.
-        product = t1_clone.dot(t2_clone).item()
-        return product/len(lims) #largest number in lims
+    with torch.no_grad():
+        # binarize, cast and copy without grad.
+        t1_clone = binarize_tensor(t1, lims).clone().detach()
+        t2_clone = binarize_tensor(t2, lims).clone().detach()
+        if len(keep) == 0: # if all should count.
+            product = t1_clone.dot(t2_clone).item()
+            return product/len(lims) #largest number in lims
 #    else:
 #        t1_clone = 
 #        t2_clone = 

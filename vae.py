@@ -18,7 +18,7 @@ def main():
     # vvv was solution posted on https://github.com/pytorch/pytorch/issues/20990
     torch.cuda.current_device()
     # if true, trains on full dataset
-    full_run = False
+    full_run = True
 
     cpus = os.cpu_count()
     # Input order:    layers, batch size, learning rate, epochs, convergence
@@ -98,6 +98,7 @@ def main():
     # 	os.mkdir(os.path.join(cwd,folder))
 
     for epoch in range(num_epochs):
+        print(epoch)
         if count >= (convergence*num_epochs):
                 print("Convergence at %i iterations." % epoch)
                 print("Minimum loss at %i iterations." % best_iter)
