@@ -4,25 +4,35 @@ import sys
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import scipy.stats
 from utils import *
+from models import *
 import torch
 matplotlib.use('Agg')
 
-cwd = os.path.join(os.getcwd()) # , 'results')
+# options = [loss, timestamps, latent vectors, diversity, heat  map]
+options_count = 5
+options = [1, 1, 1, 1, 1] if len(sys.argv)<=options_count else sys.argv[1:] 
 
+cwd = os.path.join(os.getcwd()) # , 'results') 
+stats = os.path.join(cwd, 'stats.pkl')
+times = os.path.join(cwd, 'times.pkl')
+latents = os.path.join(cwd, 'latent_results.pkl')
+samples = os.path.join(cwd, 'diversity.pkl')
 
-# options = [loss, timestamps, latent vectors, diversity]
-options_count = 4
-options = [1, 1, 1, 1] if len(sys.argv)<options_count else sys.argv[1:] 
+model_data = os.path.join(cwd, 'best_model.pt')
+size=75180
+latent_dim=250
+hidden_sizes=[250]
+batch_size = 100
+
 if not os.path.exists('stats'):
     os.mkdir('stats') 
 plt.figure()
 
-if int(options[0]):
-    print('Creating loss graphs')
-
-    stats = os.path.join(cwd, 'stats.pkl')
+def graph_loss():
+    print('Creating loss graphs') 
     stats = pickle.load(open(stats, 'rb'))
     stats = np.array(stats)
     stats_labels = ['epoch_loss', 'train_ident', 'train_kld', 'train_bce',
@@ -35,12 +45,11 @@ if int(options[0]):
         plt.savefig('stats/'+stat+'.png')
         # plt.close()
 
-if int(options[1]):
+def calc_runtimes():
     print('Calculating run times')
 
     time_file = open('stats/time_data.txt', 'a')
     time_file.write('~~~~~~~~~~~~~\n') # makes it easier to read when running multiple times
-    times = os.path.join(cwd, 'times.pkl')
     times = pickle.load(open(times, 'rb'))
     times = np.array(times)
     for timestamps in times:
@@ -53,17 +62,14 @@ if int(options[1]):
         output = 'Average {}:'.format(label).ljust(30) + '{:10.6f}\n'.format(average)
         time_file.write(output)
     time_file.close()
-    
-    
- 
-if int(options[2]):
+
+def graph_latents():
     print('Graphing latent vectors')
 
     if not os.path.exists('stats/latents'):
         os.mkdir('stats/latents')
 
     # latent: file, seq, recon_seq, log_s, mu, z
-    latents = os.path.join(cwd, 'latent_results.pkl')
     latents = pickle.load(open(latents, 'rb'))
     latents = np.array(latents) 
 
@@ -96,10 +102,9 @@ if int(options[2]):
     plt.plot(x, ys)
     plt.savefig('stats/latents/{}/{}.png'.format(name, 'stacked')) 
 
-if int(options[3]):
+def graph_pairwise(): 
     print('Graphing pairwise identity over time')
 
-    samples = os.path.join(cwd, 'diversity.pkl')
     samples = torch.load(samples, map_location='cpu')
 #    samples = pickle.load(open(samples, 'rb'))
     probe = samples[0][0].numpy()
@@ -126,4 +131,48 @@ if int(options[3]):
     plt.savefig('stats/diversity.png')
     plt.close()
 
+def graph_sample_heatmap():
+    with torch.no_grad():
+        print('Generating heatmap of samples')
+        sampleAmount = 1000
+        cpus = os.cpu_count()
+        lims = pickle.load(open('lims.pkl', 'rb'))
 
+        model_data = torch.load(globals()['model_data'], map_location='cpu')
+        model_state_dict = model_data['model_state_dict']
+        model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=hidden_sizes)
+        model.load_state_dict(model_state_dict)
+
+        seqs = pd.read_csv('seqDbPaths.csv')
+        seqs = seqs.head(1)
+        seqs.to_csv('fullset.csv')
+        seqloader = DataLoader(SequenceDataset('fullset.csv'), shuffle=True,
+                               batch_size=batch_size, num_workers=cpus)
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        
+        for seq in seqloader:
+            model.encode(seq)
+            recon_sum = torch.from_numpy(np.zeros_like(seq))
+            for i in range(sampleAmount):
+                recon_seq = binarize_tensor(model.decode()[0], lims)
+                recon_sum += recon_seq 
+            recon_sum = recon_sum.numpy().reshape(20, -1)
+            print(recon_sum[:,:15]*1000)
+            plt.figure()
+            plt.imshow(recon_sum[:,:15]*1000)
+            plt.savefig('stats/heatmap.png')
+            
+        
+        print('Didn\'t crash!')
+
+    
+if int(options[0]):
+    graph_loss() 
+if int(options[1]):
+    calc_runtimes() 
+if int(options[2]):
+    graph_latents()
+if int(options[3]):
+    graph_pairwise()
+if int(options[4]):
+    graph_sample_heatmap()
