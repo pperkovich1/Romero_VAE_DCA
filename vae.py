@@ -73,7 +73,7 @@ def main():
 
     # Initialize vae and start training
     # if num_layers==1:
-    model = VAE(l=size, latent_size=latent_dim, hidden_size=h_dims[0], device=device).to(device)
+    # model = VAE(l=size, latent_size=latent_dim, hidden_size=h_dims[0], device=device).to(device)
     # elif num_layers==2:
     #     model = VAE_double(l=size, latent_size=latent_dim, hidden_size_1=h_dims[0], hidden_size_2=h_dims[1]).to(device)
     # else

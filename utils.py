@@ -94,8 +94,8 @@ def seq2im(seq, flatten=True, keep_pos=None, unique_aa=None):
             im = np.append(im, bits)
         return im 
     else:
-        im = np.zeros(len(seq),21)
-        for i in range(im):
+        im = np.zeros((len(seq),21))
+        for i in range(len(im)):
             im[i][aa2num[seq[i]]] = 1
         return im #return matrix form
 
@@ -322,6 +322,9 @@ def binarize_tensor(tens, lims):
     '''
     for lim1,lim2 in lims:
         tens[lim1:lim2] = tens[lim1:lim2] >= torch.max(tens[lim1:lim2]).item()
+        if np.sum(tens[lim1:lim2].numpy())>1:
+            print('lim1, lim2: ', lim1, lim2)
+            print(tens[lim1:lim2])
     return tens.float()
     
 def tensor_pairwise_identity(t1, t2, lims, keep=[]):

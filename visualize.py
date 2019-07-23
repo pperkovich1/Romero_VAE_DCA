@@ -4,12 +4,13 @@ import sys
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.ma as ma
 import pandas as pd
 import scipy.stats
 from utils import *
 from models import *
-import torch
 matplotlib.use('Agg')
+np.set_printoptions(edgeitems=10, linewidth=1000)
 
 # options = [loss, timestamps, latent vectors, diversity, heat  map]
 options_count = 5
@@ -20,12 +21,16 @@ stats = os.path.join(cwd, 'stats.pkl')
 times = os.path.join(cwd, 'times.pkl')
 latents = os.path.join(cwd, 'latent_results.pkl')
 samples = os.path.join(cwd, 'diversity.pkl')
+sample_dir = os.path.join(cwd, 'samples')
+''' expected format of samples.fasta:
+>Input
+>Recon_1
+>Recon_2
+>Recon_3
+[...]
+'''
 
-model_data = os.path.join(cwd, 'best_model.pt')
-size=75180
-latent_dim=250
-hidden_sizes=[250]
-batch_size = 100
+
 
 if not os.path.exists('stats'):
     os.mkdir('stats') 
@@ -33,6 +38,8 @@ plt.figure()
 
 def graph_loss():
     print('Creating loss graphs') 
+
+    global stats
     stats = pickle.load(open(stats, 'rb'))
     stats = np.array(stats)
     stats_labels = ['epoch_loss', 'train_ident', 'train_kld', 'train_bce',
@@ -47,7 +54,8 @@ def graph_loss():
 
 def calc_runtimes():
     print('Calculating run times')
-
+    
+    global times
     time_file = open('stats/time_data.txt', 'a')
     time_file.write('~~~~~~~~~~~~~\n') # makes it easier to read when running multiple times
     times = pickle.load(open(times, 'rb'))
@@ -66,6 +74,7 @@ def calc_runtimes():
 def graph_latents():
     print('Graphing latent vectors')
 
+    global latents
     if not os.path.exists('stats/latents'):
         os.mkdir('stats/latents')
 
@@ -105,8 +114,8 @@ def graph_latents():
 def graph_pairwise(): 
     print('Graphing pairwise identity over time')
 
-    samples = torch.load(samples, map_location='cpu')
-#    samples = pickle.load(open(samples, 'rb'))
+    global samples
+    samples = pickle.load(open(samples, 'rb'))
     probe = samples[0][0].numpy()
     pos_num = len(probe)//21
     probe = np.reshape(probe, (pos_num, 21))
@@ -131,39 +140,52 @@ def graph_pairwise():
     plt.savefig('stats/diversity.png')
     plt.close()
 
+
+aa2num = {'G':0,'A':1,'B':2,'D':2,'Z':3,'E':3,'K':4,'R':5,
+             'H':6,'V':7,'I':8,'S':9,'T':10,'Y':11,
+             'N':12,'Q':13,'W':14,'F':15,'P':16,'M':17,
+             'L':18,'C':19,'.':20, 'X':20,'-':20}
 def graph_sample_heatmap():
-    with torch.no_grad():
-        print('Generating heatmap of samples')
-        sampleAmount = 1000
-        cpus = os.cpu_count()
-        lims = pickle.load(open('lims.pkl', 'rb'))
+    print('Generating heat map')
 
-        model_data = torch.load(globals()['model_data'], map_location='cpu')
-        model_state_dict = model_data['model_state_dict']
-        model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=hidden_sizes)
-        model.load_state_dict(model_state_dict)
+    global sample_dir
+    sample_dir = os.scandir(sample_dir)
 
-        seqs = pd.read_csv('seqDbPaths.csv')
-        seqs = seqs.head(1)
-        seqs.to_csv('fullset.csv')
-        seqloader = DataLoader(SequenceDataset('fullset.csv'), shuffle=True,
-                               batch_size=batch_size, num_workers=cpus)
-        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        
-        for seq in seqloader:
-            model.encode(seq)
-            recon_sum = torch.from_numpy(np.zeros_like(seq))
-            for i in range(sampleAmount):
-                recon_seq = binarize_tensor(model.decode()[0], lims)
-                recon_sum += recon_seq 
-            recon_sum = recon_sum.numpy().reshape(20, -1)
-            print(recon_sum[:,:15]*1000)
-            plt.figure()
-            plt.imshow(recon_sum[:,:15]*1000)
+    #@TODO: make figure wider for when I do Big Sequences
+    fig = plt.figure() 
+    for sample in sample_dir:
+        sample = sample.path
+        if sample.endswith('.fasta'):
+            sample = SeqIO.parse(sample, 'fasta')
+            input_seq = np.array(next(sample))
+            input_seq = seq2im(input_seq, flatten=False)
+            recons = np.array(list(sample))
+            recons = np.array([seq2im(seq, flatten=False) for seq in recons])
+
+            recons_sum = np.sum(recons, axis=0)
+            # recons_sum = recons_sum/np.linalg.norm(recons_sum,axis=0)
+            recons_sum = recons_sum/len(recons)
+            recons_sum = np.nan_to_num(recons_sum)
+            recons_sum = recons_sum.transpose()
+            input_seq = input_seq.transpose()
+            masked_sum = ma.array(recons_sum, mask=input_seq)
+
+            heatmap = ma.filled(masked_sum, fill_value=1)
+            plt.imshow(heatmap)
             plt.savefig('stats/heatmap.png')
-            
-        
-        print('Didn\'t crash!')
+            plt.cla()
+
+            variance = [np.sum(masked_sum, axis=0)]
+            plt.imshow(variance)
+            plt.savefig('stats/variance.png')
+            plt.cla()
+    plt.clf()
+
+
+
+
+
+
 
     
 if int(options[0]):
