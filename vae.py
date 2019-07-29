@@ -10,6 +10,7 @@ from utils import *
 from models import *
 import sys
 import pickle
+import timeit
 from timeit import default_timer as timer
 
 
@@ -232,4 +233,4 @@ def main():
     pickle.dump(latent_results,open('latent_results.pkl', 'wb')) 
 
 if __name__ == '__main__':
-    main()
+    print('Rutime (s):\t', timeit.timeit('main()', number=1))
