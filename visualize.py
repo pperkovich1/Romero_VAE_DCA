@@ -140,11 +140,7 @@ def graph_pairwise():
     plt.savefig('stats/diversity.png')
     plt.close()
 
-
-aa2num = {'G':0,'A':1,'B':2,'D':2,'Z':3,'E':3,'K':4,'R':5,
-             'H':6,'V':7,'I':8,'S':9,'T':10,'Y':11,
-             'N':12,'Q':13,'W':14,'F':15,'P':16,'M':17,
-             'L':18,'C':19,'.':20, 'X':20,'-':20}
+#@TODO: add labels/titles, also legend
 def graph_sample_heatmap():
     print('Generating heat map')
 
