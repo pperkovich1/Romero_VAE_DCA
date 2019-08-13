@@ -130,14 +130,17 @@ def main():
                 epoch_loss.append(float(l.item()/len(trainseq)))
                 train_kld.append(float(kld.item()/len(trainseq)))
                 train_bce.append(float(bce.item()/len(trainseq)))
-                 # calculate identity
+                # calculate identity
+                train_ident = tensors_pairwise_identity(trainseq, recon_seq, lims)
+                '''
                 if len(trainseq) > 1: #if batching
                     for i in range(len(trainseq)):
                         train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
                 else: # no batch
                     train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
+                '''
                 timestamps.append(['train_ident', timer()])
-            train_ident = np.mean(train_ident)
+            train_ident = torch.mean(train_ident).cpu().numpy()
             epoch_loss = np.mean(epoch_loss)
             train_kld = np.mean(train_kld)
             train_bce = np.mean(train_bce)
@@ -163,19 +166,23 @@ def main():
                     test_bce.append(float(bce)/len(testseq))
                     timestamps.append(['test_loss', timer()])
                     # calculate identity
+                    test_ident = tensors_pairwise_identity(testseq, recon_seq, lims)
+                    '''
                     if len(testseq) > 1: #if batching
                         for i in range(len(testseq)):
                             test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
                     else: # no batch
                         test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
-                test_ident = np.mean(test_ident) #TODO: tell Juan about this typo
+                    '''
+                    timestamps.append(['test_ident', timer()])#TODO: run to check if this is actual slowdown 
+                test_ident = torch.mean(test_ident).cpu().numpy()
                 test_loss = np.mean(test_loss)
                 test_kld = np.mean(test_kld)
                 test_bce = np.mean(test_bce)
-                timestamps.append(['test_mean', timer()])
+                timestamps.append(['test_means', timer()])
                 probe_results.append([])
                 for i in range(probe_amount):
-                    probe_results[-1].append(model(probe)[0].cpu())
+                    probe_results[-1].append(model(probe)[0])
                 timestamps.append(['sample_diversity', timer()])
 
                 if min_loss < (test_loss - test_loss*improve_step_pct):

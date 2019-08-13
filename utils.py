@@ -323,6 +323,26 @@ def binarize_tensor(tens, lims):
     for lim1,lim2 in lims:
         tens[lim1:lim2] = tens[lim1:lim2] >= torch.max(tens[lim1:lim2]).item()
     return tens.float()
+
+def binarize_tensors(matrix, lims):
+    '''
+    Input: matrix of tensors (float)
+    Output: matrix of tensors (binarized, float)
+    Binarizes a matrix of tensors using the limits that excode each aa 
+    identical to binarize_tensor except faster (hopefully)
+    faster b/c no loops, so GPU can be parallel? I think . . . 
+    '''
+    height = len(matrix)
+    output = torch.zeros((height, 0)).to(matrix.device)
+    for lim1, lim2 in lims:
+        chunk_len = lim2-lim1
+        raw_chunk = torch.narrow(matrix, 1, lim1, chunk_len)
+        mask = (torch.max(raw_chunk, 1)[0])
+        mask = mask.view(height, 1)
+        binarized_chunk = (raw_chunk == mask).to(torch.float)
+        output = torch.cat((output, binarized_chunk), 1)
+    return output
+        
     
 def tensor_pairwise_identity(t1, t2, lims, keep=[]):
     with torch.no_grad():
@@ -337,7 +357,67 @@ def tensor_pairwise_identity(t1, t2, lims, keep=[]):
 #        t2_clone = 
 #        product = t1_clone.dot(t2_clone).item()
 #        return product/len(keep)
-    
-    
+
+def tensors_pairwise_identity(m1, m2, lims, keep=[]):
+    '''
+    Input:
+        m1=input matrix (binarized, float)
+        m2=reconstructed matrix (float)
+    Output: list of integers
+    Interprets input as one-hot encoded proteins
+    Calculates the pairwise identity between corresponding rows in m1 and m2
+    '''
+    with torch.no_grad():
+        height = len(m1)
+        width = lims[-1][-1]
+        m1 = binarize_tensors(m1, lims) # shouldn't be necessary (already bin)
+        m2 = binarize_tensors(m2, lims)
+
+        product = torch.bmm(m1.view(height, 1, width), m2.view(height, width, 1))
+        product = product.view(height, 1)
+        return (product/len(lims)) # normalizes to number of amino acids
+
+
+# simple tests
+if __name__ == '__main__':
+    import timeit
+
+    m1 = torch.tensor(
+         [[1, 0, 0, 0, 0,   0, 1, 0, 0, 0,    0, 0, 0, 0, 1],
+          [0, 0, 1, 0, 0,   0, 0, 1, 0, 0,    0, 0, 0, 0, 1],
+          [0, 1, 0, 0, 0,   0, 0, 1, 0, 0,    0, 0, 0, 0, 1],
+          [0, 0, 0, 1, 0,   0, 1, 0, 0, 0,    0, 0, 1, 0, 0],
+          [0, 0, 0, 1, 0,   1, 0, 0, 0, 0,    1, 0, 0, 0, 0]])
+
+    m2 = torch.tensor(
+         [[.6,.3,.4,.5,.5,  .5,.8,.5,.5,.5,   .5,.5,.5,.5,.8], 
+          [.9,.5,.5,.5,.5,  .5,.1,.1,.1,.1,   .0,.0,.0,.1,.0],
+          [.5,.5,.0,.6,.5,  .5,.5,.0,.5,.7,   .2,.2,.2,.2,.5],
+          [.5,.5,.5,.5,.9,  .9,.5,.5,.5,.5,   .5,.5,.9,.5,.5],
+          [.5,.5,.5,.5,.5,  .9,.5,.5,.5,.5,   .9,.5,.5,.5,.5]])
+
+    lims= [[0, 5], [5, 10], [10, 15]]
+    for t1, t2 in zip(m1, m2):
+        print(tensor_pairwise_identity(t1, t2, lims))
+    print('~~~~~~~')
+    foo = tensors_pairwise_identity(m1, m2, lims)
+    print(foo)
+    print(torch.mean(foo).numpy())
+
+    def test1():
+        for t1, t2 in zip(m1, m2):
+            tensor_pairwise_identity(t1, t2, lims)
+    def test2():
+        tensors_pairwise_identity(m1, m2, lims)
+
+    print(timeit.timeit(test1, number = 10000))
+    print(timeit.timeit(test2, number = 10000))
+
+
+
+
+
+
+
 
 
