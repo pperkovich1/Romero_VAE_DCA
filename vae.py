@@ -78,9 +78,7 @@ def main():
     # elif num_layers==2:
     #     model = VAE_double(l=size, latent_size=latent_dim, hidden_size_1=h_dims[0], hidden_size_2=h_dims[1]).to(device)
     # else
-    print('-3', torch.cuda.max_memory_cached())#DEBUG
     model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=h_dims).to(device)
-    print('-2', torch.cuda.max_memory_cached())#DEBUG
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     train_loss = []
     count = 0
@@ -99,8 +97,6 @@ def main():
     # folder = os.path.join(cwd, 'results')
     # if(not os.path.exists(folder)): # added to make repeated testing on personal machine a bit easier
     # 	os.mkdir(os.path.join(cwd,folder))
-    print('-1', torch.cuda.max_memory_cached())#DEBUG
-    torch.cuda.reset_max_memory_cached()
 
     for epoch in range(num_epochs):
         print(epoch)
@@ -116,72 +112,36 @@ def main():
             train_bce = []
             train_ident = []
             for seq in trainloader:
-                print('0', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['batch_start', timer()]) # batch start time
-                print('1', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 trainseq = seq.float().to(device)
-                print('3', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 optimizer.zero_grad()
-                print('4', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['model_preparation', timer()])
-                print('5', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 recon_seq, s, mu = model(trainseq)
-                print('6', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['forward_pass', timer()])
-                print('7', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 bce = F.binary_cross_entropy(trainseq.float(),
                                             recon_seq.detach().float(),
                                             reduction='sum')
-                print('8', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 kld = kl_divergence(mu, s)
-                print('9', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 l = bce + kld
-                print('10', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['train_loss', timer()])
-                print('11', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 l.backward()
-                print('12', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 optimizer.step()
-                print('13', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['back_prop', timer()])
-                print('14', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 epoch_loss.append(float(l.item()/len(trainseq)))
                 train_kld.append(float(kld.item()/len(trainseq)))
                 train_bce.append(float(bce.item()/len(trainseq)))
-                print('15', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                  # calculate identity
                 if len(trainseq) > 1: #if batching
                     for i in range(len(trainseq)):
                         train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
                 else: # no batch
                     train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
-                print('16', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['train_ident', timer()])
-                print('17', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
             train_ident = np.mean(train_ident)
             epoch_loss = np.mean(epoch_loss)
             train_kld = np.mean(train_kld)
             train_bce = np.mean(train_bce)
             timestamps.append(['train_mean', timer()])
-            print('train:', torch.cuda.max_memory_cached())#DEBUG
-            torch.cuda.reset_max_memory_cached()
                                   
             #test
             with torch.no_grad():
@@ -190,59 +150,33 @@ def main():
                 test_bce = []
                 test_ident = []
                 for seqt in testloader:
-                    print('0', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     timestamps.append(['test_start', timer()])
-                    print('1', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     testseq = seqt.float().to(device)
-                    print('2', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     recon_seq, s, mu = model(testseq)
-                    print('3', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     bce = F.binary_cross_entropy(testseq.float(),
                                             recon_seq.detach().float(),
                                             reduction='sum')
-                    print('4', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     kld = kl_divergence(mu, s)
-                    print('5', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     l_test = bce + kld
-                    print('6', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     test_loss.append(float(l_test.item()/len(testseq)))
                     test_kld.append(float(kld)/len(testseq))
                     test_bce.append(float(bce)/len(testseq))
                     timestamps.append(['test_loss', timer()])
-                    print('7', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                     # calculate identity
                     if len(testseq) > 1: #if batching
                         for i in range(len(testseq)):
                             test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
                     else: # no batch
                         test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
-                    print('8', torch.cuda.max_memory_cached())#DEBUG
-                    torch.cuda.reset_max_memory_cached()
                 test_ident = np.mean(test_ident) #TODO: tell Juan about this typo
                 test_loss = np.mean(test_loss)
                 test_kld = np.mean(test_kld)
                 test_bce = np.mean(test_bce)
-                print('9', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['test_mean', timer()])
                 probe_results.append([])
-                print('10', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 for i in range(probe_amount):
                     probe_results[-1].append(model(probe)[0].cpu())
-                print('11', torch.cuda.max_memory_cached())#DEBUG
-                torch.cuda.reset_max_memory_cached()
                 timestamps.append(['sample_diversity', timer()])
-                print('test', torch.cuda.max_memory_cached())#DEBUG 
-                torch.cuda.reset_max_memory_cached()
 
                 if min_loss < (test_loss - test_loss*improve_step_pct):
                     count += 1 # add no-improvement count. 
