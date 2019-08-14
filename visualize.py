@@ -14,7 +14,7 @@ np.set_printoptions(edgeitems=10, linewidth=1000)
 
 # options = [loss, timestamps, latent vectors, diversity, heat  map]
 options_count = 5
-options = [1, 1, 1, 1, 1] if len(sys.argv)<=options_count else sys.argv[1:] 
+options = [1, 1, 1, 1, 1, 1] if len(sys.argv)<=options_count else sys.argv[1:] 
 
 cwd = os.path.join(os.getcwd()) # , 'results') 
 stats = os.path.join(cwd, 'stats.pkl')
@@ -60,13 +60,30 @@ def calc_runtimes():
     time_file.write('~~~~~~~~~~~~~\n') # makes it easier to read when running multiple times
     times = pickle.load(open(times, 'rb'))
     times = np.array(times)
+    output = {}
+    # collects all labels
+    for label, time in times[0]:
+        if not label in output.keys():
+            output[label] = []
+            # output.update((label, [])) 
+
+    # converts real time to change in time
     for timestamps in times:
         for i in range(len(timestamps)-1, 0, -1):
-            timestamps[i][1] = timestamps[i][1].astype(np.float)-timestamps[i-1][1].astype(np.float)
-    times = np.moveaxis(times, 0, -1)
-    for timestamp in times:
-        label = timestamp[0][0]
-        average = np.nanmean(timestamp[1].astype(np.float))
+            timestamps[i][1] = timestamps[i][1].astype(np.float)-timestamps[i-1][1].astype(np.float) 
+
+    # times = np.moveaxis(times, 0, -1)
+    flag = 1
+    for timediffs in times:
+        for label, timediff in timediffs:
+            output[label].append(timediff.astype(np.float))
+            if flag:
+                print(timediff)
+                print(output[label])
+                flag = 0
+
+    for label, timediffs in output.items():
+        average = np.mean(timediffs)
         output = 'Average {}:'.format(label).ljust(30) + '{:10.6f}\n'.format(average)
         time_file.write(output)
     time_file.close()
