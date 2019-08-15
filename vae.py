@@ -131,7 +131,8 @@ def main():
                 train_kld.append(float(kld.item()/len(trainseq)))
                 train_bce.append(float(bce.item()/len(trainseq)))
                 # calculate identity
-                train_ident = tensors_pairwise_identity(trainseq, recon_seq, lims)
+                train_ident = tensors_pairwise_identity(trainseq, recon_seq,
+                                                        lims)
                 '''
                 if len(trainseq) > 1: #if batching
                     for i in range(len(trainseq)):
