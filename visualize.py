@@ -16,30 +16,20 @@ np.set_printoptions(edgeitems=10, linewidth=1000)
 options_count = 5
 options = [1, 1, 1, 1, 1, 1] if len(sys.argv)<=options_count else sys.argv[1:] 
 
-cwd = os.path.join(os.getcwd()) # , 'results') 
-stats = os.path.join(cwd, 'stats.pkl')
-times = os.path.join(cwd, 'times.pkl')
-latents = os.path.join(cwd, 'latent_results.pkl')
-samples = os.path.join(cwd, 'diversity.pkl')
-sample_dir = os.path.join(cwd, 'samples')
-''' expected format of samples.fasta:
->Input
->Recon_1
->Recon_2
->Recon_3
-[...]
-'''
-
 
 
 if not os.path.exists('stats'):
-    os.mkdir('stats') 
+    os.mkdir('stats')
 plt.figure()
 
-def graph_loss():
-    print('Creating loss graphs') 
+def graph_loss(stats):
+    '''
+    Input: stats.pkl, 
+    Graphs loss over time
+    '''
+    print('Creating loss graphs')
 
-    global stats
+    # global stats
     stats = pickle.load(open(stats, 'rb'))
     stats = np.array(stats)
     stats_labels = ['epoch_loss', 'train_ident', 'train_kld', 'train_bce',
@@ -52,10 +42,15 @@ def graph_loss():
         plt.savefig('stats/'+stat+'.png')
         # plt.close()
 
-def calc_runtimes():
+def calc_runtimes(times):
+    '''
+    Input: file of timestamps
+    Calculates average runtime of each section fo code
+    '''
+
     print('Calculating run times')
     
-    global times
+    # global times
     time_file = open('stats/time_data.txt', 'a')
     time_file.write('~~~~~~~~~~~~~\n') # makes it easier to read when running multiple times
     times = pickle.load(open(times, 'rb'))
@@ -88,16 +83,20 @@ def calc_runtimes():
         time_file.write(output)
     time_file.close()
 
-def graph_latents():
+def graph_latents(latents):
+    '''
+    Input: file of latent vectors for each input
+    Graphs latent vectors for each input sequence
+    '''
     print('Graphing latent vectors')
 
-    global latents
+    # global latents
     if not os.path.exists('stats/latents'):
         os.mkdir('stats/latents')
 
     # latent: file, seq, recon_seq, log_s, mu, z
     latents = pickle.load(open(latents, 'rb'))
-    latents = np.array(latents) 
+    latents = np.array(latents)
 
     for latent in latents:
         name, seq, recon_seq, LOG_S, MU, z = latent
@@ -128,10 +127,14 @@ def graph_latents():
     plt.plot(x, ys)
     plt.savefig('stats/latents/{}/{}.png'.format(name, 'stacked')) 
 
-def graph_pairwise(): 
+def graph_pairwise(samples):
+    '''
+    Input: [[probe], [epoch 1 samples], [epoch 2], ...]
+    Graphs pairwise identity over time
+    '''
     print('Graphing pairwise identity over time')
 
-    global samples
+    # global samples
     samples = pickle.load(open(samples, 'rb'))
     probe = samples[0][0].numpy()
     pos_num = len(probe)//21
@@ -139,7 +142,7 @@ def graph_pairwise():
     probe = im2seq(probe)
     samples = samples[1:]
 
-    averages= []
+    averages = []
     for sample in samples:
         # sample = [im2seq(np.reshape(binarize_image(seq), (pos_num, 21))) for seq in sample]
         average = 0
@@ -158,10 +161,14 @@ def graph_pairwise():
     plt.close()
 
 #@TODO: add labels/titles, also legend
-def graph_sample_heatmap():
+def graph_sample_heatmap(sample_dir):
+    '''
+    Input: directory of output sequences (not one-hot encoded)
+    plots amino acid frequency in each position
+    '''
     print('Generating heat map')
 
-    global sample_dir
+    # global sample_dir
     sample_dir = os.scandir(sample_dir)
 
     #@TODO: make figure wider for when I do Big Sequences
@@ -195,19 +202,27 @@ def graph_sample_heatmap():
     plt.clf()
 
 
+cwd = os.path.join(os.getcwd()) # , 'results')
+''' expected format of samples.fasta:
+>Input
+>Recon_1
+>Recon_2
+>Recon_3
+[...]
+'''
 
-
-
-
-
-    
 if int(options[0]):
-    graph_loss() 
+    stats = os.path.join(cwd, 'stats.pkl')
+    graph_loss(stats)
 if int(options[1]):
-    calc_runtimes() 
+    times = os.path.join(cwd, 'times.pkl')
+    calc_runtimes(times)
 if int(options[2]):
-    graph_latents()
+    latents = os.path.join(cwd, 'latent_results.pkl')
+    graph_latents(latents)
 if int(options[3]):
-    graph_pairwise()
+    samples = os.path.join(cwd, 'diversity.pkl')
+    graph_pairwise(samples)
 if int(options[4]):
-    graph_sample_heatmap()
+    sample_dir = os.path.join(cwd, 'samples')
+    graph_sample_heatmap(sample_dir)

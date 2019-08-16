@@ -12,6 +12,7 @@ import sys
 import pickle
 import timeit
 from timeit import default_timer as timer
+from torch import multiprocessing
 
 
 def main():
@@ -79,6 +80,9 @@ def main():
     #     model = VAE_double(l=size, latent_size=latent_dim, hidden_size_1=h_dims[0], hidden_size_2=h_dims[1]).to(device)
     # else
     model = VAE_flexible(l=size, latent_size=latent_dim, hidden_sizes=h_dims).to(device)
+    # hopefully this works VVV
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     train_loss = []
     count = 0
@@ -118,9 +122,12 @@ def main():
                 timestamps.append(['model_preparation', timer()])
                 recon_seq, s, mu = model(trainseq)
                 timestamps.append(['forward_pass', timer()])
+                #TODO: see if F.bce can be multithreaded (maybe use 'pool'?)
                 bce = F.binary_cross_entropy(trainseq.float(),
                                             recon_seq.detach().float(),
                                             reduction='sum')
+                #TODO: multithread kld/loss calculations (maybe use 'pool'?)
+                #TODO: confirm that multithreading doesn't mess up gradient
                 kld = kl_divergence(mu, s)
                 l = bce + kld
                 timestamps.append(['train_loss', timer()])
@@ -131,15 +138,7 @@ def main():
                 train_kld.append(float(kld.item()/len(trainseq)))
                 train_bce.append(float(bce.item()/len(trainseq)))
                 # calculate identity
-                train_ident = tensors_pairwise_identity(trainseq, recon_seq,
-                                                        lims)
-                '''
-                if len(trainseq) > 1: #if batching
-                    for i in range(len(trainseq)):
-                        train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
-                else: # no batch
-                    train_ident.append(tensor_pairwise_identity(trainseq[i], recon_seq[i], lims))
-                '''
+                train_ident = tensors_pairwise_identity(trainseq, recon_seq, lims)
                 timestamps.append(['train_ident', timer()])
             train_ident = torch.mean(train_ident).cpu().numpy()
             epoch_loss = np.mean(epoch_loss)
@@ -168,14 +167,7 @@ def main():
                     timestamps.append(['test_loss', timer()])
                     # calculate identity
                     test_ident = tensors_pairwise_identity(testseq, recon_seq, lims)
-                    '''
-                    if len(testseq) > 1: #if batching
-                        for i in range(len(testseq)):
-                            test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
-                    else: # no batch
-                        test_ident.append(tensor_pairwise_identity(testseq[i], recon_seq[i], lims))
-                    '''
-                    timestamps.append(['test_ident', timer()])#TODO: run to check if this is actual slowdown 
+                    timestamps.append(['test_ident', timer()])
                 test_ident = torch.mean(test_ident).cpu().numpy()
                 test_loss = np.mean(test_loss)
                 test_kld = np.mean(test_kld)
