@@ -47,6 +47,8 @@ def main():
     print('Hidden Dim = ', h_dims)
     print('Latent Dim = ', latent_dim)
     #separate path DB into train/test dbs for dataloader
+    '''
+    # No longer necessary b/c trainset/testset are already created
     allseqpaths = pd.read_csv('seqDbPaths.csv') 
     if full_run:
         allseqpaths = allseqpaths['path']
@@ -60,7 +62,8 @@ def main():
     testpaths = pd.DataFrame(columns=['path'])
     testpaths['path'] = test
     testpaths.to_csv('testset.csv')
-    lims = pickle.load(open('lims.pkl', 'rb'))
+    '''
+    #  lims = pickle.load(open('lims.pkl', 'rb'))
 
 
     #Initialize Data Loaders
@@ -139,9 +142,9 @@ def main():
                 train_kld.append(float(kld.item()/len(trainseq)))
                 train_bce.append(float(bce.item()/len(trainseq)))
                 # calculate identity
-                train_ident = tensors_pairwise_identity(trainseq, recon_seq, lims)
-                timestamps.append(['train_ident', timer()])
-            train_ident = torch.mean(train_ident).cpu().numpy()
+                # train_ident = tensors_pairwise_identity(trainseq, recon_seq, lims)
+                # timestamps.append(['train_ident', timer()])
+            # train_ident = torch.mean(train_ident).cpu().numpy()
             epoch_loss = np.mean(epoch_loss)
             train_kld = np.mean(train_kld)
             train_bce = np.mean(train_bce)
@@ -167,9 +170,9 @@ def main():
                     test_bce.append(float(bce)/len(testseq))
                     timestamps.append(['test_loss', timer()])
                     # calculate identity
-                    test_ident = tensors_pairwise_identity(testseq, recon_seq, lims)
-                    timestamps.append(['test_ident', timer()])
-                test_ident = torch.mean(test_ident).cpu().numpy()
+                    # test_ident = tensors_pairwise_identity(testseq, recon_seq, lims)
+                    # timestamps.append(['test_ident', timer()])
+                # test_ident = torch.mean(test_ident).cpu().numpy()
                 test_loss = np.mean(test_loss)
                 test_kld = np.mean(test_kld)
                 test_bce = np.mean(test_bce)
@@ -183,6 +186,7 @@ def main():
                     count += 1 # add no-improvement count. 
                     timestamps.append(['no_save', np.NaN])
                 elif full_run:
+                    print("saving model")
                     torch.save({
                     'epoch': epoch,
                     'model_state_dict': model.state_dict(),
