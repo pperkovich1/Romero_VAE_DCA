@@ -63,6 +63,10 @@ def main():
     testpaths['path'] = test
     testpaths.to_csv('testset.csv')
     '''
+    # b/c we still use this later on. TODO: go back and refactor this. super messy!
+    trainpaths = pd.read_csv('trainset.csv')
+    trainpaths = trainpaths['path']
+
     #  lims = pickle.load(open('lims.pkl', 'rb'))
 
 
@@ -74,7 +78,8 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     #Size of input vector for VAE initialization
-    size = len(read_sequence(os.path.join(os.getcwd(), allseqpaths[0])))
+    #size = len(read_sequence(os.path.join(os.getcwd(), allseqpaths[0])))
+    size = len(read_sequence(os.path.join(os.getcwd(), trainpaths[0])))
     pos_num = int(size/21)
 
     # Initialize vae and start training
@@ -223,7 +228,8 @@ def main():
 
     # store all latest space variables for all sequences in dataset.
     latent_results = []
-    for seqpath in allseqpaths:
+    # for seqpath in allseqpaths:
+    for seqpath in trainpaths:
         seq = np.array(list(SeqIO.parse(open(seqpath), 'fasta'))[0].seq, dtype=np.float)
         seq = torch.tensor([seq]).float().to(device)
         recon_seq, s, mu = model(seq)
