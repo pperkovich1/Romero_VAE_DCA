@@ -2,7 +2,7 @@ from torch import nn
 import numpy as np
 
 prev_model = "model.pt"
-msa = "processed_msa.fasta"
+msa = "metaclust_processed_msa.fasta"
 
 input_length = 7168
 num_hidden = 400
