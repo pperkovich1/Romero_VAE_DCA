@@ -76,7 +76,7 @@ def main():
 	(trainloader, valloader) = torch.utils.data.random_split(dataloader, (trainsize, valsize))
 
 	max_epochs = config.max_epochs
-	convergence = config.convergence
+	convergence_limit  = config.convergence_limit
 	train_model(model, trainloader, valloader, max_epochs, convergence_limit)
 
 if __name__=='__main__':
