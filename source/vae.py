@@ -1,6 +1,5 @@
 import torch
 import time
-import utils
 import os
 
 #local files
