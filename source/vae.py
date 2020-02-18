@@ -1,4 +1,5 @@
 import torch
+from torch.utils.data import DataLoader
 import time
 import utils
 import os
@@ -6,9 +7,9 @@ import os
 #local files
 import config
 from model import VAE
-from dataloader import MSADataset
+from dataloader import MSADataset, OneHotTransform
 
-def train_model(model, trainloader, valloader, max_epochs, convergence_limit):
+def train_model(device, model, trainloader, valloader, max_epochs, convergence_limit):
 	start_time = time.time()
 	min_loss = 999999
 	no_improvement = 0
@@ -63,7 +64,7 @@ def main():
 	activation_func = config.activation_func
 	model = VAE(input_length, num_hidden, num_latent, activation_func)
 
-	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+	device = config.device
 
 	if os.path.exists(config.prev_model):
 		print("Loading saved model...")
@@ -71,14 +72,20 @@ def main():
 
 	model.to(device)
 
-	dataloader = MSADataset(config.msa)
-	trainsize = int(len(dataloader)*.9)
-	valsize = len(dataloader) - trainsize
-	(trainloader, valloader) = torch.utils.data.random_split(dataloader, (trainsize, valsize))
+	dataset = MSADataset(config.msa, transform=OneHotTransform(21))
+	trainsize = int(len(dataset)*.9)
+	valsize = len(dataset) - trainsize
+	(trainset, valset) = torch.utils.data.random_split(dataset, (trainsize, valsize))
+
+	batch_size = config.batch_size
+	trainloader = DataLoader(dataset=trainset, batch_size=batch_size)
+	valloader = DataLoader(dataset=valset, batch_size=batch_size)
+
+
 
 	max_epochs = config.max_epochs
-	convergence = config.convergence
-	train_model(model, trainloader, valloader, max_epochs, convergence_limit)
+	convergence_limit = config.convergence_limit
+	train_model(device, model, trainloader, valloader, max_epochs, convergence_limit)
 
 if __name__=='__main__':
 	main()

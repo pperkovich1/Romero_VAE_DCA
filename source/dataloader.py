@@ -2,9 +2,11 @@
 Modified from Sameer's VAE code
 '''
 
+import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import torch.nn.functional as F
+from Bio import SeqIO
 import config
 
 class MSADataset(Dataset):
@@ -12,6 +14,7 @@ class MSADataset(Dataset):
 
 	def __init__(self, msa_file, weights=None, transform=None, filterX=False):
 		self.raw_data = self.get_raw_data(msa_file)
+		print(self.raw_data[0:10])
 		self.transform = transform
 		self.AA_enc = self.get_encoding_dict()
 
@@ -33,8 +36,9 @@ class MSADataset(Dataset):
 		[self.raw_data, self.weights] = list(zip(*g))
 
 	def get_raw_data(self, msa_file):
-		with open(msa_file, "r") as f:
-			return [x.strip() for x in f]
+		f =  SeqIO.parse(open(msa_file), 'fasta')
+		print(list(f)[0])
+		return [x.strip() for x in f]
 
 	def get_encoding_dict(self):
 		return config.AA_map_str.copy()
@@ -44,7 +48,7 @@ class MSADataset(Dataset):
 
 	def conver_protein_to_tensor(self, prot_str):
 		# Integer representation of the protein
-		prot_itn = [self.AA_enc[p] for p in prot_str]
+		prot_int = [self.AA_enc[p] for p in prot_str]
 		sample = torch.LongTensor(prot_int)
 		if self.transform:
 			sample = self.transform(sample)
@@ -59,7 +63,7 @@ class MSADataset(Dataset):
 class OneHotTransform:
 	
 	def __init__(self, num_labels, to_float=True):
-		self.num_labels = num_labls
+		self.num_labels = num_labels
 		self.to_float = to_float
 
 	def __call__(self, sample):

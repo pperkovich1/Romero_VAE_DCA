@@ -33,6 +33,8 @@ class VAE(torch.nn.Module):
 		
 	def encoder(self, input_images):
 		x = input_images
+		print(len(x[0])/21)
+		print(x[0])
 		for layer in self.hidden_in:
 			x=self.activation_func(layer(x))
 		z_mean = self.z_mean(x)
