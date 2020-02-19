@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import time
 import utils
 import os
+import pickle
 
 #local files
 import config
@@ -16,7 +17,8 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
 	train_loss = []
 	test_loss = []
 	for epoch in range(max_epochs):
-		print('Epoch: %i\tTime elapsed:%.2f min'%(epoch, (time.time()-start_time)))
+		if not epoch%100:
+			print('Epoch: %i\tTime elapsed:%.2f sec'%(epoch, (time.time()-start_time)))
 		train_loss.append([])
 		test_loss.append([])
 
@@ -56,6 +58,7 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
 
 				test_loss[epoch].append(loss)
 	torch.save(model.state_dict(), "model.pt")
+	pickle.dump({'test loss': test_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
 
 def main():
 	input_length = config.input_length
