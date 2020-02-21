@@ -38,7 +38,7 @@ def get_msa_from_fasta(fasta_filename):
     """
     # TODO(Sameer): Move SeqIO import to header after merge with utils.py
     from Bio import SeqIO
-    seq_io_gen = SeqIO.parse(seq_filename, "fasta") # generator of sequences
+    seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
     # convert to lists of lists for easy numpy conversion to 2D array
     seqs = [list(str(seq.seq.upper())) for seq in seq_io_gen]
     return np.array(seqs, dtype="|S1")
