@@ -11,7 +11,7 @@ output = logs/pytorch_reweighting_$(Process).out.txt
 
 # set the executable to run
 executable = pytorch_reweighting.sh
-arguments = -t $(threshold) -i ../sequence_sets/$(inputfasta)
+arguments = -t $(threshold) -i ../sequence_sets/$(inputfasta).fasta -o output/$(inputfasta)_weights.npy
 
 # take our python script and data to the compute node
 transfer_input_files = staging.tar.gz
@@ -32,5 +32,5 @@ request_disk = 500MB
 
 # Tell HTCondor to run 1 instances of our job:
 queue threshold, inputfasta from ( 
-  0.8, cmx_aligned_blank_90.fasta
+  0.8, cmx_aligned_blank_90
 )
