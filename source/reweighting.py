@@ -100,14 +100,19 @@ def compute_weights_from_msa(msa, threshold, device=device):
 
 if __name__ == "__main__":
     import time
+    import argparse
 
-    seq_filename = "../sequence_sets/cmx_aligned_blank_90.fasta"
-    msa = get_msa_from_fasta(seq_filename)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--inputfasta", 
+                    help="input alignment file in fasta format")
+    parser.add_argument("-t", "--threshold", default=0.8, type=float,
+                    help="Threshold similarity for a sequence to be "
+                         "considerd a neighbor")
+    args = parser.parse_args()
 
+    msa = get_msa_from_fasta(args.inputfasta)
     start_time = time.time()
-
-    weights = compute_weights_from_msa(msa, threshold=0.8)
-
+    weights = compute_weights_from_msa(msa, threshold=args.threshold)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
 
