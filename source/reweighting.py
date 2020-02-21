@@ -94,7 +94,7 @@ def compute_weights_from_msa(msa, threshold, device=device):
         torch_seq in torch_seqs))
 
     weights = 1 / neighbors_count.float()
-    return weights.data.numpy()
+    return weights.data.cpu().numpy()
 
 
 
