@@ -105,6 +105,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputfasta", 
                     help="input alignment file in fasta format")
+    parser.add_argument("-o", "--outputnpy", 
+                    help="output filename for weights file")
     parser.add_argument("-t", "--threshold", default=0.8, type=float,
                     help="Threshold similarity for a sequence to be "
                          "considerd a neighbor")
@@ -114,5 +116,7 @@ if __name__ == "__main__":
     start_time = time.time()
     weights = compute_weights_from_msa(msa, threshold=args.threshold)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
+
+    np.save(args.outputnpy, weights, allow_pickle=False)
 
 
