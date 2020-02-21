@@ -9,11 +9,11 @@ deepclean: clean
 	rm -f output.tar.gz
 
 staging:
-	tar --exclude='./chtc' \
-			--exclude='.git' \
+	tar --exclude='.git' \
 			--exclude='.gitignore' \
-			--exclude='README.md' \
-			-czvf staging.tar.gz -C ../ ./
+			-czvf staging.tar.gz -C ../ \
+			./source \
+			./sequence_sets
 
 submit_reweighting: 
 	condor_submit pytorch_reweighting.sub
