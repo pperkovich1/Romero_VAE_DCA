@@ -5,9 +5,9 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = logs/pytorch_reweighting_$(Process).log.txt
-error = logs/pytorch_reweighting_$(Process).err.txt
-output = logs/pytorch_reweighting_$(Process).out.txt
+log = logs/pytorch_reweighting_$(Cluster)_$(Process).log.txt
+error = logs/pytorch_reweighting_$(Cluster)_$(Process).err.txt
+output = logs/pytorch_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
 executable = pytorch_reweighting.sh
