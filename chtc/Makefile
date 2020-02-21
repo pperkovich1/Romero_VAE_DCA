@@ -17,3 +17,8 @@ staging:
 
 submit_reweighting: 
 	condor_submit pytorch_reweighting.sub
+
+submit_reweighting_nogpu: 
+	condor_submit pytorch_reweighting_nogpu.sub
+
+

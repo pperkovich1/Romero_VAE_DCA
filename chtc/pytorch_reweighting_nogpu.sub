@@ -11,7 +11,7 @@ output = logs/pytorch_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
 executable = pytorch_reweighting.sh
-arguments = -t $(threshold) -i ../sequence_sets/$(inputfasta).fasta -o ../output/$(inputfasta)_weights.npy
+arguments = -t $(threshold) -i sequence_sets/$(inputfasta).fasta -o output/$(inputfasta)_weights.npy
 
 # take our python script and data to the compute node
 transfer_input_files = staging.tar.gz
@@ -20,15 +20,15 @@ should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 
 # We require a machine with a modern version of the CUDA driver
-Requirements = (Target.CUDADriverVersion >= 10.1)
+#Requirements = (Target.CUDADriverVersion >= 10.1)
 
 # We must request 1 CPU in addition to 1 GPU
 request_cpus = 1
-request_gpus = 1
+#request_gpus = 1
 
 # select some memory and disk space
 request_memory = 1GB
-request_disk = 500MB
+#request_disk = 500MB
 
 # Tell HTCondor to run 1 instances of our job:
 queue threshold, inputfasta from ( 

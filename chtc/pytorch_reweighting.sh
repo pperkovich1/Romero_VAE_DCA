@@ -8,10 +8,12 @@ tar -zxvf staging.tar.gz
 mkdir output
 
 # pass all arguments to the python program
-python source/reweighting.py "$@"
+cd source
+python reweighting.py "$@"
 
 # tar up the output directory
-tar -zcvf output.tar.gz -C output/
+cd ..
+tar -zcvf output.tar.gz -C output/ .
 
 # clean up all subdirectories
 rm -rf */

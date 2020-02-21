@@ -1,2 +1,4 @@
 docker_stderror
-staging.tar.gz
+*.tar.gz
+*.npy
+
