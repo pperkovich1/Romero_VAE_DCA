@@ -17,7 +17,7 @@ and imported into other python programs.
 import numpy as np
 import torch
 
-# TODO(Sameer): Merge this function with existing code in utils.py
+# TODO(Sameer): Merge this function with existing code in config.py
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print('Device:', device)
 
