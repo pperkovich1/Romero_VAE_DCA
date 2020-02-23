@@ -1,0 +1,44 @@
+# submit file for VAEs in Pytorch
+
+# Must set the universe to Docker
+universe = docker
+docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
+
+# set the log, error and output files 
+log = logs/pytorch_reweighting_$(Cluster)_$(Process).log.txt
+error = logs/pytorch_reweighting_$(Cluster)_$(Process).err.txt
+output = logs/pytorch_reweighting_$(Cluster)_$(Process).out.txt
+
+# set the executable to run
+executable = pytorch_reweighting.sh
+arguments = $(Cluster)_$(Process) -t $(threshold) -i ../sequence_sets/$(inputfasta).fasta -o ../output/$(inputfasta)_weights.npy
+
+# take our python script and data to the compute node
+transfer_input_files = staging.tar.gz
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+  
+# We must request 1 CPU in addition to 1 GPU (if needed)
+request_cpus = 1
+
+if ! defined DISABLE_GPU
+# condor_submit was run from the command line like 
+# condor_submit DISABLE_GPU=1 pytorch_reweighting.sub
+  request_gpus = 1
+  # We require a machine with a modern version of the CUDA driver
+  Requirements = (Target.CUDADriverVersion >= 10.1)
+endif
+
+# select some memory and disk space
+request_memory = 1GB
+request_disk = 500MB
+
+if ! defined DISABLE_FLOCKING
+    +WantFlocking = true
+endif
+
+# Tell HTCondor to run 1 instances of our job:
+queue threshold, inputfasta from ( 
+  0.8, cmx_aligned_blank_90
+)
