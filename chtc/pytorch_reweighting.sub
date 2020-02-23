@@ -18,12 +18,13 @@ transfer_input_files = staging.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
+  
+# We must request 1 CPU in addition to 1 GPU (if needed)
+request_cpus = 1
 
-if defined CPU_ONLY
-  request_cpus = 1
-else
-  # We must request 1 CPU in addition to 1 GPU (if needed)
-  request_cpus = 1
+if ! defined DISABLE_GPU
+# condor_submit was run from the command line like 
+# condor_submit DISABLE_GPU=1 pytorch_reweighting.sub
   request_gpus = 1
   # We require a machine with a modern version of the CUDA driver
   Requirements = (Target.CUDADriverVersion >= 10.1)
@@ -32,6 +33,10 @@ endif
 # select some memory and disk space
 request_memory = 1GB
 request_disk = 500MB
+
+if ! defined DISABLE_FLOCKING
+    +WantFlocking = true
+endif
 
 # Tell HTCondor to run 1 instances of our job:
 queue threshold, inputfasta from ( 

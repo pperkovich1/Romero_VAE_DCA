@@ -21,6 +21,10 @@ staging.tar.gz :
 
 # submit jobs
 submit_reweighting: staging.tar.gz
-	condor_submit pytorch_reweighting.sub
-	condor_submit CPU_ONLY=1 pytorch_reweighting.sub
+	condor_submit \
+			pytorch_reweighting.sub
+	condor_submit \
+			DISABLE_FLOCKING=1 \
+			DISABLE_GPU=1 \
+			pytorch_reweighting.sub
 
