@@ -27,6 +27,7 @@ def kl_divergence(z_mean, z_log_var, weight=1):
     kld = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - torch.exp(z_log_var))
     return weight * kld.float()
 
-def BCE(recon_images, input_images, weights):
-    return F.binary_cross_entropy(recon_images, input_images,
-                                  weight=weights, reduction='sum')
+def bce(recon_images, input_images, weights):
+
+    return F.binary_cross_entropy(recon_images, input_images, reduction='sum')
+                                  #weight=weights, reduction='sum')# weights is incorrect dimension when batch size isn't 1

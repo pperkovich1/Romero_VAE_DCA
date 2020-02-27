@@ -14,7 +14,6 @@ class MSADataset(Dataset):
 
 	def __init__(self, msa_file, weights=None, transform=None, filterX=False):
 		self.raw_data = self.get_raw_data(msa_file)
-		print(self.raw_data[0:10])
 		self.transform = transform
 		self.AA_enc = self.get_encoding_dict()
 
@@ -37,8 +36,9 @@ class MSADataset(Dataset):
 
 	def get_raw_data(self, msa_file):
 		f =  SeqIO.parse(open(msa_file), 'fasta')
-		print(list(f)[0])
-		return [x.strip() for x in f]
+		f = list(f)
+		f = [x.seq for x in f]
+		return f
 
 	def get_encoding_dict(self):
 		return config.AA_map_str.copy()
@@ -70,4 +70,5 @@ class OneHotTransform:
 		ret = F.one_hot(sample, self.num_labels)
 		if self.to_float:
 			ret = ret.float()
-		return ret.flatten()
+		ret = ret.flatten()
+		return ret

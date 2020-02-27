@@ -9,9 +9,10 @@ input_length = 11088
 num_hidden = 400
 num_latent = 20
 activation_func = nn.Sigmoid()
+learning_rate = .001
 
-batch_size = 10
-max_epochs = 10000
+batch_size = 5
+max_epochs = 10
 convergence_limit = 100
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
