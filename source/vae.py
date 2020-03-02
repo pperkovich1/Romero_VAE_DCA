@@ -25,7 +25,11 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
 
 		if no_improvement > convergence_limit:
 			print("convergence at %i iterations" % epoch)
+		#DEBUG
+		batch_count = 0
 		for batch_id, (input_images, weights) in enumerate(trainloader):
+			batch_count=batch_count+1
+			print("batch count:%d"%batch_count)
 			input_images = input_images.to(device)
 			weights = weights.to(device)
 
