@@ -59,7 +59,7 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
             else:
                 min_loss = loss
                 no_improvement = 0
-                val_loss[epoch].append(loss)
+                val_loss.append(loss)
 
     torch.save(model.state_dict(), "model.pt")
     pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
