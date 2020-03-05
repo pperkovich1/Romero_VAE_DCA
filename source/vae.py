@@ -20,6 +20,49 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
     val_loss = []
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(max_epochs):
+        if not epoch%100:
+            print('Epoch: %i\tTime elapsed:%.2f sec'%(epoch, (time.time()-start_time)))
+
+        loss_sum = 0
+        if no_improvement > convergence_limit:
+            print("convergence at %i iterations" % epoch)
+        for batch_id, (input_images, weights) in enumerate(trainloader):
+            input_images = input_images.to(device)
+            weights = weights.to(device)
+
+            z_mean, z_log_var, encoded, recon_images = model(input_images)
+            kld = utils.kl_divergence(z_mean, z_log_var)
+            bce = utils.bce(recon_images, input_images, weights)
+            loss = kld+bce
+
+            optimizer.zero_grad()
+            loss.backward
+            optimizer.step()
+
+            loss_sum += torch.sum(loss.detach())
+        train_loss.append(loss_sum/len(trainloader))
+
+        #validation
+        with torch.no_grad():
+            loss_sum = 0
+            for batch_id, (input_images, weights) in enumerate(valloader):
+                input_images = input_images.to(device)
+                weights = weights.to(device)
+
+                z_mean, z_log_var, encoded, recon_images = model(input_images)
+                kld = utils.kl_divergence(z_mean, z_log_var)
+                bce = utils.bce(recon_images, input_images, weights)
+                loss_sum += torch.sum(kld+bce)
+            loss=loss_sum/len(valloader)
+            if min_loss < loss:
+                no_improvement += 1
+            else:
+                min_loss = loss
+                no_improvement = 0
+                val_loss[epoch].append(loss)
+
+    torch.save(model.state_dict(), "model.pt")
+    pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
 
 def main():
 
