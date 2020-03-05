@@ -4,6 +4,7 @@ import time
 import utils
 import os
 import pickle
+import numpy as np
 
 #local files
 import config
@@ -14,7 +15,7 @@ from dataloader import MSADataset, OneHotTransform
 
 def train_model(device, model, trainloader, valloader, max_epochs, convergence_limit, learning_rate):
     start_time = time.time()
-    min_loss = 999999
+    min_loss = np.inf
     no_improvement = 0
     train_loss = []
     val_loss = []
@@ -56,10 +57,12 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
             loss=loss_sum/len(valloader)
             if min_loss < loss:
                 no_improvement += 1
+                print('no improvement')
             else:
                 min_loss = loss
                 no_improvement = 0
                 val_loss.append(loss)
+                print('improvement')
 
     torch.save(model.state_dict(), "model.pt")
     pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
