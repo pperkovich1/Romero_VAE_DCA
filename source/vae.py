@@ -1,7 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
 import time
-import utils
 import os
 import pickle
 import numpy as np

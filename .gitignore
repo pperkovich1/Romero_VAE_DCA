@@ -4,3 +4,4 @@ stats/
 .pt
 .csv
 .git/
+.ipynb_checkpoints/

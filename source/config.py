@@ -37,5 +37,6 @@ PNAMKNLDLPEE---S-NH-----------------------------------------
 ----------AKKEIDNLISNIKSNLLNR--APVIIGEYATFTTWPSDIDYYNTDREVAL
 YAMDYLIQETKK------AGV---GTCYWMGLSDGTYRTLPVFHQADL'''
 example_seq = example_seq.replace('\n','')
+
 input_length = len(example_seq)*21
 print("Input length:%d"%input_length)
