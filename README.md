@@ -12,7 +12,7 @@ The latent space is then used for further computation or for visualization.
 1. Use the scripts in the run directory to do further processing.
   * (TODO: describe later)
 
-![seq_space.png](Sequence Space Visualization)
+![Sequence Space Visualization](seq_space.png)
 
 ### Contributors
 1. **James Wang** 
@@ -23,6 +23,6 @@ See the [contributor's page](https://github.com/RomeroLab/VAEs/graphs/contributo
 
 
 ### Acknowledgements
-* The underlying VAE code has been taken from Dr. Sebastian Raschka's [Deep Learning Models github archive](https://github.com/rasbt/deeplearning-models). [Link to AE-VAE](https://github.com/rasbt/deeplearning-models/blob/master/pytorch_ipynb/autoencoder/ae-var.ipynb)
+* The underlying VAE code has been taken from the [AE-VAE example](https://github.com/rasbt/deeplearning-models/blob/master/pytorch_ipynb/autoencoder/ae-var.ipynb) of Sebastian Raschka's [Deep Learning Models github archive](https://github.com/rasbt/deeplearning-models). 
 * The method for re-weighting sequences has been taken from *Riesselman, Adam J., John B. Ingraham, and Debora S. Marks. "Deep generative models of genetic variation capture the effects of mutations." Nature methods 15.10 (2018): 816-822.*
 
