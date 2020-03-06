@@ -9,10 +9,10 @@ The latent space is then used for further computation or for visualization.
 
 ### How to use this repository
 1. Download this repository from git
-  * ```git clone https://github.com/RomeroLab/VAEs```
+   * ```git clone https://github.com/RomeroLab/VAEs```
 1. Put your Multiple Sequence Alignment (MSA) file in the sequence_sets directory
 1. Use the scripts in the run directory to do further processing.
-  * (TODO: describe later)
+   * (TODO: describe later)
 
 ### Contributors
 1. **James Wang** 
