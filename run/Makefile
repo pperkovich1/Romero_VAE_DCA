@@ -20,11 +20,11 @@ staging.tar.gz :
 			./sequence_sets
 
 # submit jobs
-submit_reweighting: staging.tar.gz
+chtc_submit_reweighting: staging.tar.gz
 	condor_submit \
-			pytorch_reweighting.sub
+			chtc_reweighting.sub
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \
-	#		pytorch_reweighting.sub
+	#		chtc_reweighting.sub
 

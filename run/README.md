@@ -20,7 +20,7 @@ cd chtc
 # second last line. Also set the threshold param (default 0.8)
 
 # run makefile
-make submit_reweighting
+make chtc_submit_reweighting
 ```
 
 ### Expected Run Times for Reweighting
