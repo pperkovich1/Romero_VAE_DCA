@@ -39,6 +39,4 @@ if ! defined DISABLE_FLOCKING
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue threshold, inputfasta from ( 
-  0.8, cmx_aligned_blank_90
-)
+queue inputfasta, threshold from dataset.txt
