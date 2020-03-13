@@ -1,5 +1,6 @@
 __pycache__/
 stats/
+source/config.py
 .pkl
 .pt
 .csv
