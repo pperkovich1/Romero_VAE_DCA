@@ -38,7 +38,13 @@ if __name__ == "__main__":
                     help="input config file in yaml format")
     parser.add_argument("-c", "--printchtc", 
                     help="output print output for chtc")
+    parser.add_argument("-d", "--datasetdir", 
+                    help="directory where dataset is stored")
+
     args = parser.parse_args()
-    
+    if args.datasetdir is not None:
+        global dataset_dir
+        dataset_dir = args.datasetdir
+
     yaml_data = load_yaml(parser.inputconfig)
     print_output_for_chtc(yaml_data)
