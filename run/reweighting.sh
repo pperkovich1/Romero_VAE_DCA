@@ -12,6 +12,9 @@ IFS="," read -r inputfasta threshold \
 echo "Input Fasta =" $inputfasta
 echo "Threshold =" $threshold
 
+cd source
+python reweighting.py 
+
 
 ## pass all arguments (except the first one) to the python program
 #cd source
