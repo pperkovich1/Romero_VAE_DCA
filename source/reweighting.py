@@ -116,5 +116,5 @@ if __name__ == "__main__":
     weights = compute_weights_from_msa(msa, threshold=config.reweighting_threshold)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
-    np.save(args.outputnpy, weights, allow_pickle=False)
+    np.save(config.weights_fullpath, weights, allow_pickle=False)
 
