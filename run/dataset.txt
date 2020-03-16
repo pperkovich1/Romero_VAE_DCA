@@ -1,4 +1,0 @@
-# input_fasta, threshold
-# Aligned MSA will be read from 
-# ../sequence_sets/[input_fasta].fasta
-cmx_aligned_blank_90, 0.8

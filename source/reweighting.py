@@ -101,22 +101,20 @@ def compute_weights_from_msa(msa, threshold, device=device):
 if __name__ == "__main__":
     import time
     import argparse
+    import read_config
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--inputfasta", 
-                    help="input alignment file in fasta format")
-    parser.add_argument("-o", "--outputnpy", 
-                    help="output filename for weights file")
-    parser.add_argument("-t", "--threshold", default=0.8, type=float,
-                    help="Threshold similarity for a sequence to be "
-                         "considerd a neighbor")
+    parser.add_argument("config_filename",
+                    help="input config file in yaml format")
     args = parser.parse_args()
 
-    msa = get_msa_from_fasta(args.inputfasta)
+    config = read_config.Config(args.config_filename)
+
+    msa = get_msa_from_fasta(config.aligned_msa_fullpath)
+
     start_time = time.time()
-    weights = compute_weights_from_msa(msa, threshold=args.threshold)
+    weights = compute_weights_from_msa(msa, threshold=config.reweighting_threshold)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
     np.save(args.outputnpy, weights, allow_pickle=False)
-
 
