@@ -11,7 +11,7 @@ output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
 executable = chtc_reweighting.sh
-arguments = $(Cluster)_$(Process) -t $(threshold) -i ../sequence_sets/$(inputfasta).fasta -o ../output/$(inputfasta)_weights.npy
+arguments = $(Cluster)_$(Process) ../config.yaml
 
 # take our python script and data to the compute node
 transfer_input_files = staging.tar.gz

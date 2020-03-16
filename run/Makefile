@@ -17,7 +17,8 @@ staging.tar.gz :
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			./sequence_sets
+			./sequence_sets \
+			config.yaml
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz
