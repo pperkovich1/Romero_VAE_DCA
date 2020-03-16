@@ -4,15 +4,12 @@
 # $1 is the postfix to the output tar.gz file
 # $2 onwards are passed onto the python program
 
-
-# Group server check!!
-# if the home directory has a @ in it then we
-# might be on the group server so do not execute
-# as this script will delete all subdirectories in 
-# the parent directory without asking
-if [[ $HOME == *"@"* ]]; then 
-  echo "This script is only meant to be executed on chtc. Is this the group server?"; 
-  exit 1
+TOPDIR_FILE=chtc_root.txt
+if [ -f "$TOPDIR_FILE" ]; then
+    echo "$TOPDIR_FILE exist"
+else
+    echo "$TOPDIR_FILE does not exist"
+    exit 1
 fi
 
 # set up the staging environment
@@ -29,5 +26,11 @@ cd ..
 tar -zcvf output_"$1".tar.gz -C output/ .
 
 # clean up all subdirectories
-rm -rf */
+if [ -f "$TOPDIR_FILE" ]; then
+    rm -rf */ # safely delete sub directories
+else
+    echo "$TOPDIR_FILE does not exist. "
+    echo "Error: Not cleaning up sub directories"
+fi
+
 # output.tar.gz should be returned automatically

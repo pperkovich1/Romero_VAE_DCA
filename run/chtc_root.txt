@@ -1,0 +1,5 @@
+# This file determines the root chtc directory
+
+It is a safety check to make sure that the chtc scripts do not delete files and
+directories in directories above this directory. This is likely to happen if
+someone accidentally executes a chtc intended script on a non chtc server. 
