@@ -1,7 +1,8 @@
 __pycache__/
 stats/
-.pkl
-.pt
-.csv
+*.pkl
+*.pt
+*.csv
+*.swp
 .git/
 .ipynb_checkpoints/
