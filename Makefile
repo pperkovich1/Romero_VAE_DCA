@@ -17,7 +17,5 @@ clean:
 deepclean: clean
 	rm -f output/*
 
-
 reweighting:
-	conda activate ${CONDA_PYTORCH_ENV}
 	${RUNDIR}/reweighting.sh ../${CONFIG}
