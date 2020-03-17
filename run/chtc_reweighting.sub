@@ -28,6 +28,10 @@ if ! defined DISABLE_GPU
   request_gpus = 1
   # We require a machine with a modern version of the CUDA driver
   Requirements = (Target.CUDADriverVersion >= 10.1)
+
+  +WantGPULab = true
+  +GPUJobLength = "short"
+
 endif
 
 # select some memory and disk space

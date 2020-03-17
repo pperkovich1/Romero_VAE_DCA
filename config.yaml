@@ -3,4 +3,4 @@ reweighting_threshold: 0.8
 
 # These directories need to be specified relative to the main directory
 dataset_dir: sequence_sets
-working_dir: run/working
+working_dir: working
