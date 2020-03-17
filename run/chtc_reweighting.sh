@@ -18,6 +18,9 @@ tar -zxvf staging.tar.gz
 # create the output directory where we can store stuff to return
 mkdir output
 
+# just in case our sh files are not executable
+chmod +x *.sh
+
 # pass all arguments (except the first one) to the python program
 ./reweighting.sh "${@:2}"
 
