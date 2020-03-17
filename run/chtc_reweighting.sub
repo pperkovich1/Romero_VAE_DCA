@@ -14,7 +14,7 @@ executable = chtc_reweighting.sh
 arguments = $(Cluster)_$(Process) ../config.yaml
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz, chtc_root.txt
+transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

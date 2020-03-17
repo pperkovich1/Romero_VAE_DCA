@@ -9,6 +9,7 @@ if [ -f "$TOPDIR_FILE" ]; then
     echo "$TOPDIR_FILE exist"
 else
     echo "$TOPDIR_FILE does not exist"
+    echo "This file is needed so that we do not accidentally delete directories "
     exit 1
 fi
 
@@ -18,8 +19,7 @@ tar -zxvf staging.tar.gz
 mkdir output
 
 # pass all arguments (except the first one) to the python program
-cd source
-python reweighting.py "${@:2}"
+./reweighting.sh "${@:2}"
 
 # tar up the output directory
 cd ..
