@@ -12,7 +12,7 @@ $(error CONDA needs to be activated in $(CONDA_PYTORCH_ENV) environment )
 endif
 
 clean:
-	rm -f working/*
+	rm -f working/*.npy
 
 deepclean: clean
 	rm -f output/*
