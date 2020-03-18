@@ -17,14 +17,15 @@ staging.tar.gz :
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			./sequence_sets
+			./sequence_sets \
+			config.yaml
 
 # submit jobs
-submit_reweighting: staging.tar.gz
+chtc_submit_reweighting: staging.tar.gz
 	condor_submit \
-			pytorch_reweighting.sub
+			chtc_reweighting.sub
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \
-	#		pytorch_reweighting.sub
+	#		chtc_reweighting.sub
 

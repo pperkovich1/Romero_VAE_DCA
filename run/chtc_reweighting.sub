@@ -5,16 +5,16 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = logs/pytorch_reweighting_$(Cluster)_$(Process).log.txt
-error = logs/pytorch_reweighting_$(Cluster)_$(Process).err.txt
-output = logs/pytorch_reweighting_$(Cluster)_$(Process).out.txt
+log = logs/chtc_reweighting_$(Cluster)_$(Process).log.txt
+error = logs/chtc_reweighting_$(Cluster)_$(Process).err.txt
+output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
-executable = pytorch_reweighting.sh
-arguments = $(Cluster)_$(Process) -t $(threshold) -i ../sequence_sets/$(inputfasta).fasta -o ../output/$(inputfasta)_weights.npy
+executable = chtc_reweighting.sh
+arguments = $(Cluster)_$(Process) ../config.yaml
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz
+transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -24,10 +24,14 @@ request_cpus = 1
 
 if ! defined DISABLE_GPU
 # condor_submit was run from the command line like 
-# condor_submit DISABLE_GPU=1 pytorch_reweighting.sub
+# condor_submit DISABLE_GPU=1 chtc_reweighting.sub
   request_gpus = 1
   # We require a machine with a modern version of the CUDA driver
   Requirements = (Target.CUDADriverVersion >= 10.1)
+
+  +WantGPULab = true
+  +GPUJobLength = "short"
+
 endif
 
 # select some memory and disk space
@@ -39,6 +43,4 @@ if ! defined DISABLE_FLOCKING
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue threshold, inputfasta from ( 
-  0.8, cmx_aligned_blank_90
-)
+queue 
