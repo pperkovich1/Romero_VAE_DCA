@@ -26,7 +26,7 @@ chmod +x *.sh
 
 # tar up the output directory
 cd ..
-tar -zcvf output_"$1".tar.gz -C output/ .
+tar -zcvf reweighting_output_"$1".tar.gz -C output/ .
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then
@@ -36,4 +36,4 @@ else
     echo "Error: Not cleaning up sub directories"
 fi
 
-# output.tar.gz should be returned automatically
+# reweighting_output_<msa_filename>.tar.gz should be returned automatically
