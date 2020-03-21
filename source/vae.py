@@ -16,24 +16,20 @@ from dataloader import MSADataset, OneHotTransform
 def train_model(device, model, trainloader, valloader, max_epochs, convergence_limit, learning_rate):
         start_time = time.time()
         min_loss = 999999
-        no_improvement = 0
-        train_loss = []
+        # no_improvement = 0
+        # train_loss = []
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
         for epoch in range(max_epochs):
                 print('Max  memory usage:%d'%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
-                print(len(train_loss))
-                if not epoch%10:
+                # print(len(train_loss))
+                if not epoch%1:
                         print('Epoch: %i\tTime elapsed:%.2f sec'%(epoch, (time.time()-start_time)))
-                train_loss.append(0)
+                # train_loss.append(0)
 
-                if no_improvement > convergence_limit:
-                        print("convergence at %i iterations" % epoch)
+                # if no_improvement > convergence_limit:
+                #         print("convergence at %i iterations" % epoch)
 
-                batch_count = 0
                 for batch_id, (input_images, weights) in enumerate(trainloader):
-                        batch_count=batch_count+1
-                        if not batch_count%500:
-                                print("batch count:%d"%batch_count)
                         input_images = input_images.to(device)
                         weights = weights.to(device)
 
@@ -46,17 +42,17 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
                         loss.backward
                         optimizer.step()
 
-                        loss=loss.detach()
-                        train_loss[epoch] +=loss
-                train_loss[epoch] = train_loss[epoch]/len(trainloader)
-                if train_loss[epoch] < min_loss:
-                    min_loss = train_loss[epoch]
-                    no_improvement = 0
-                else:
-                    no_improvement +=1 
+                        # loss=loss.detach()
+                        # train_loss[epoch] +=loss
+                # train_loss[epoch] = train_loss[epoch]/len(trainloader)
+                # if train_loss[epoch] < min_loss:
+                #     min_loss = train_loss[epoch]
+                #     no_improvement = 0
+                # else:
+                #     no_improvement +=1 
 
         torch.save(model.state_dict(), "model.pt")
-        pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
+        # pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
 
 def main():
 
