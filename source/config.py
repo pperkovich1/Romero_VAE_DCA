@@ -11,7 +11,7 @@ num_latent = 20
 activation_func = nn.Sigmoid()
 learning_rate = .001
 
-batch_size = 5
+batch_size = 150
 max_epochs = 10
 convergence_limit = 100
 

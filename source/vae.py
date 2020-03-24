@@ -21,19 +21,14 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
         for epoch in range(max_epochs):
                 print('Max  memory usage:%d'%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
-                print(len(train_loss))
-                if not epoch%10:
+                if not epoch%1:
                         print('Epoch: %i\tTime elapsed:%.2f sec'%(epoch, (time.time()-start_time)))
                 train_loss.append(0)
 
                 if no_improvement > convergence_limit:
                         print("convergence at %i iterations" % epoch)
 
-                batch_count = 0
                 for batch_id, (input_images, weights) in enumerate(trainloader):
-                        batch_count=batch_count+1
-                        if not batch_count%500:
-                                print("batch count:%d"%batch_count)
                         input_images = input_images.to(device)
                         weights = weights.to(device)
 
@@ -56,7 +51,7 @@ def train_model(device, model, trainloader, valloader, max_epochs, convergence_l
                     no_improvement +=1 
 
         torch.save(model.state_dict(), "model.pt")
-        pickle.dump({'validation loss': val_loss, 'train_loss':train_loss}, open('loss.pkl', 'wb'))
+        pickle.dump({'loss':train_loss}, open('loss.pkl', 'wb'))
 
 def main():
 
