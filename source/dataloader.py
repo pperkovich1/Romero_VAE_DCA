@@ -12,7 +12,7 @@ import config
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, size_limit = None, weights=None, transform=None, filterX=False):
+    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, filterX=False):
         self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()

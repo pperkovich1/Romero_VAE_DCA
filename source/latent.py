@@ -12,7 +12,7 @@ from model import VAE
 from dataloader import MSADataset, OneHotTransform
 
 
-def getLatentSpace(model, loader):
+def getLatentSpace(model, loader, device):
     start_time = time.time()
     latent_vecs = []
 
@@ -22,8 +22,10 @@ def getLatentSpace(model, loader):
             weights = weights.to(device)
 
             z_mean, z_log_var, encoded, recon_images = model(input_images)
-            latent_vecs.append(z_mean, z_log_var)
-    print(len(latent_vecs))
+            #TODO: break up batches
+            for m, v, in zip(z_mean, z_log_var):
+                latent_vecs.append((m, v))
+    pickle.dump({'latent':latent_vecs}, open('latent.pkl', 'wb'))
 
 def main():
     input_length = config.input_length
@@ -32,13 +34,16 @@ def main():
     activation_func = config.activation_func
     learning_rate = config.learning_rate
     device = config.device
-    model = VAE(input_length, num_hidden, num_latent, activation_func, device) 
+    model = VAE(input_length, num_hidden, num_latent, activation_func, device)
 
     model.load_state_dict(torch.load(config.prev_model))
     model.to(device)
     
     batch_size = config.batch_size
-    dataset = MSADataset(config.msa, transform=OneHotTransform(21), size_limit = 10)
+    dataset = MSADataset(config.msa, transform=OneHotTransform(21), size_limit = None)
     loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
-    getLatentSpace(model, loader) 
+    getLatentSpace(model, loader, device)
+
+if __name__=='__main__':
+    main()
