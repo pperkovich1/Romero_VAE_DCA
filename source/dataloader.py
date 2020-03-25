@@ -12,8 +12,8 @@ import config
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, weights=None, transform=None, filterX=False):
-        self.raw_data = self.get_raw_data(msa_file)
+    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, filterX=False):
+        self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()
 
@@ -34,9 +34,9 @@ class MSADataset(Dataset):
         g = ((x,w) for (x,w) in zip(self.raw_data, self.weights) if x.find('X'))
         [self.raw_data, self.weights] = list(zip(*g))
 
-    def get_raw_data(self, msa_file):
+    def get_raw_data(self, msa_file, size_limit):
         f =  SeqIO.parse(open(msa_file), 'fasta')
-        f = list(f)
+        f = list(f)[:size_limit]
         f = [x.seq for x in f]
         return f
 

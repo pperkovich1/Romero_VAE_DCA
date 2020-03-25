@@ -1,15 +1,15 @@
 import torch
 from torch.utils.data import DataLoader
-import time
-import utils
 import os
 import pickle
 
 #debug libraries
+import time
 import resource
 
 #local files
 import config
+import utils
 from model import VAE
 from dataloader import MSADataset, OneHotTransform
 
