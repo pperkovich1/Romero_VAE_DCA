@@ -1,6 +1,10 @@
 import torch.nn.functional as F
 import torch
 
+def get_input_length(dataset):
+    sample = dataset.__getitem__(0)[0]
+    return len(sample)
+
 def vae_loss(input_image, recon_image, z_mean, z_log_var):
     '''Calculates binary cross entropy + KLD for a reconstructed tensor.
 

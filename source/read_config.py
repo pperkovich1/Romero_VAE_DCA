@@ -1,5 +1,6 @@
 import yaml
 import pathlib
+from torch import nn
 
 class Config:
     """Miscellaneous properties for config, derived from a config.yaml file
@@ -78,7 +79,44 @@ class Config:
         return Config.root_dir / pathlib.Path(self.safe_get_key('working_dir', 
                 'sequence_sets'))
 
+    @property
+    def hidden_layer_size(self):
+        """ Number of nodes in hidden layer """
+        return self.safe_get_key('hidden_layer_size')
 
+    @property
+    def latent_layer_size(self):
+        """ Number of nodes in latent layer """
+        return self.safe_get_key('latent_layer_size')
+
+    @property
+    def activation_function(self):
+        """ Type of activation function. Options: Sigmoide, """
+        function = self.safe_get_key('activation_function')
+        if function == 'sigmoid':
+            return nn.Sigmoid()
+        else:
+            return None
+
+    @property
+    def learning_rate(self):
+        """ Something something gradient descent? """
+        return self.safe_get_key('learning_rate')
+
+    @property
+    def epochs(self):
+        """ Number of epochs to train model """
+        return self.safe_get_key('epochs')
+
+    @property
+    def batch_size(self):
+        """ Self explanatory """
+        return self.safe_get_key('batch_size')
+
+    @property
+    def model_name(self):
+        """ name of file to save model to """
+        return self.safe_get_key('model_name')
 
 
 if __name__ == "__main__":

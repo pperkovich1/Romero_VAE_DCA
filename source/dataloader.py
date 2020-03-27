@@ -7,7 +7,15 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import torch.nn.functional as F
 from Bio import SeqIO
-import config
+
+AMINO_ACIDS = np.array([aa for aa in "RKDEQNHSTCYWAILMFVPG-"], "S1")
+# AAs = AMINO_ACIDS[:-1] # drop the gap character
+AAs = AMINO_ACIDS # idk why Sameer dropped the gap character so I'm not doing that
+AAs_string = AAs.tostring().decode("ascii")
+AA_L = AAs.size # alphabet size
+AA_map = {a:idx for idx,a in enumerate(AAs)} # map each amino acid to an index
+# same map as above but with ascii indices
+AA_map_str = {a:idx for idx, a in enumerate(AAs_string)}
 
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
@@ -41,7 +49,7 @@ class MSADataset(Dataset):
         return f
 
     def get_encoding_dict(self):
-        return config.AA_map_str.copy()
+        return AA_map_str.copy()
 
     def __len__(self):
         return len(self.raw_data)

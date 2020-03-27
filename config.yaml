@@ -4,3 +4,12 @@ reweighting_threshold: 0.8
 # These directories need to be specified relative to the main directory
 dataset_dir: sequence_sets
 working_dir: working
+
+hidden_layer_size: 400
+latent_layer_size: 20
+activation_function: sigmoid
+learning_rate: .001
+epochs: 5
+batch_size: 128
+
+model_name: model.pt
