@@ -61,8 +61,6 @@ def train_model(device, model, loader, max_epochs, learning_rate, model_filename
 def main():
     config = Config('../config.yaml')
 
-
-
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
 
     input_length = utils.get_input_length(dataset)
@@ -71,8 +69,6 @@ def main():
     activation_func = config.activation_function
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = VAE(input_length, hidden, latent, activation_func, device)
-
-
 
     model.to(device)
 
