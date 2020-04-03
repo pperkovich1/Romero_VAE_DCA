@@ -110,13 +110,38 @@ class Config:
 
     @property
     def batch_size(self):
-        """ Self explanatory """
+        """ Get batch_size"""
         return self.safe_get_key('batch_size')
 
     @property
-    def model_filename(self):
-        """ name of file to save model to """
-        return self.safe_get_key('model_filename')
+    def model_name(self):
+        """ name of file to save model """
+        return self.safe_get_key('model_name')
+
+    @property
+    def model_fullpath(self):
+        """Complete path to the saved model"""
+        return self.working_dir / \
+                pathlib.Path(self.model_name).with_suffix(".pt")
+
+    @property
+    def latent_fullpath(self):
+        """Complete path to the saved latent"""
+        return self.working_dir / \
+                pathlib.Path(self.model_name + "_latent").with_suffix(".pkl")
+
+    @property
+    def loss_fullpath(self):
+        """Complete path to the saved loss"""
+        return self.working_dir / \
+                pathlib.Path(self.model_name + "_loss").with_suffix(".pkl")
+
+    @property
+    def lossgraph_fullpath(self):
+        """Complete path to the saved loss"""
+        return self.working_dir / \
+                pathlib.Path(self.model_name + "_loss").with_suffix(".png")
+
 
 
 if __name__ == "__main__":
