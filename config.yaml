@@ -12,4 +12,12 @@ learning_rate: .001
 epochs: 5
 batch_size: 128
 
-model_name: model.pt
+# Do not put spaces or other special characters into model_name below If the
+# model_name is model then the following files will be saved in the working
+# directory
+#  1. model.pt (saved pytorch model)
+#  2. model_loss.pkl (saved loss function)
+#  3. model_loss.png (loss function graphed)
+#  4. model_latent.pkl (saved latent space)
+
+model_name: model

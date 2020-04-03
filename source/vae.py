@@ -13,11 +13,14 @@ from model import VAE
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 
-def train_model(device, model, loader, max_epochs, learning_rate, model_filename, convergence_limit=99999):
-    ''' Convergence limit - place holder in case we want to train based on loss improvement '''
-    if os.path.exists(model_filename):
+def train_model(device, model, loader, max_epochs, learning_rate,
+        model_fullpath, loss_fullpath, convergence_limit=99999):
+    """ Convergence limit - place holder in case we want to train based on loss
+        improvement
+    """ 
+    if os.path.exists(model_fullpath):
         print("Loading saved model...")
-        model.load_state_dict(torch.load(model_filename))
+        model.load_state_dict(torch.load(model_fullpath))
 
     start_time = time.time()
     min_loss = 999999
@@ -55,11 +58,11 @@ def train_model(device, model, loader, max_epochs, learning_rate, model_filename
         else:
             no_improvement +=1 
 
-    torch.save(model.state_dict(), model_filename)
-    pickle.dump({'loss':loss_history}, open('loss.pkl', 'wb'))
+    torch.save(model.state_dict(), model_fullpath)
+    with open(loss_fullpath, 'wb') as fh:
+        pickle.dump({'loss':loss_history}, fh)
 
-def main():
-    config = Config('../config.yaml')
+def train_and_save_model(config):
 
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
 
@@ -75,11 +78,19 @@ def main():
     batch_size = config.batch_size
     loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
-
-
     learning_rate = config.learning_rate
     epochs = config.epochs
-    train_model(device, model, loader, epochs, learning_rate, config.model_name)
+    train_model(device, model, loader, epochs, learning_rate, 
+            config.model_fullpath, config.loss_fullpath)
 
 if __name__=='__main__':
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_filename",
+                    help="input config file in yaml format")
+    args = parser.parse_args()
+
+    config = Config(args.config_filename)
+
+    train_and_save_model(config)
