@@ -13,14 +13,14 @@ from model import VAE
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 
-def graphLoss(config):
+def graph_loss(config):
     with open(config.loss_fullpath, 'rb') as fh:
         loss = pickle.load(fh)
     plt.plot(loss['loss'])
     plt.savefig(config.lossgraph_fullpath, bbox_inches='tight')
 
 
-def sampleLatentSpace(model, loader, device):
+def calc_latent_space(model, loader, device):
     start_time = time.time()
     latent_vecs = []
 
@@ -35,7 +35,7 @@ def sampleLatentSpace(model, loader, device):
                 latent_vecs.append((m, v))
     return latent_vecs
 
-def getLatentSpace(config):
+def save_latent_space(config):
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
 
     input_length = utils.get_input_length(dataset)
@@ -51,7 +51,7 @@ def getLatentSpace(config):
     batch_size = config.batch_size
     loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
-    latent_vecs = sampleLatentSpace(model, loader, device)
+    latent_vecs = calc_latent_space(model, loader, device)
     with open(config.latent_fullpath, 'wb') as fh:
         pickle.dump({'latent':latent_vecs}, fh)
 
@@ -65,5 +65,5 @@ if __name__=='__main__':
 
     config = Config(args.config_filename)
 
-    getLatentSpace(config)
-    graphLoss(config)
+    save_latent_space(config)
+    graph_loss(config)
