@@ -79,7 +79,7 @@ def main():
 
     learning_rate = config.learning_rate
     epochs = config.epochs
-    train_model(device, model, loader, epochs, learning_rate, config.model_name)
+    train_model(device, model, loader, epochs, learning_rate, config.model_filename)
 
 if __name__=='__main__':
     main()

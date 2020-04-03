@@ -12,4 +12,4 @@ learning_rate: .001
 epochs: 5
 batch_size: 128
 
-model_name: model.pt
+model_filename: model.pt

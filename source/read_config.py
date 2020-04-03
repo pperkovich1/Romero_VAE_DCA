@@ -114,9 +114,9 @@ class Config:
         return self.safe_get_key('batch_size')
 
     @property
-    def model_name(self):
+    def model_filename(self):
         """ name of file to save model to """
-        return self.safe_get_key('model_name')
+        return self.safe_get_key('model_filename')
 
 
 if __name__ == "__main__":

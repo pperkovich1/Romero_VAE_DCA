@@ -44,7 +44,7 @@ def getLatentSpace(config):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = VAE(input_length, hidden, latent, activation_func, device)
 
-    model.load_state_dict(torch.load(config.model_name))
+    model.load_state_dict(torch.load(config.model_filename))
     model.to(device)
     
     batch_size = config.batch_size
