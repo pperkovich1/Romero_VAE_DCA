@@ -5,13 +5,6 @@ reweighting_threshold: 0.8
 dataset_dir: sequence_sets
 working_dir: working
 
-hidden_layer_size: 400
-latent_layer_size: 20
-activation_function: sigmoid
-learning_rate: .001
-epochs: 5
-batch_size: 128
-
 # Do not put spaces or other special characters into model_name below If the
 # model_name is model then the following files will be saved in the working
 # directory
@@ -21,3 +14,16 @@ batch_size: 128
 #  4. model_latent.pkl (saved latent space)
 
 model_name: model
+
+hidden_layer_size: 400
+latent_layer_size: 2
+activation_function: sigmoid
+learning_rate: .001
+epochs: 5
+batch_size: 128
+device: auto
+
+
+# Plotting options
+foreground_sequences_filename: cmx_foreground.fasta
+foreground_sequences_output_filename: cmx.png

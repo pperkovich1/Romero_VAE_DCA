@@ -13,15 +13,12 @@ from model import VAE
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 
+
 def train_model(device, model, loader, max_epochs, learning_rate,
         model_fullpath, loss_fullpath, convergence_limit=99999):
     """ Convergence limit - place holder in case we want to train based on loss
         improvement
     """ 
-    if os.path.exists(model_fullpath):
-        print("Loading saved model...")
-        model.load_state_dict(torch.load(model_fullpath))
-
     start_time = time.time()
     min_loss = 999999
     no_improvement = 0
@@ -62,26 +59,44 @@ def train_model(device, model, loader, max_epochs, learning_rate,
     with open(loss_fullpath, 'wb') as fh:
         pickle.dump({'loss':loss_history}, fh)
 
-def train_and_save_model(config):
 
+def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
+        latent_layer_size, activation_func, device):
+    model = VAE(input_length, hidden_layer_size, latent_layer_size, 
+            activation_func, device)
+    if os.path.exists(model_fullpath):
+        print("Loading saved model...")
+        model.load_state_dict(torch.load(model_fullpath))
+        # TODO: Do we need to run model.eval() here? see,
+        # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
+
+    return model
+
+def load_model_from_config(input_length, config):
+    model = load_model_from_path(model_fullpath = config.model_fullpath,
+            input_length = input_length,
+            hidden_layer_size = config.hidden_layer_size,
+            latent_layer_size = config.latent_layer_size,
+            activation_func = config.activation_function,
+            device = config.device)
+    return model
+
+
+def train_and_save_model(config):
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
 
     input_length = utils.get_input_length(dataset)
-    hidden = config.hidden_layer_size
-    latent = config.latent_layer_size
-    activation_func = config.activation_function
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = VAE(input_length, hidden, latent, activation_func, device)
-
-    model.to(device)
-
+    model = load_model_from_config(input_length=input_length, config=config)
     batch_size = config.batch_size
     loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
     learning_rate = config.learning_rate
     epochs = config.epochs
-    train_model(device, model, loader, epochs, learning_rate, 
+    train_model(config.device, model, loader, epochs, learning_rate, 
             config.model_fullpath, config.loss_fullpath)
+    return None
+
+
 
 if __name__=='__main__':
     import argparse
