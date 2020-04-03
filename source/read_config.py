@@ -37,7 +37,9 @@ class Config:
         return "\n".join(pstr_list)
 
     def safe_get_key(self, key, default=""):
-        """Get a key from the yaml file but if it doesn't exist then set it to default"""
+        """Get a key from the yaml file but if it doesn't exist then set it to
+            default
+        """
         ret = default
         try:
             ret = self.data[key]
