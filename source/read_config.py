@@ -1,5 +1,6 @@
 import yaml
 import pathlib
+import torch
 from torch import nn
 
 class Config:
@@ -44,7 +45,7 @@ class Config:
         try:
             ret = self.data[key]
         except KeyError:
-            print("Cannot get : {0}, setting default to : {1}", key, default)
+            print(f"Cannot get : {key}, setting default to : {default}")
             pass
         return (ret)
 
@@ -121,6 +122,14 @@ class Config:
         return self.safe_get_key('model_name')
 
     @property
+    def device(self):
+        """ name of file to save model """
+        device = self.safe_get_key('device', '')
+        if device == '' or device == 'auto':
+            device = get_best_device()
+        return device
+
+    @property
     def model_fullpath(self):
         """Complete path to the saved model"""
         return self.working_dir / \
@@ -140,10 +149,39 @@ class Config:
 
     @property
     def lossgraph_fullpath(self):
-        """Complete path to the saved loss"""
         return self.working_dir / \
                 pathlib.Path(self.model_name + "_loss").with_suffix(".png")
 
+    @property
+    def foreground_sequences_filename(self):
+        return self.safe_get_key('foreground_sequences_filename', '')
+
+
+    @property
+    def foreground_sequences_fullpath(self):
+        return self.dataset_dir / \
+                pathlib.Path(self.foreground_sequences_filename)
+
+    @property
+    def foreground_sequences_output_filename(self):
+        return self.safe_get_key('foreground_sequences_output_filename', 
+                self.model_name + "_plot.png")
+
+    @property
+    def foreground_sequences_output_fullpath(self):
+        # TODO: should this be output directory?
+        return self.working_dir / \
+                pathlib.Path(
+                        self.foreground_sequences_output_filename
+                        ).with_suffix(".png")
+
+def get_best_device():
+    """Get the device to use for pytorch
+
+       Return gpu device if the gpu is available else return cpu
+    """
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    return device
 
 
 if __name__ == "__main__":

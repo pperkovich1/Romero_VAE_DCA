@@ -9,7 +9,7 @@ import time
 
 #local files
 import utils
-from model import VAE
+from vae import load_model_from_config
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 
@@ -35,25 +35,35 @@ def calc_latent_space(model, loader, device):
                 latent_vecs.append((m, v))
     return latent_vecs
 
-def save_latent_space(config):
-    dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
-
+def calc_latent_space_from_config(dataset, config, 
+        batch_size = None):
+    """Takes an MSADataset and config file and returns the latent space """
     input_length = utils.get_input_length(dataset)
-    hidden = config.hidden_layer_size
-    latent = config.latent_layer_size
-    activation_func = config.activation_function
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = VAE(input_length, hidden, latent, activation_func, device)
+    model = load_model_from_config(input_length=input_length, config=config)
 
-    model.load_state_dict(torch.load(config.model_fullpath))
-    model.to(device)
-    
-    batch_size = config.batch_size
+    if batch_size is None:
+        batch_size = config.batch_size
     loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
-    latent_vecs = calc_latent_space(model, loader, device)
+    return calc_latent_space(model, loader, device=config.device)
+
+def save_latent_space_from_config(config):
+    # TODO: save the latent space as a numpy array
+    dataset = MSADataset(config.aligned_msa_fullpath, 
+            transform=OneHotTransform(21))
+    latent_vecs = calc_latent_space_from_config(dataset, config)
     with open(config.latent_fullpath, 'wb') as fh:
         pickle.dump({'latent':latent_vecs}, fh)
+
+def convert_torch_latent_space_to_numpy(latent_vecs):
+    means = torch.stack(tuple(v[0] for v in latent_vecs)).numpy()
+    log_vars = torch.stack(tuple(v[1] for v in latent_vecs)).numpy()
+    return means, log_vars
+
+def get_saved_latent_space_as_numpy(latent_fullpath):
+    with open(latent_fullpath, 'rb') as fh:
+        vecs = pickle.load(fh)
+    return convert_torch_latent_space_to_numpy(vecs['latent'])
 
 if __name__=='__main__':
     import argparse
@@ -65,5 +75,8 @@ if __name__=='__main__':
 
     config = Config(args.config_filename)
 
-    save_latent_space(config)
+    print ("Saving Graph of loss function")
     graph_loss(config)
+
+    print ("Saving Latent space")
+    save_latent_space_from_config(config)

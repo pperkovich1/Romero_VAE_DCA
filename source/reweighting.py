@@ -17,33 +17,9 @@ and imported into other python programs.
 import numpy as np
 import torch
 
-# TODO(Sameer): Merge this function with existing code in config.py
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('Device:', device)
+from dataloader import get_msa_from_fasta
 
-# TODO(Sameer): Merge this function with existing code in utils.py
-def get_msa_from_fasta(fasta_filename):
-    """Reads a fasta file and returns an MSA
-
-    Takes a fasta filename and reads it with SeqIO and converts to a numpy
-    byte array. This function tries to be fast and keep the data in the
-    simplest representation posible. 
-
-    Args:
-        fasta_filename: Filename of fasta file to read
-
-    Returns:
-        A numpy byte array of dtpye S1 which represents the MSA. Each
-        sequence is in its own row. 
-    """
-    # TODO(Sameer): Move SeqIO import to header after merge with utils.py
-    from Bio import SeqIO
-    seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
-    # convert to lists of lists for easy numpy conversion to 2D array
-    seqs = [list(str(seq.seq.upper())) for seq in seq_io_gen]
-    return np.array(seqs, dtype="|S1")
-
-def compute_weights_from_msa(msa, threshold, device=device):
+def compute_weights_from_msa(msa, threshold, device):
     """Computes weights from an msa using threshold to determine neighbors.
 
     Counts the number of neighbors around each sequence using the threshold
@@ -113,7 +89,9 @@ if __name__ == "__main__":
     msa = get_msa_from_fasta(config.aligned_msa_fullpath)
 
     start_time = time.time()
-    weights = compute_weights_from_msa(msa, threshold=config.reweighting_threshold)
+    weights = compute_weights_from_msa(msa, 
+            threshold=config.reweighting_threshold,
+            device=config.device)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
     np.save(config.weights_fullpath, weights, allow_pickle=False)
