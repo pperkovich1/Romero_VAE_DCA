@@ -29,4 +29,3 @@ runmodel:
 
 plotlatent:
 	${RUNDIR}/plotlatent.sh ../${CONFIG2D}
-

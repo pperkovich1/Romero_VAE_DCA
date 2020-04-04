@@ -15,6 +15,7 @@
 
 
 cd source || { echo "Error: Cannot change to source directory" ; exit 1; }
+python reweighting.py "$@"
 python vae.py "$@"
 python examine_model.py "$@"
 python plot_sequences.py "$@"
