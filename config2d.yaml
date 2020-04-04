@@ -13,13 +13,18 @@ working_dir: working
 #  3. model_loss.png (loss function graphed)
 #  4. model_latent.pkl (saved latent space)
 
-model_name: model
+model_name: model2d
 
 hidden_layer_size: 400
-latent_layer_size: 20
+# latent_layer_size must be 2 to make a 2d plot of the latent space
+latent_layer_size: 2
 activation_function: sigmoid
 learning_rate: .001
 epochs: 5
 batch_size: 128
 device: auto
 
+
+# Plotting options
+foreground_sequences_filename: cmx_foreground.fasta
+foreground_sequences_output_filename: cmx_latent.png
