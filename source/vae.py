@@ -1,5 +1,6 @@
+import numpy as np
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 import os
 import pickle
 
@@ -11,7 +12,6 @@ import resource
 import utils
 from model import VAE
 from dataloader import MSADataset, OneHotTransform
-from read_config import Config
 
 
 def train_model(device, model, loader, max_epochs, learning_rate,
@@ -81,6 +81,15 @@ def load_model_from_config(input_length, config):
             device = config.device)
     return model
 
+def load_sampler(num_samples, config):
+    sampler = None
+    if config.weights_fullpath.is_file():
+        weights = np.load(config.weights_fullpath)
+        sampler = WeightedRandomSampler(weights=weights,
+                                  num_samples=num_samples)
+    else:
+        print("Weights do not exist. No weighted sampling will be done.")
+    return sampler
 
 def train_and_save_model(config):
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
@@ -88,7 +97,8 @@ def train_and_save_model(config):
     input_length = utils.get_input_length(dataset)
     model = load_model_from_config(input_length=input_length, config=config)
     batch_size = config.batch_size
-    loader = DataLoader(dataset=dataset, batch_size=batch_size)
+    sampler = load_sampler(len(dataset), config)
+    loader = DataLoader(dataset=dataset, batch_size=batch_size, sampler=sampler)
 
     learning_rate = config.learning_rate
     epochs = config.epochs
@@ -100,6 +110,7 @@ def train_and_save_model(config):
 
 if __name__=='__main__':
     import argparse
+    from read_config import Config
 
     parser = argparse.ArgumentParser()
     parser.add_argument("config_filename",
