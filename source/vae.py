@@ -43,7 +43,7 @@ def train_model(device, model, loader, max_epochs, learning_rate,
             loss = kld+bce
 
             optimizer.zero_grad()
-            loss.backward
+            loss.backward()
             optimizer.step()
 
             loss=loss.detach()
