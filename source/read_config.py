@@ -67,8 +67,9 @@ class Config:
     @property
     def weights_fullpath(self):
         """Complete path to the output weights npy file"""
-        return (self.working_dir / pathlib.Path(self.aligned_msa_filename).stem
-                    ).with_suffix('.npy')
+        msa_filename_stem = str(pathlib.Path(self.aligned_msa_filename).stem)
+        return (self.working_dir / pathlib.Path(msa_filename_stem + 
+                    "_weights")).with_suffix('.npy')
 
     @property
     def dataset_dir(self):
