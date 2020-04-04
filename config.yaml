@@ -12,7 +12,6 @@ working_dir: working
 #  2. model_loss.pkl (saved loss function)
 #  3. model_loss.png (loss function graphed)
 #  4. model_latent.pkl (saved latent space)
-
 model_name: model
 
 hidden_layer_size: 400
@@ -21,5 +20,5 @@ activation_function: sigmoid
 learning_rate: .001
 epochs: 5
 batch_size: 128
-device: auto
+device: auto # possible options are cpu, gpu, auto
 
