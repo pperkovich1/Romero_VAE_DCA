@@ -49,6 +49,9 @@ def calc_latent_space_from_config(dataset, config,
 
 def save_latent_space_from_config(config):
     # TODO: save the latent space as a numpy array
+    # TODO: make sure that the latent space is the same size as the input
+    # sequences and in the same order. Batch sampling is not necessarily
+    # sequential
     dataset = MSADataset(config.aligned_msa_fullpath, 
             transform=OneHotTransform(21))
     latent_vecs = calc_latent_space_from_config(dataset, config)
