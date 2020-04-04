@@ -19,7 +19,7 @@ import torch
 
 from dataloader import get_msa_from_fasta
 
-def compute_weights_from_msa(msa, threshold, device):
+def compute_weights_from_aligned_msa(msa, threshold, device):
     """Computes weights from an msa using threshold to determine neighbors.
 
     Counts the number of neighbors around each sequence using the threshold
@@ -41,35 +41,35 @@ def compute_weights_from_msa(msa, threshold, device):
         the the number of sequences (rows or first dimension) in the msa that
         is passed in. 
     """
-    torch.set_grad_enabled(False)
-    N, L = msa.shape # number of sequences, length of protein
-    msa_int = torch.ByteTensor(msa.view(np.uint8))
+    with torch.no_grad():
+        N, L = msa.shape # number of sequences, length of protein
+        msa_int = torch.ByteTensor(msa.view(np.uint8))
 
-    # Compute integer threshold
-    distance_to_threshold = threshold 
-    epsilon = 1e-6 # to avoid rounding issues (unlikely)
-    distance_from_threshold_int = int((1 - distance_to_threshold)*L + epsilon)
+        # Compute integer threshold
+        distance_to_threshold = threshold 
+        epsilon = 1e-6 # to avoid rounding issues (unlikely)
+        distance_from_threshold_int = int((1 - distance_to_threshold)*L + epsilon)
 
-    # Create a torch scalar for the threshold
-    torch_threshold = torch.ShortTensor(1)
-    torch_threshold[0] = distance_from_threshold_int
-    torch_threshold = torch_threshold.to(device)
+        # Create a torch scalar for the threshold
+        torch_threshold = torch.ShortTensor(1)
+        torch_threshold[0] = distance_from_threshold_int
+        torch_threshold = torch_threshold.to(device)
 
-    msa_int = msa_int.to(device) # move to device
-    torch_seqs = torch.unbind(msa_int, dim=0) # split into separate sequences
+        msa_int = msa_int.to(device) # move to device
+        torch_seqs = torch.unbind(msa_int, dim=0) # split into separate sequences
 
-    def count_neighbors(torch_seq):
-        """Count the neighbors of torch_seq.
-        This is an inline function that uses msa_int and torch_threshold"""
-        dist_from_seq = (torch_seq != msa_int).sum(axis=1, dtype=torch.short)
-        threshold_count = (dist_from_seq <=
-                torch_threshold).sum(dtype=torch.short) 
-        return threshold_count
+        def count_neighbors(torch_seq):
+            """Count the neighbors of torch_seq.
+            This is an inline function that uses msa_int and torch_threshold"""
+            dist_from_seq = (torch_seq != msa_int).sum(axis=1, dtype=torch.short)
+            threshold_count = (dist_from_seq <=
+                    torch_threshold).sum(dtype=torch.short) 
+            return threshold_count
 
-    neighbors_count = torch.stack(tuple(count_neighbors(torch_seq) for
-        torch_seq in torch_seqs))
+        neighbors_count = torch.stack(tuple(count_neighbors(torch_seq) for
+            torch_seq in torch_seqs))
 
-    weights = 1 / neighbors_count.float()
+        weights = 1 / neighbors_count.float()
     return weights.data.cpu().numpy()
 
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     msa = get_msa_from_fasta(config.aligned_msa_fullpath)
 
     start_time = time.time()
-    weights = compute_weights_from_msa(msa, 
+    weights = compute_weights_from_aligned_msa(msa, 
             threshold=config.reweighting_threshold,
             device=config.device)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
