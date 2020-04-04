@@ -30,6 +30,9 @@ def save_latent_space_plot(config):
                 dataset=foreground_dataset,
                 config=config,
                 batch_size= len(foreground_dataset))
+        foreground_means, foreground_logvars = \
+                examine_model.convert_torch_latent_space_to_numpy(
+                    foreground_latent_space)
     
     figsize=(12,12)
     plt.figure(figsize=figsize)
@@ -40,8 +43,8 @@ def save_latent_space_plot(config):
     plt.xlabel("z1 (Latent space first dimension)")
     plt.ylabel("z2 (Latent space second dimension)")
     if foreground_latent_space is not None:
-        plt.plot(foreground_latent_space[:, 0],
-                 foreground_latent_space[:, 1], 'ro', markersize=4, 
+        plt.plot(foreground_means[:, 0],
+                 foreground_means[:, 1], 'ro', markersize=4, 
                  label="Foreground")
     plt.legend();
     plt.savefig(config.foreground_sequences_output_fullpath)    
