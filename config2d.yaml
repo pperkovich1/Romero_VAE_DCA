@@ -20,11 +20,11 @@ hidden_layer_size: 400
 latent_layer_size: 2
 activation_function: sigmoid
 learning_rate: .001
-epochs: 5
+epochs: 50
 batch_size: 128
 device: auto
 
 
 # Plotting options
 foreground_sequences_filename: cmx_foreground.fasta
-foreground_sequences_output_filename: model2d_latent.png
+latent_plot_output_filename: model2d_latent.png

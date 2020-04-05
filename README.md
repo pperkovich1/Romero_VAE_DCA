@@ -5,14 +5,24 @@ representation (also called latent space) using a [Variational Auto
 Encoder](https://en.wikipedia.org/wiki/Autoencoder#Variational_autoencoder_.28VAE.29).
 The latent space is then used for further computation or for visualization.
 
-![Sequence Space Visualization](images/seq_space.png)
+<img align="right" src="images/seq_space.png", width=400>
 
 ### How to use this repository
 1. Download this repository from git
-   * ```git clone https://github.com/RomeroLab/VAEs```
+   * ``` git clone https://github.com/RomeroLab/VAEs```
 1. Put your Multiple Sequence Alignment (MSA) file in the sequence_sets directory
-1. Use the scripts in the run directory to do further processing.
-   * (TODO: describe later)
+1. Switch to the conda `pytorch-docker` environment
+   * ``` conda activate pytorch-docker ```
+1. Edit the `config.yaml` file to have the correct paths and options
+1. Use the makefile to run the scripts
+   * ```shell
+        # run the reweighting script
+        make reweighting 
+        # run the model
+        make runmodel 
+        # plot the latent space (must have 2d latent space for plots)
+        make plotlatent
+     ```
 
 ### Contributors
 1. **James Wang** 
