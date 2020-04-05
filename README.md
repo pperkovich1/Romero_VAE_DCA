@@ -24,6 +24,11 @@ The latent space is then used for further computation or for visualization.
         make plotlatent
      ```
 
+### Sanity check
+Make sure that the loss function converges. It should look something like the image on the right. 
+
+<img align="right" src="images/training_loss.png" width="200" title="training loss" />
+
 ### Contributors
 1. **James Wang** 
 1. **Juan Diaz** 
