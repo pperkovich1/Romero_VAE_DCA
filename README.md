@@ -5,7 +5,7 @@ representation (also called latent space) using a [Variational Auto
 Encoder](https://en.wikipedia.org/wiki/Autoencoder#Variational_autoencoder_.28VAE.29).
 The latent space is then used for further computation or for visualization.
 
-<img align="right" src="images/seq_space.png", width=400>
+<img align="right" src="images/seq_space.png" width="400" title="sequence space" />
 
 ### How to use this repository
 1. Download this repository from git
