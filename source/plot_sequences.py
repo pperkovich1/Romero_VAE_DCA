@@ -38,16 +38,16 @@ def save_latent_space_plot(config):
     plt.figure(figsize=figsize)
     plt.plot(mean[:, 0], 
              mean[:, 1], 'o', markersize=1, alpha=0.5,
-            label="Natural Sequences")
+            label=config.model_name)
     plt.title("latent space (projected to two dimensions using VAE)")
-    plt.xlabel("z1 (Latent space first dimension)")
-    plt.ylabel("z2 (Latent space second dimension)")
+    plt.xlabel("z1 (1st dim)")
+    plt.ylabel("z2 (2nd dim)")
     if foreground_latent_space is not None:
         plt.plot(foreground_means[:, 0],
                  foreground_means[:, 1], 'ro', markersize=4, 
-                 label="Foreground")
+                 label=config.foreground_sequences_label)
     plt.legend();
-    plt.savefig(config.foreground_sequences_output_fullpath)    
+    plt.savefig(config.latent_plot_output_fullpath)    
 
 if __name__ == "__main__":
     import argparse
