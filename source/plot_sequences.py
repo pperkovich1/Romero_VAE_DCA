@@ -47,7 +47,7 @@ def save_latent_space_plot(config):
                  foreground_means[:, 1], 'ro', markersize=4, 
                  label=config.foreground_sequences_label)
     plt.legend();
-    plt.savefig(config.latent_plot_output_filename)    
+    plt.savefig(config.latent_plot_output_fullpath)    
 
 if __name__ == "__main__":
     import argparse

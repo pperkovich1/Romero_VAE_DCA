@@ -163,6 +163,13 @@ class Config:
                 pathlib.Path(self.foreground_sequences_filename)
 
     @property
+    def foreground_sequences_output_fullpath(self):
+        return self.working_dir / \
+                pathlib.Path(
+                        self.latent_plot_output_filename
+                        ).with_suffix(".png")
+
+    @property
     def foreground_sequences_label(self):
         return self.safe_get_key('foreground_sequences_label',
                 default= str(self.foreground_sequences_fullpath.stem))
@@ -173,8 +180,7 @@ class Config:
                 default=self.model_name + "_latent.png")
 
     @property
-    def foreground_sequences_output_fullpath(self):
-        # TODO: should this be output directory?
+    def latent_plot_output_fullpath(self):
         return self.working_dir / \
                 pathlib.Path(
                         self.latent_plot_output_filename
