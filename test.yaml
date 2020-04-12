@@ -1,0 +1,24 @@
+aligned_msa_filename: test.fasta
+reweighting_threshold: 0.9
+
+# These directories need to be specified relative to the main directory
+dataset_dir: sequence_sets
+working_dir: working
+
+# Do not put spaces or other special characters into model_name below If the
+# model_name is model then the following files will be saved in the working
+# directory
+#  1. model.pt (saved pytorch model)
+#  2. model_loss.pkl (saved loss function)
+#  3. model_loss.png (loss function graphed)
+#  4. model_latent.pkl (saved latent space)
+model_name: model
+
+hidden_layer_size: 400
+latent_layer_size: 20
+activation_function: sigmoid
+learning_rate: .001
+epochs: 5
+batch_size: 128
+device: auto # possible options are cpu, gpu, auto
+
