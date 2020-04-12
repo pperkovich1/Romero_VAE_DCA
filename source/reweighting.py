@@ -61,7 +61,7 @@ def compute_weights_from_aligned_msa(msa, threshold, device):
         def count_neighbors(torch_seq):
             """Count the neighbors of torch_seq.
             This is an inline function that uses msa_int and torch_threshold"""
-            dist_from_seq = (torch_seq != msa_int).sum(axis=1, dtype=torch.short)
+            dist_from_seq = (torch_seq != msa_int).sum(dim=1, dtype=torch.short)
             threshold_count = (dist_from_seq <=
                     torch_threshold).sum(dtype=torch.short) 
             return threshold_count
@@ -70,6 +70,7 @@ def compute_weights_from_aligned_msa(msa, threshold, device):
             torch_seq in torch_seqs))
 
         weights = 1 / neighbors_count.float()
+        print(weights)
     return weights.data.cpu().numpy()
 
 
