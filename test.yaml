@@ -1,4 +1,4 @@
-aligned_msa_filename: test_3.fasta
+aligned_msa_filename: test.fasta
 reweighting_threshold: 0.9
 
 # These directories need to be specified relative to the main directory
