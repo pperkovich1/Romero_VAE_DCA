@@ -1,3 +1,5 @@
+import pathlib
+
 import numpy as np
 import itertools 
 
@@ -5,7 +7,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 
-from Bio import SeqIO
+from Bio import Seq, SeqIO
 
 AMINO_ACIDS = np.array([aa for aa in "RKDEQNHSTCYWAILMFVPG-"], "S1")
 # AAs = AMINO_ACIDS[:-1] # drop the gap character
@@ -30,9 +32,12 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
         as_numpy        : return numpy byte array instead of list of seqs
 
     Returns:
-        A list of sequences (if as_numpy is False)
-        A numpy byte array of dtpye S1 which represents the MSA. Each
-        sequence is in its own row. (if as_numpy is True)
+        if as_numpy is False:
+            A list of sequences in Bio.Seq format
+        if as_numpy is True:
+            A numpy byte array of dtpye S1 which represents the MSA. 
+            The first axis is the sequence number. The second axis is the
+            residue number. 
     """
     seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
     # Read only size_limit elements of the generator
@@ -47,11 +52,65 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
         ret = list(seqs)
     return ret
 
+def get_msa_from_aln(aln_filename, size_limit=None, 
+                            as_numpy=True):
+    """Reads a (plain text) aln file and returns an MSA
+
+    Takes a simple text file (ALN) which has one sequence per line. Returns 
+    and MSA as a numpy array or as a list of Bio.Seq sequences.
+
+    Args:
+        aln_filename    : Filename of ALN file to read
+        size_limit      : Return upto size_limit sequences
+        as_numpy        : return numpy byte array instead of list of seqs
+
+    Returns:
+        if as_numpy is False:
+            A list of sequences in Bio.Seq format
+        if as_numpy is True:
+            A numpy byte array of dtpye S1 which represents the MSA. 
+            The first axis is the sequence number. The second axis is the
+            residue number. 
+    """
+    with open(aln_filename, "rt") as fh:
+        seq_io_gen = (line.strip() for line in fh)
+        # Read only size_limit elements of the generator
+        # if size_limit is None then we will read in everything
+        seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
+        seqs = (seq.upper() for seq in seq_io_gen_slice)
+        ret = None
+        if as_numpy:
+            # convert to lists of lists for easy numpy conversion to 2D array
+            ret = np.array([list(s) for s in seqs], dtype="|S1")
+        else:
+            ret = [Seq.Seq(s) for s in seqs]
+        return ret
+
+
+def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
+    """
+        Read in the filename and call the right function to read in the MSA
+        by looking at the extension
+    """
+    suffix = pathlib.Path(msa_file).suffix
+    if suffix == ".fasta" or suffix == ".a2m":
+        file_reader_func = get_msa_from_fasta
+    elif suffix == ".txt" or suffix == ".text" or suffix == ".aln":
+        file_reader_func = get_msa_from_aln
+    else:
+        err_str = f"Input MSA must have format FASTA/A2M or TEXT/ALN.\n" \
+                  f"The file extension must be one of " \
+                  f".fasta/.a2m/.txt/.text/.aln to reflect that." \
+                  f"Found extension {suffix}"
+        raise ValueError(err_str)
+    return file_reader_func(msa_file, size_limit=size_limit, as_numpy=as_numpy)
+
 
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, filterX=False):
+    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, 
+            filterX=False):
         self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()
@@ -74,7 +133,7 @@ class MSADataset(Dataset):
         [self.raw_data, self.weights] = list(zip(*g))
 
     def get_raw_data(self, msa_file, size_limit):
-        return get_msa_from_fasta(msa_file, size_limit=size_limit, as_numpy=False)
+        return get_msa_from_file(msa_file, size_limit=size_limit, as_numpy=False)
 
     def get_encoding_dict(self):
         return AA_map_str.copy()
