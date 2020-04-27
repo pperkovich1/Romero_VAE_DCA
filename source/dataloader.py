@@ -1,11 +1,10 @@
-'''
-Modified from Sameer's VAE code
-'''
+import numpy as np
+import itertools 
 
 import torch
 from torch.utils.data import Dataset, DataLoader
-import numpy as np
 import torch.nn.functional as F
+
 from Bio import SeqIO
 
 AMINO_ACIDS = np.array([aa for aa in "RKDEQNHSTCYWAILMFVPG-"], "S1")
@@ -17,7 +16,8 @@ AA_map = {a:idx for idx,a in enumerate(AAs)} # map each amino acid to an index
 # same map as above but with ascii indices
 AA_map_str = {a:idx for idx, a in enumerate(AAs_string)}
 
-def get_msa_from_fasta(fasta_filename):
+def get_msa_from_fasta(fasta_filename, size_limit=None, 
+                            as_numpy=True):
     """Reads a fasta file and returns an MSA
 
     Takes a fasta filename and reads it with SeqIO and converts to a numpy
@@ -25,18 +25,27 @@ def get_msa_from_fasta(fasta_filename):
     simplest representation posible. 
 
     Args:
-        fasta_filename: Filename of fasta file to read
+        fasta_filename  : Filename of fasta file to read
+        size_limit      : Return upto size_limit sequences
+        as_numpy        : return numpy byte array instead of list of seqs
 
     Returns:
+        A list of sequences (if as_numpy is False)
         A numpy byte array of dtpye S1 which represents the MSA. Each
-        sequence is in its own row. 
+        sequence is in its own row. (if as_numpy is True)
     """
-    # TODO(sameer): How is this function different from MSADataset.get_raw_data?
-    # Merge the two functions if necessary
     seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
-    # convert to lists of lists for easy numpy conversion to 2D array
-    seqs = [list(str(seq.seq.upper())) for seq in seq_io_gen]
-    return np.array(seqs, dtype="|S1")
+    # Read only size_limit elements of the generator
+    # if size_limit is None then we will read in everything
+    seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
+    seqs = (seq.seq.upper() for seq in seq_io_gen_slice)
+    ret = None
+    if as_numpy:
+        # convert to lists of lists for easy numpy conversion to 2D array
+        ret = np.array([list(str(s)) for s in seqs], dtype="|S1")
+    else:
+        ret = list(seqs)
+    return ret
 
 
 class MSADataset(Dataset):
@@ -65,10 +74,7 @@ class MSADataset(Dataset):
         [self.raw_data, self.weights] = list(zip(*g))
 
     def get_raw_data(self, msa_file, size_limit):
-        f =  SeqIO.parse(open(msa_file), 'fasta')
-        f = list(f)[:size_limit]
-        f = [x.seq for x in f]
-        return f
+        return get_msa_from_fasta(msa_file, size_limit=size_limit, as_numpy=False)
 
     def get_encoding_dict(self):
         return AA_map_str.copy()
@@ -102,3 +108,4 @@ class OneHotTransform:
             ret = ret.float()
         ret = ret.flatten()
         return ret
+

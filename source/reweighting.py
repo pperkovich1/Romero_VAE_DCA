@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     config = read_config.Config(args.config_filename)
 
-    msa = get_msa_from_fasta(config.aligned_msa_fullpath)
+    msa = get_msa_from_fasta(config.aligned_msa_fullpath, as_numpy=True)
 
     start_time = time.time()
     weights = compute_weights_from_aligned_msa(msa, 
