@@ -17,7 +17,7 @@ and imported into other python programs.
 import numpy as np
 import torch
 
-from dataloader import get_msa_from_fasta
+from dataloader import get_msa_from_file
 
 def compute_weights_from_aligned_msa(msa, threshold, device):
     """Computes weights from an msa using threshold to determine neighbors.
@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     config = read_config.Config(args.config_filename)
 
-    msa = get_msa_from_fasta(config.aligned_msa_fullpath, as_numpy=True)
+    msa = get_msa_from_file(config.aligned_msa_fullpath, as_numpy=True)
 
     start_time = time.time()
     weights = compute_weights_from_aligned_msa(msa, 
