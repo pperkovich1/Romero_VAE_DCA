@@ -1,5 +1,5 @@
-aligned_msa_filename: cmx_aligned_blank_90.fasta
-reweighting_threshold: 0.8
+aligned_msa_filename: Gen15_aa.aln.gz
+reweighting_threshold: 0.93
 
 # These directories need to be specified relative to the main directory
 dataset_dir: sequence_sets
@@ -20,5 +20,5 @@ activation_function: sigmoid
 learning_rate: .001
 epochs: 5
 batch_size: 128
-device: auto # possible options are cpu, gpu, auto
+device: auto # possible options are cpu, cuda, auto
 
