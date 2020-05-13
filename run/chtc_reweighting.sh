@@ -16,7 +16,6 @@ fi
 # set up the staging environment
 tar -zxvf staging.tar.gz
 # create the output directory where we can store stuff to return
-mkdir output
 mkdir working
 
 # just in case our sh files are not executable
@@ -26,8 +25,7 @@ chmod +x *.sh
 ./reweighting.sh "${@:2}"
 
 # tar up the output directory
-cd ..
-tar -zcvf reweighting_output_"$1".tar.gz -C output/ .
+tar -zcvf reweighting_output_"$1".tar.gz -C working/ .
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then
