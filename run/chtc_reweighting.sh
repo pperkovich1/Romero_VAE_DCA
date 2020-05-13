@@ -17,6 +17,7 @@ fi
 tar -zxvf staging.tar.gz
 # create the output directory where we can store stuff to return
 mkdir output
+mkdir working
 
 # just in case our sh files are not executable
 chmod +x *.sh
