@@ -69,7 +69,7 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
         model.load_state_dict(torch.load(model_fullpath))
         # TODO: Do we need to run model.eval() here? see,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
-
+    model.to(device)
     return model
 
 def load_model_from_config(input_length, config):

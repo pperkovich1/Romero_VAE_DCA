@@ -13,16 +13,16 @@ class VAE(torch.nn.Module):
         self.device = device
 
         ### ENCODER
-        self.hidden_in = torch.nn.ModuleList([torch.nn.Linear(nums[i], nums[i+1])
-                                  for i in range(len(nums)-2)])
-        self.z_mean = torch.nn.Linear(nums[-2], num_latent)
-        self.z_log_var = torch.nn.Linear(nums[-2], num_latent)
+        self.hidden_in = torch.nn.ModuleList([torch.nn.Linear(nums[i], nums[i+1]).to(self.device)
+                                  for i in range(len(nums)-2)]).to(self.device)
+        self.z_mean = torch.nn.Linear(nums[-2], num_latent).to(self.device)
+        self.z_log_var = torch.nn.Linear(nums[-2], num_latent).to(self.device)
         
         
         ### DECODER
         self.hidden_out = torch.nn.ModuleList([torch.nn.Linear(nums[i-1], nums[i-2])
-                                  for i in range(len(nums),2, -1)])
-        self.linear_4 = torch.nn.Linear(nums[1], input_length)
+                                  for i in range(len(nums),2, -1)]).to(self.device)
+        self.linear_4 = torch.nn.Linear(nums[1], input_length).to(self.device)
 
     def reparameterize(self, z_mu, z_log_var):
         # Sample epsilon from standard normal distribution

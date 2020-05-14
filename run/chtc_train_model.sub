@@ -1,0 +1,55 @@
+# submit file for VAEs in Pytorch
+
+# Must set the universe to Docker
+universe = docker
+docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
+
+# set the log, error and output files 
+log = logs/chtc_model_training_$(Cluster)_$(Process).log.txt
+error = logs/chtc_model_training_$(Cluster)_$(Process).err.txt
+output = logs/chtc_model_training_$(Cluster)_$(Process).out.txt
+
+# set the executable to run
+executable = chtc_train_model.sh
+arguments = $(Cluster)_$(Process) ../config.yaml
+
+# squid files
+dataset = http://proxy.chtc.wisc.edu/SQUID/jlwang5/uniref/processed_cmx_uniref100_90_80_10_100.fasta
+python_tar = http://proxy.chtc.wisc.edu/SQUID/jlwang5/vae_env.tar.gz # used for interactive sessions
+
+# allows submit file to be run from anywhere
+home = /home/jlwang5/VAEs/run
+
+
+# take our python script and data to the compute node
+# staging tarball contains all the python scripts
+transfer_input_files = $(home)/VAEs.tar.gz, $(home)/chtc_train_model.sh, $(home)/chtc_root.txt, $(dataset), $(python_tar)
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+  
+# We must request 1 CPU in addition to 1 GPU (if needed)
+request_cpus = 1
+
+if ! defined DISABLE_GPU
+# condor_submit was run from the command line like 
+# condor_submit DISABLE_GPU=1 chtc_reweighting.sub
+  request_gpus = 1
+  # We require a machine with a modern version of the CUDA driver
+  Requirements = (Target.CUDADriverVersion >= 10.1)
+
+  +WantGPULab = true
+  +GPUJobLength = "short"
+
+endif
+
+# select some memory and disk space
+request_memory = 1GB
+request_disk = 1GB
+
+if ! defined DISABLE_FLOCKING
+    +WantFlocking = true
+endif
+
+# Tell HTCondor to run 1 instances of our job:
+queue 

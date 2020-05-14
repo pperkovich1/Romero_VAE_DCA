@@ -9,7 +9,7 @@ import time
 
 #local files
 import utils
-from vae import load_model_from_config
+from train_model import load_model_from_config
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 

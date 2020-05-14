@@ -13,8 +13,7 @@
 # able to find the source directory and the reweighting.py script and put the
 # output in the same working directory
 
-
 cd source || { echo "Error: Cannot change to source directory" ; exit 1; }
-python vae.py "$@"
+python train_model.py "$@"
 python examine_model.py "$@"
 cd ..
