@@ -30,7 +30,7 @@ tar -zcvf reweighting_output_"$1".tar.gz -C working/ .
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then
     rm -rf */ # safely delete sub directories
-    rm config.yaml
+    rm -f config.yaml 
 else
     echo "$TOPDIR_FILE does not exist. "
     echo "Error: Not cleaning up sub directories"

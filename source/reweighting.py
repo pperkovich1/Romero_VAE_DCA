@@ -70,7 +70,12 @@ def compute_weights_from_aligned_msa(msa, threshold, device):
             torch_seq in torch_seqs))
 
         weights = 1 / neighbors_count.float()
-    return weights.data.cpu().numpy()
+    weights = weights.data.cpu().numpy()
+
+    # normalize weights to sum to length of MSA
+    weights = (weights / weights.sum()) * N
+    return weights
+
 
 
 
