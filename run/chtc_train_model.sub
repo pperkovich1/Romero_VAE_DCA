@@ -5,15 +5,15 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = logs/chtc_model_training_$(Cluster)_$(Process).log.txt
-error = logs/chtc_model_training_$(Cluster)_$(Process).err.txt
-output = logs/chtc_model_training_$(Cluster)_$(Process).out.txt
+log = chtc_model_training_$(Cluster)_$(Process).log.txt
+error = chtc_model_training_$(Cluster)_$(Process).err.txt
+output = chtc_model_training_$(Cluster)_$(Process).out.txt
 
 # allows submit file to be run from anywhere
-home = /home/jlwang5/VAEs/run
+base = ../..
 
 # set the executable to run
-executable = $(home)/chtc_train_model.sh
+executable = $(base)/chtc_train_model.sh
 arguments = $(Cluster)_$(Process) ../config.yaml
 
 # squid files
@@ -23,7 +23,7 @@ python_tar = http://proxy.chtc.wisc.edu/SQUID/jlwang5/vae_env.tar.gz # used for 
 
 # take our python script and data to the compute node
 # staging tarball contains all the python scripts
-transfer_input_files = $(home)/VAEs.tar.gz, $(home)/chtc_train_model.sh, $(home)/chtc_root.txt, $(dataset), $(python_tar)
+transfer_input_files = $(base)/VAEs.tar.gz, $(base)/chtc_train_model.sh, $(base)/chtc_root.txt, $(dataset), $(python_tar)
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
