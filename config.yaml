@@ -20,5 +20,5 @@ activation_function: sigmoid
 learning_rate: .001
 epochs: 5
 batch_size: 128
-device: auto # possible options are cpu, gpu, auto
+device: auto # possible options are cpu, cuda, auto
 

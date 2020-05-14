@@ -31,7 +31,7 @@ alignment datasets. This is expected to vary considerably by the type of process
 | ---   | ---- | --------- |  ---      | ---------|
 | ~15k  | ~550 | 0.23 min  |  1.96 min | 0.26 min |
 | ~55k  | ~550 | 1.71 min  | 93.32 min |  - min   |
-| ~127k | ~200 |  - min    | - min     |  ~30 min  |
+| ~127k | ~200 | 2.18 min    | - min     |  ~30 min  |
 
 ### Note for Biochem Cluster (BCC)
 All of these scripts can be used on the BCC without any

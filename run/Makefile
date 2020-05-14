@@ -1,6 +1,8 @@
 
 .PHONY: clean deepclean submit_reweighting
 
+CONFIG := config.yaml
+
 # clean logs and error files and code that is staged
 clean:
 	rm -f logs/*
@@ -18,7 +20,7 @@ staging.tar.gz :
 			-czvf staging.tar.gz -C ../ \
 			./source \
 			./sequence_sets \
-			config.yaml
+			$(CONFIG)
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz
