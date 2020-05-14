@@ -9,16 +9,16 @@ log = logs/chtc_model_training_$(Cluster)_$(Process).log.txt
 error = logs/chtc_model_training_$(Cluster)_$(Process).err.txt
 output = logs/chtc_model_training_$(Cluster)_$(Process).out.txt
 
+# allows submit file to be run from anywhere
+home = /home/jlwang5/VAEs/run
+
 # set the executable to run
-executable = chtc_train_model.sh
+executable = $(home)/chtc_train_model.sh
 arguments = $(Cluster)_$(Process) ../config.yaml
 
 # squid files
 dataset = http://proxy.chtc.wisc.edu/SQUID/jlwang5/uniref/processed_cmx_uniref100_90_80_10_100.fasta
 python_tar = http://proxy.chtc.wisc.edu/SQUID/jlwang5/vae_env.tar.gz # used for interactive sessions
-
-# allows submit file to be run from anywhere
-home = /home/jlwang5/VAEs/run
 
 
 # take our python script and data to the compute node
