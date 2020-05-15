@@ -2,6 +2,7 @@ import pathlib
 
 import numpy as np
 import itertools 
+import gzip
 
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -54,7 +55,7 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
 
 def get_msa_from_aln(aln_filename, size_limit=None, 
                             as_numpy=True):
-    """Reads a (plain text) aln file and returns an MSA
+    """Reads a (plain text) aln file (can be gzipped also) and returns an MSA
 
     Takes a simple text file (ALN) which has one sequence per line. Returns 
     and MSA as a numpy array or as a list of Bio.Seq sequences.
@@ -72,7 +73,10 @@ def get_msa_from_aln(aln_filename, size_limit=None,
             The first axis is the sequence number. The second axis is the
             residue number. 
     """
-    with open(aln_filename, "rt") as fh:
+    opener = open
+    if aln_filename.endswith(".gz"):
+        opener = gzip.open
+    with opener(aln_filename, "rt") as fh:
         seq_io_gen = (line.strip() for line in fh)
         # Read only size_limit elements of the generator
         # if size_limit is None then we will read in everything
