@@ -42,7 +42,5 @@ if __name__ == "__main__":
             )
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
-    parser = argparse.ArgumentParser()
-
     np.save(args.output_filename, weights, allow_pickle=False)
 
