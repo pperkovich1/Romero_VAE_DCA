@@ -11,13 +11,14 @@
         avg_pairwise_dist_pct: 63.12%
         name: cmx_aligned_blank_90
         num_seqs: 14441
+        optimal_theta_after_mean_removal: 0.37
         seq_length: 559
         Time elapsed: 0.11 min
 """
 
 import sys
-import functools
-from contextlib import ExitStack
+import functools # For CachedProperty
+import contextlib # ExitStack to close filehandles
 import gzip
 
 import pathlib
@@ -30,10 +31,14 @@ import dataloader
 class MSA:
     """ Perform manipulations on MSA 
 
-    TODO: Move functions that do not use WT into here
+        Args:
+            msa    : Numpy array of shape (N, L)  dtype "|S1"
+
     """
 
-    pass
+    def __init__(self, msa, name=""):
+        self.msa = msa
+        self.name = name
 
 
 class MSAwt(MSA):
@@ -51,14 +56,13 @@ class MSAwt(MSA):
             wt     : Numpy array of shape (1, L) or (L,)  dtype "|S1"
             name   : A string name for the MSA
         """
-        self.msa = msa
         self.wt = wt
-        self.name = name
         wt = wt.squeeze()
         if len(wt.shape) != 1:
             raise ValueError("WildType filename must have only one value in it")
         if wt.shape[0] != msa.shape[1]:
             raise ValueError("WildType and MSA files have different length sequences in them")
+        super(MSAwt, self).__init__(msa=msa, name=name)
 
     @property
     def num_seqs(self):
@@ -88,22 +92,33 @@ class MSAwt(MSA):
             # sample pairwise indices
             it = (np.random.choice(self.num_seqs, 2, replace=True)
                     for _ in range(100000))
-            distances = np.array([(self.msa[x, :] != self.msa[y, :]).sum() for x, y in it])
+            distances = np.array([(self.msa[x, :] != self.msa[y, :]).sum() 
+                                    for x, y in it])
         else:
-            distances = np.array([self.calc_avg_dist_from_seq(self.msa[i, :]) for i in 
-                                    range(self.seq_length)])
+            distances = np.array([self.calc_avg_dist_from_seq(self.msa[i, :]) 
+                                    for i in range(self.seq_length)])
         return distances.mean()
 
     @property
     def avg_pairwise_dist_pct(self):
         return self.avg_pairwise_dist / self.seq_length * 100
 
+    @property
+    def optimal_theta_after_mean_removal(self):
+        return 1 - (self.avg_dist_from_wt_pct + self.avg_pairwise_dist_pct) \
+                        / (2 * 100)
+
+
     def get_stats_dict(self):
-        return {'name': self.name,
-                'num_seqs': self.num_seqs,
-                'seq_length':self.seq_length,
-                'avg_dist_from_wt_pct':f"{self.avg_dist_from_wt_pct:.2f}%",
-                'avg_pairwise_dist_pct':f"{self.avg_pairwise_dist_pct:.2f}%"}
+        return {
+            'name': self.name,
+            'num_seqs': self.num_seqs,
+            'seq_length': self.seq_length,
+            'avg_dist_from_wt_pct': f"{self.avg_dist_from_wt_pct:.2f}%",
+            'avg_pairwise_dist_pct': f"{self.avg_pairwise_dist_pct:.2f}%",
+            'optimal_theta_after_mean_removal': \
+                    float(round(self.optimal_theta_after_mean_removal, 2))
+            }
 
     def write_stats_dict(self, filetype):
         """ Write stats dictionary out to a file
@@ -111,7 +126,7 @@ class MSAwt(MSA):
             Args:
                 filetype : str or filehandle (even something like sys.stdout)
         """
-        with ExitStack() as stack: # make sure any file handles are closed if opened
+        with contextlib.ExitStack() as stack: # make sure any file handles are closed if opened
             fh = sys.stdout
             if isinstance(filetype, str):
                 if filetype:
@@ -144,7 +159,11 @@ class MSAwt(MSA):
     def create_from_files(msa_filename, wildtype_filename):
         msa = dataloader.get_msa_from_file(msa_filename, as_numpy=True)
         wt = dataloader.get_msa_from_file(wildtype_filename, as_numpy=True)
-        name = pathlib.Path(msa_filename).stem.split('.')[0]
+
+        path = pathlib.Path(msa_filename)
+        if path.suffix == ".gz":
+            path = pathlib.Path(path.stem) # strip it off
+        name = path.stem
         return MSAwt(msa, wt, name)
 
 
@@ -160,11 +179,10 @@ if __name__ == "__main__":
                     help="filename that contains only WildType",
                     required=True) # required for now! TODO: make optional later
     parser.add_argument("-s", "--stats_filename", 
-                    default=None, help="filename to save stats to")
+                    default=None, help="filename to save stats")
     parser.add_argument("-r", "--remove_below_mean_filename", 
-                    help="filename to save new MSA with seqeuences below mean removed")
-    parser.add_argument("-f", "--remove_below_mean_yaml", 
-                    help="filename to save stats to")
+                    help="filename to save new MSA with seqeuences " 
+                         "below mean removed")
     args = parser.parse_args()
 
     start_time = time.time()
@@ -174,11 +192,9 @@ if __name__ == "__main__":
     if args.stats_filename is not None: # can be an empty string
         msa.write_stats_dict(args.stats_filename)
 
-    if args.remove_below_mean_filename:
+    if args.remove_below_mean_filename: # remove seqs closer than avg dist to WT
         msa_above_mean = msa.remove_seqs_below_mean()
         msa_above_mean.write_msa_to_file(args.remove_below_mean_filename)
-
-
 
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 

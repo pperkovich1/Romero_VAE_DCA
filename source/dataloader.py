@@ -28,7 +28,7 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
     simplest representation posible. 
 
     Args:
-        fasta_filename  : Filename of fasta file to read
+        fasta_filename  : Filename or filehandle of fasta file to read
         size_limit      : Return upto size_limit sequences
         as_numpy        : return numpy byte array instead of list of seqs
 
@@ -61,7 +61,7 @@ def get_msa_from_aln(aln_filename, size_limit=None,
     and MSA as a numpy array or as a list of Bio.Seq sequences.
 
     Args:
-        aln_filename    : Filename of ALN file to read
+        aln_filename    : Filename or filename of ALN file to read
         size_limit      : Return upto size_limit sequences
         as_numpy        : return numpy byte array instead of list of seqs
 
@@ -96,7 +96,10 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
         Read in the filename and call the right function to read in the MSA
         by looking at the extension
     """
-    suffix = pathlib.Path(msa_file).suffix
+    suffixes = pathlib.Path(msa_file).suffixes
+    suffix = suffixes[-1]
+    if len(suffixes) > 1 and suffixes[-1] == ".gz":
+        suffix = suffixes[-2] # handle .fasta.gz
     if suffix == ".fasta" or suffix == ".a2m":
         file_reader_func = get_msa_from_fasta
     elif suffix == ".txt" or suffix == ".text" or suffix == ".aln":
@@ -104,7 +107,8 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
     else:
         err_str = f"Input MSA must have format FASTA/A2M or TEXT/ALN.\n" \
                   f"The file extension must be one of " \
-                  f".fasta/.a2m/.txt/.text/.aln to reflect that." \
+                  f".fasta/.a2m/.txt/.text/.aln to reflect that. Or " \
+                  f".fasta.gz/.a2m.gz/.txt.gz/.text.gz/.aln.gz if compressed." \
                   f"Found extension {suffix}"
         raise ValueError(err_str)
     return file_reader_func(msa_file, size_limit=size_limit, as_numpy=as_numpy)
