@@ -1,29 +1,33 @@
 # submit file for VAEs in Pytorch
+# TODO: make this consistent with other submit files
+
+notification = Always
+notify_user = jlwang5@wisc.edu
 
 # Must set the universe to Docker
 universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = chtc_model_training_$(Cluster)_$(Process).log.txt
-error = chtc_model_training_$(Cluster)_$(Process).err.txt
-output = chtc_model_training_$(Cluster)_$(Process).out.txt
+#
+log = logs/chtc_model_training_$(Process)_$(dataset).log
+error = logs/chtc_model_training_$(Process)_$(dataset).err
+output = logs/chtc_model_training_$(Process)_$(dataset).out
 
-# allows submit file to be run from anywhere
-base = ../..
+# allows submit file to be run from anywhere?
+# TODO: figure out while absolute filepaths don't work
+# base = /home/jlwang5/VAEs/run
+base = .
+# dataset = processed_cmx_uniref100_90_80_10_100.fasta
+squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 
 # set the executable to run
 executable = $(base)/chtc_train_model.sh
-arguments = $(Cluster)_$(Process) ../config.yaml
-
-# squid files
-dataset = http://proxy.chtc.wisc.edu/SQUID/jlwang5/uniref/processed_cmx_uniref100_90_80_10_100.fasta
-python_tar = http://proxy.chtc.wisc.edu/SQUID/jlwang5/vae_env.tar.gz # used for interactive sessions
-
+arguments = $(Cluster)_$(Process) $(dataset) ../config.yaml
 
 # take our python script and data to the compute node
-# staging tarball contains all the python scripts
-transfer_input_files = $(base)/VAEs.tar.gz, $(base)/chtc_train_model.sh, $(base)/chtc_root.txt, $(dataset), $(python_tar)
+# staging tarball contains entire github repository
+transfer_input_files = $(base)/staging.tar.gz, $(base)/chtc_root.txt, $(base)/chtc_train_model.sh, $(base)/runmodel.sh,  $(squid)/$(dataset), $(squid)/vae_env.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -44,12 +48,12 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 1GB
-request_disk = 1GB
+request_memory = 5GB
+request_disk = 5GB
 
 if ! defined DISABLE_FLOCKING
-    +WantFlocking = true
+    +WantFlocking = false
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue 
+queue dataset from datasets.txt

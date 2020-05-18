@@ -14,29 +14,29 @@ else
 fi
 
 # set up the staging environment
-tar -zxf VAEs.tar.gz
+tar -zxf staging.tar.gz
 # create the output directory where we can store stuff to return
 mkdir output
 
+# add dataset to config file
+printf "\naligned_msa_filename:%s\n" $2 >> config.yaml
+ 
 # move dataset into sequence_sets folder
-# TODO: file name should be an input argument
-cp ./processed_cmx_uniref100_90_80_10_100.fasta VAEs/sequence_sets
+# TODO: find prettier way to accomplish this
+# cp ./processed_cmx_uniref100_90_80_10_100.fasta sequence_sets
+cp $2 sequence_sets
 
-cd VAEs/run
+# for debuging purposes
+ls -aR
 
 # just in case our sh files are not executable
 chmod +x *.sh
 
-# runmodel.sh needs to be run from home directory
-cd ..
-
-# pass all arguments (except the first one) to the python program
-./run/runmodel.sh "${@:2}"
+# pass config file location to the python program
+./runmodel.sh $3
 
 # tar up the output directory
-cd ..
 tar -zcf training_output_"$1".tar.gz ./output 
-tar -zcf VAEs_file_tree.tar.gz ./VAEs
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then

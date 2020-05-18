@@ -1,9 +1,10 @@
-aligned_msa_filename: cmx_aligned_blank_90.fasta
+# aligned_msa_filename: metaclust_processed_msa.fasta
+# aligned_msa_filename: processed_cmx_uniref100_90_80_10_100.fasta
 reweighting_threshold: 0.8
 
 # These directories need to be specified relative to the main directory
 dataset_dir: sequence_sets
-working_dir: working
+working_dir: output
 
 # Do not put spaces or other special characters into model_name below If the
 # model_name is model then the following files will be saved in the working
@@ -18,7 +19,6 @@ hidden_layer_size: 400
 latent_layer_size: 20
 activation_function: sigmoid
 learning_rate: .001
-epochs: 5
+epochs: 10
 batch_size: 128
 device: auto # possible options are cpu, gpu, auto
-
