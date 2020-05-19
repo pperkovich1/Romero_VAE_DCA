@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # Shell script to launch reweighting script
-# $1 is the postfix to the output tar.gz file
-# $2 onwards are passed onto the python program
+Process = $1
+Cluster = $2
+dataset = $3
+config  = $4
 
 TOPDIR_FILE=chtc_root.txt
 if [ -f "$TOPDIR_FILE" ]; then
@@ -16,15 +18,15 @@ fi
 # set up the staging environment
 tar -zxf staging.tar.gz
 # create the output directory where we can store stuff to return
-mkdir output
+mkdir output_$(Cluster)
 
+python modify_config.py $(Process) $(config)
 # add dataset to config file
-printf "\naligned_msa_filename:%s\n" $2 >> config.yaml
+printf "\naligned_msa_filename: %s\n" $(dataset) >> config.yaml
+cat config.yaml
  
 # move dataset into sequence_sets folder
-# TODO: find prettier way to accomplish this
-# cp ./processed_cmx_uniref100_90_80_10_100.fasta sequence_sets
-cp $2 sequence_sets
+cp $dataset sequence_sets
 
 # for debuging purposes
 ls -aR
@@ -33,10 +35,10 @@ ls -aR
 chmod +x *.sh
 
 # pass config file location to the python program
-./runmodel.sh $3
+./runmodel.sh $(config)
 
 # tar up the output directory
-tar -zcf training_output_"$1".tar.gz ./output 
+tar -zcf training_output_$(cluster).tar.gz ./output 
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then

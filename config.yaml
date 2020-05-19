@@ -19,6 +19,6 @@ hidden_layer_size: 400
 latent_layer_size: 20
 activation_function: sigmoid
 learning_rate: .001
-epochs: 10
+epochs: 500
 batch_size: 128
 device: auto # possible options are cpu, gpu, auto
