@@ -186,6 +186,11 @@ class Config:
                         self.latent_plot_output_filename
                         ).with_suffix(".png")
 
+    @property
+    def latent_plot_archive_fullpath(self):
+        return self.latent_plot_output_fullpath.with_suffix(".pkl")
+
+
 def get_best_device():
     """Get the device to use for pytorch
 
