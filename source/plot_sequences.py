@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 # local imports
 import examine_model
 import utils
-import vae
 from dataloader import MSADataset, OneHotTransform
 
 
