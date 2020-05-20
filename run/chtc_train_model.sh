@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Shell script to launch reweighting script
-Process = $1
-Cluster = $2
-dataset = $3
-config  = $4
+Cluster=$1
+Process=$2
+dataset=$3
+hidden=$4
+latent=$5
+config=$6
 
 TOPDIR_FILE=chtc_root.txt
 if [ -f "$TOPDIR_FILE" ]; then
@@ -18,11 +20,17 @@ fi
 # set up the staging environment
 tar -zxf staging.tar.gz
 # create the output directory where we can store stuff to return
-mkdir output_$(Cluster)
+mkdir output
 
-python modify_config.py $(Process) $(config)
+cp config.yaml output
+
+# TODO: make editing config file less janky
+# TODO: it'd be nice if I could replace ../config.yaml with $config
+# python modify_config.py $(Process) $(config)
 # add dataset to config file
-printf "\naligned_msa_filename: %s\n" $(dataset) >> config.yaml
+printf "\naligned_msa_filename: %s\n" $dataset >> config.yaml
+printf "\nhidden_layer_size: %s\n" $hidden >> config.yaml
+printf "\nlatent_layer_size: %s\n" $latent >> config.yaml
 cat config.yaml
  
 # move dataset into sequence_sets folder
@@ -35,10 +43,10 @@ ls -aR
 chmod +x *.sh
 
 # pass config file location to the python program
-./runmodel.sh $(config)
+./runmodel.sh $config
 
 # tar up the output directory
-tar -zcf training_output_$(cluster).tar.gz ./output 
+tar -zcf training_output_"$hidden"_"$latent".tar.gz ./output 
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then

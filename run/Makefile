@@ -29,6 +29,12 @@ chtc_submit_reweighting: staging.tar.gz
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \
 	#		chtc_reweighting.sub
-chtc_submit_training: staging.tar.gz
+submit_training: staging.tar.gz
 	condor_submit \
 			chtc_train_model.sub
+
+move_output:
+	rm -f docker_stderror
+	rm -f config.yaml
+	mv *fasta* logs
+	mv *output* logs
