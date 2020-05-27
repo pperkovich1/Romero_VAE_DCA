@@ -18,11 +18,15 @@ staging.tar.gz :
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			./sequence_sets \
-			config.yaml
+			./configs\
+			run/runmodel.sh
+			# ./sequence_sets
+			# config.yaml
+sequences.tar.gz :
+	tar -czvf /squid/jlwang5/sequences.tar.gz ../sequence_sets
 
 # submit jobs
-chtc_submit_reweighting: staging.tar.gz
+chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
 	condor_submit \
 			chtc_reweighting.sub
 	#condor_submit \
@@ -36,5 +40,7 @@ submit_training: staging.tar.gz
 move_output:
 	rm -f docker_stderror
 	rm -f config.yaml
-	mv *fasta* logs
+	mv *.err logs
+	mv *.out logs
+	mv *.log logs
 	mv *output* logs

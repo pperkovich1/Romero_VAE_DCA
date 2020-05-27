@@ -10,24 +10,24 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # sends output to a subdirectory
-# initialdir = logs
-config = ../config.yaml
+initialdir = /home/jlwang5/VAEs/run
+# config = ../config.yaml
 squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 # dataset = processed_cmx_uniref100_90_80_10_100.fasta
 
 # set the log, error and output files
-log = chtc_model_training_$(hidden)_$(latent)_$(dataset).log
-error = chtc_model_training_$(hidden)_$(latent)_$(dataset).err
-output = chtc_model_training_$(hidden)_$(latent)_$(dataset).out
+log = chtc_model_training_$(Process).log
+error = chtc_model_training_$(Process).err
+output = chtc_model_training_$(Process).out
 
 
 # set the executable to run
 executable = chtc_train_model.sh
-arguments = $(Cluster) $(Process) $(dataset) $(hidden) $(latent) $(config)
+# arguments = $(Cluster) $(Process) $(dataset) $(hidden) $(latent) $(config)
+arguments = $(Cluster) $(Process) $(config)
 
 # take our python script and data to the compute node
-# staging tarball contains entire github repository
-transfer_input_files = staging.tar.gz, chtc_root.txt, chtc_train_model.sh, runmodel.sh,  $(squid)/$(dataset), $(squid)/vae_env.tar.gz
+transfer_input_files = staging.tar.gz, chtc_root.txt, chtc_train_model.sh, $(squid)/sequences.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -49,12 +49,13 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 5GB
-request_disk = 5GB
+request_memory = 20GB
+request_disk = 10GB
 
 if ! defined DISABLE_FLOCKING
     +WantFlocking = false
 endif
 
 # Tell HTCondor to run on each dataset in datasets.txt
-queue dataset,hidden,latent from datasets.txt
+# queue dataset,hidden,latent from datasets.txt
+queue config from configs.txt

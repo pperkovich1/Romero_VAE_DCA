@@ -1,0 +1,45 @@
+000 (6203219.029.000) 2020-05-26 09:44:28 Job submitted from host: <128.104.101.92:9618?addrs=128.104.101.92-9618+[2607-f388-107c-501-a236-9fff-fe3c-caa8]-9618&alias=submit2.chtc.wisc.edu&noUDP&sock=schedd_3841921_d3c3>
+...
+040 (6203219.029.000) 2020-05-27 08:03:37 Started transferring input files
+	Transferring to host: <128.105.244.146:9618?addrs=128.105.244.146-9618&alias=gpulab2002.chtc.wisc.edu&noUDP&sock=slot1_3_6135_6993_2286>
+...
+040 (6203219.029.000) 2020-05-27 08:03:37 Finished transferring input files
+...
+001 (6203219.029.000) 2020-05-27 08:03:38 Job executing on host: <128.105.244.146:9618?addrs=128.105.244.146-9618&alias=gpulab2002.chtc.wisc.edu&noUDP&sock=startd_4871_ade8>
+...
+006 (6203219.029.000) 2020-05-27 08:03:47 Image size of job updated: 1039
+	1039  -  MemoryUsage of job (MB)
+	1064016  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:08:48 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073836  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:13:49 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073840  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:28:51 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073852  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:38:51 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073856  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:53:51 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073860  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 08:58:52 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073864  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 09:08:53 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073868  -  ResidentSetSize of job (KB)
+...
+006 (6203219.029.000) 2020-05-27 09:13:53 Image size of job updated: 1048
+	1048  -  MemoryUsage of job (MB)
+	1073872  -  ResidentSetSize of job (KB)
+...

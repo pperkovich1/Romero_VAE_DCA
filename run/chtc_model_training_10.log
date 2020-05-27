@@ -1,0 +1,98 @@
+000 (6203219.010.000) 2020-05-26 09:44:28 Job submitted from host: <128.104.101.92:9618?addrs=128.104.101.92-9618+[2607-f388-107c-501-a236-9fff-fe3c-caa8]-9618&alias=submit2.chtc.wisc.edu&noUDP&sock=schedd_3841921_d3c3>
+...
+040 (6203219.010.000) 2020-05-27 03:02:05 Started transferring input files
+	Transferring to host: <128.105.244.143:9618?addrs=128.105.244.143-9618&alias=gpulab2001.chtc.wisc.edu&noUDP&sock=slot1_3_6100_c071_1491>
+...
+040 (6203219.010.000) 2020-05-27 03:02:05 Finished transferring input files
+...
+001 (6203219.010.000) 2020-05-27 03:02:06 Job executing on host: <128.105.244.143:9618?addrs=128.105.244.143-9618&alias=gpulab2001.chtc.wisc.edu&noUDP&sock=startd_4761_3a7d>
+...
+006 (6203219.010.000) 2020-05-27 03:02:15 Image size of job updated: 136
+	136  -  MemoryUsage of job (MB)
+	140048  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:07:15 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070128  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:12:16 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070132  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:17:16 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070136  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:27:18 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070140  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:32:19 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070144  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:42:20 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070148  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 03:57:21 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070152  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 04:02:22 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070156  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 04:07:22 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070160  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 04:12:22 Image size of job updated: 1045
+	1045  -  MemoryUsage of job (MB)
+	1070164  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 04:17:23 Image size of job updated: 1051
+	1051  -  MemoryUsage of job (MB)
+	1076348  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 05:07:29 Image size of job updated: 1051
+	1051  -  MemoryUsage of job (MB)
+	1076352  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 05:12:29 Image size of job updated: 1051
+	1051  -  MemoryUsage of job (MB)
+	1076356  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 05:57:37 Image size of job updated: 1051
+	1051  -  MemoryUsage of job (MB)
+	1076364  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 06:02:37 Image size of job updated: 1052
+	1052  -  MemoryUsage of job (MB)
+	1077996  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 06:07:38 Image size of job updated: 1052
+	1052  -  MemoryUsage of job (MB)
+	1078136  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 06:12:38 Image size of job updated: 1054
+	1054  -  MemoryUsage of job (MB)
+	1080248  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 06:17:39 Image size of job updated: 1054
+	1054  -  MemoryUsage of job (MB)
+	1080252  -  ResidentSetSize of job (KB)
+...
+006 (6203219.010.000) 2020-05-27 07:02:43 Image size of job updated: 1054
+	1054  -  MemoryUsage of job (MB)
+	1080256  -  ResidentSetSize of job (KB)
+...
+007 (6203219.010.000) 2020-05-27 07:03:42 Shadow exception!
+	Error from slot1_3@gpulab2001.chtc.wisc.edu: Docker job has gone over memory limit of 20480 Mb
+	0  -  Run Bytes Sent By Job
+	16282  -  Run Bytes Received By Job
+...
+012 (6203219.010.000) 2020-05-27 07:03:42 Job was held.
+	Error from slot1_3@gpulab2001.chtc.wisc.edu: Docker job has gone over memory limit of 20480 Mb
+	Code 34 Subcode 0
+...

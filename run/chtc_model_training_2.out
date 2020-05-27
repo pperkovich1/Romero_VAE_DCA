@@ -1,0 +1,1153 @@
+
+=============
+== PyTorch ==
+=============
+
+NVIDIA Release 19.11 (build 8777600)
+PyTorch Version 1.4.0a0+649135b
+
+Container image Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
+
+Copyright (c) 2014-2019 Facebook Inc.
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+Copyright (c) 2015      Google Inc.
+Copyright (c) 2015      Yangqing Jia
+Copyright (c) 2013-2016 The Caffe contributors
+All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION.  All rights reserved.
+NVIDIA modifications are covered by the license terms that apply to the underlying project or file.
+
+NOTE: MOFED driver for multi-node communication was not detected.
+      Multi-node communication performance may be reduced.
+
+NOTE: The SHMEM allocation limit is set to the default of 64MB.  This may be
+   insufficient for PyTorch.  NVIDIA recommends the use of the following flags:
+   nvidia-docker run --ipc=host ...
+
+chtc_root.txt exist
+.:
+.
+..
+.chirp.config
+.curl_plugin.in
+.curl_plugin.out
+.docker_sock
+.job.ad
+.machine.ad
+.update.ad
+_condor_stderr
+_condor_stdout
+chtc_root.txt
+chtc_train_model.sh
+condor_exec.exe
+configs
+docker_stderror
+output
+run
+sequence_sets
+sequences.tar.gz
+source
+staging.tar.gz
+tmp
+var
+
+./configs:
+.
+..
+config_1000_10.yaml
+config_1000_100.yaml
+config_1000_15.yaml
+config_1000_2.yaml
+config_1000_20.yaml
+config_1000_30.yaml
+config_1000_40.yaml
+config_1000_5.yaml
+config_1000_50.yaml
+config_1000_500.yaml
+config_200_10.yaml
+config_200_100.yaml
+config_200_15.yaml
+config_200_2.yaml
+config_200_20.yaml
+config_200_30.yaml
+config_200_40.yaml
+config_200_5.yaml
+config_200_50.yaml
+config_200_500.yaml
+config_500_10.yaml
+config_500_100.yaml
+config_500_15.yaml
+config_500_2.yaml
+config_500_20.yaml
+config_500_30.yaml
+config_500_40.yaml
+config_500_5.yaml
+config_500_50.yaml
+config_500_500.yaml
+configs.txt
+make_configs.py
+
+./output:
+.
+..
+
+./run:
+.
+..
+runmodel.sh
+
+./sequence_sets:
+.
+..
+.gitignore
+README.md
+cmx_aligned_blank_90.fasta
+cmx_foreground.fasta
+cmx_sequences.zip
+processed_cmx_uniref100_90_80_10_100.fasta
+processed_cmx_uniref100_90_80_10_100_small.fasta
+test.fasta
+
+./source:
+.
+..
+dataloader.py
+examine_model.py
+make_dataset
+model.py
+plot_sequences.py
+read_config.py
+reweighting.py
+train_model.py
+utils.py
+
+./source/make_dataset:
+.
+..
+get_msa_stats.py
+make_dataset.sh
+process_msa.py
+
+./tmp:
+.
+..
+
+./var:
+.
+..
+tmp
+
+./var/tmp:
+.
+..
+Weights do not exist. No weighted sampling will be done.
+Max  memory usage:1295204
+Epoch: 0	Time elapsed:0.00 sec
+Max  memory usage:1471744
+Epoch: 1	Time elapsed:35.80 sec
+Max  memory usage:1471752
+Epoch: 2	Time elapsed:66.63 sec
+Max  memory usage:1471912
+Epoch: 3	Time elapsed:96.94 sec
+Max  memory usage:1471912
+Epoch: 4	Time elapsed:124.24 sec
+Max  memory usage:1471912
+Epoch: 5	Time elapsed:152.83 sec
+Max  memory usage:1471912
+Epoch: 6	Time elapsed:181.22 sec
+Max  memory usage:1471912
+Epoch: 7	Time elapsed:210.23 sec
+Max  memory usage:1471912
+Epoch: 8	Time elapsed:238.43 sec
+Max  memory usage:1471912
+Epoch: 9	Time elapsed:267.73 sec
+Max  memory usage:1471912
+Epoch: 10	Time elapsed:299.13 sec
+Max  memory usage:1471980
+Epoch: 11	Time elapsed:328.47 sec
+Max  memory usage:1471980
+Epoch: 12	Time elapsed:358.07 sec
+Max  memory usage:1472008
+Epoch: 13	Time elapsed:385.87 sec
+Max  memory usage:1472060
+Epoch: 14	Time elapsed:413.77 sec
+Max  memory usage:1472064
+Epoch: 15	Time elapsed:442.41 sec
+Max  memory usage:1472064
+Epoch: 16	Time elapsed:473.03 sec
+Max  memory usage:1472064
+Epoch: 17	Time elapsed:501.39 sec
+Max  memory usage:1472064
+Epoch: 18	Time elapsed:529.82 sec
+Max  memory usage:1472064
+Epoch: 19	Time elapsed:560.16 sec
+Max  memory usage:1472072
+Epoch: 20	Time elapsed:592.96 sec
+Max  memory usage:1472076
+Epoch: 21	Time elapsed:622.44 sec
+Max  memory usage:1472076
+Epoch: 22	Time elapsed:652.57 sec
+Max  memory usage:1472076
+Epoch: 23	Time elapsed:685.31 sec
+Max  memory usage:1472076
+Epoch: 24	Time elapsed:716.23 sec
+Max  memory usage:1472076
+Epoch: 25	Time elapsed:745.56 sec
+Max  memory usage:1472076
+Epoch: 26	Time elapsed:775.82 sec
+Max  memory usage:1472076
+Epoch: 27	Time elapsed:804.55 sec
+Max  memory usage:1472076
+Epoch: 28	Time elapsed:833.07 sec
+Max  memory usage:1472076
+Epoch: 29	Time elapsed:863.62 sec
+Max  memory usage:1472076
+Epoch: 30	Time elapsed:893.71 sec
+Max  memory usage:1472076
+Epoch: 31	Time elapsed:922.85 sec
+Max  memory usage:1472076
+Epoch: 32	Time elapsed:954.21 sec
+Max  memory usage:1472076
+Epoch: 33	Time elapsed:981.62 sec
+Max  memory usage:1472076
+Epoch: 34	Time elapsed:1010.65 sec
+Max  memory usage:1472076
+Epoch: 35	Time elapsed:1038.79 sec
+Max  memory usage:1472076
+Epoch: 36	Time elapsed:1070.23 sec
+Max  memory usage:1472076
+Epoch: 37	Time elapsed:1098.96 sec
+Max  memory usage:1472076
+Epoch: 38	Time elapsed:1127.68 sec
+Max  memory usage:1472076
+Epoch: 39	Time elapsed:1156.06 sec
+Max  memory usage:1472076
+Epoch: 40	Time elapsed:1185.81 sec
+Max  memory usage:1472076
+Epoch: 41	Time elapsed:1214.49 sec
+Max  memory usage:1472076
+Epoch: 42	Time elapsed:1242.36 sec
+Max  memory usage:1472080
+Epoch: 43	Time elapsed:1270.85 sec
+Max  memory usage:1472080
+Epoch: 44	Time elapsed:1299.67 sec
+Max  memory usage:1472080
+Epoch: 45	Time elapsed:1332.32 sec
+Max  memory usage:1472080
+Epoch: 46	Time elapsed:1362.47 sec
+Max  memory usage:1472080
+Epoch: 47	Time elapsed:1392.88 sec
+Max  memory usage:1472080
+Epoch: 48	Time elapsed:1424.10 sec
+Max  memory usage:1472080
+Epoch: 49	Time elapsed:1453.92 sec
+Max  memory usage:1472080
+Epoch: 50	Time elapsed:1481.49 sec
+Max  memory usage:1472080
+Epoch: 51	Time elapsed:1509.11 sec
+Max  memory usage:1472080
+Epoch: 52	Time elapsed:1536.75 sec
+Max  memory usage:1472080
+Epoch: 53	Time elapsed:1564.86 sec
+Max  memory usage:1472080
+Epoch: 54	Time elapsed:1592.56 sec
+Max  memory usage:1472084
+Epoch: 55	Time elapsed:1621.08 sec
+Max  memory usage:1472084
+Epoch: 56	Time elapsed:1649.85 sec
+Max  memory usage:1472084
+Epoch: 57	Time elapsed:1678.43 sec
+Max  memory usage:1472084
+Epoch: 58	Time elapsed:1707.87 sec
+Max  memory usage:1472084
+Epoch: 59	Time elapsed:1735.18 sec
+Max  memory usage:1472084
+Epoch: 60	Time elapsed:1763.10 sec
+Max  memory usage:1472084
+Epoch: 61	Time elapsed:1791.62 sec
+Max  memory usage:1472084
+Epoch: 62	Time elapsed:1819.87 sec
+Max  memory usage:1472084
+Epoch: 63	Time elapsed:1847.57 sec
+Max  memory usage:1472084
+Epoch: 64	Time elapsed:1878.73 sec
+Max  memory usage:1472084
+Epoch: 65	Time elapsed:1906.63 sec
+Max  memory usage:1472084
+Epoch: 66	Time elapsed:1935.74 sec
+Max  memory usage:1472084
+Epoch: 67	Time elapsed:1964.31 sec
+Max  memory usage:1472084
+Epoch: 68	Time elapsed:1992.70 sec
+Max  memory usage:1472084
+Epoch: 69	Time elapsed:2020.80 sec
+Max  memory usage:1472084
+Epoch: 70	Time elapsed:2051.50 sec
+Max  memory usage:1472088
+Epoch: 71	Time elapsed:2079.57 sec
+Max  memory usage:1472088
+Epoch: 72	Time elapsed:2108.05 sec
+Max  memory usage:1472088
+Epoch: 73	Time elapsed:2136.84 sec
+Max  memory usage:1472088
+Epoch: 74	Time elapsed:2165.01 sec
+Max  memory usage:1472088
+Epoch: 75	Time elapsed:2194.41 sec
+Max  memory usage:1472088
+Epoch: 76	Time elapsed:2221.73 sec
+Max  memory usage:1472088
+Epoch: 77	Time elapsed:2251.31 sec
+Max  memory usage:1472088
+Epoch: 78	Time elapsed:2278.89 sec
+Max  memory usage:1472088
+Epoch: 79	Time elapsed:2307.14 sec
+Max  memory usage:1472088
+Epoch: 80	Time elapsed:2334.62 sec
+Max  memory usage:1472088
+Epoch: 81	Time elapsed:2361.24 sec
+Max  memory usage:1472088
+Epoch: 82	Time elapsed:2390.92 sec
+Max  memory usage:1472088
+Epoch: 83	Time elapsed:2418.49 sec
+Max  memory usage:1472088
+Epoch: 84	Time elapsed:2448.20 sec
+Max  memory usage:1472088
+Epoch: 85	Time elapsed:2475.91 sec
+Max  memory usage:1472088
+Epoch: 86	Time elapsed:2505.19 sec
+Max  memory usage:1472088
+Epoch: 87	Time elapsed:2533.32 sec
+Max  memory usage:1472088
+Epoch: 88	Time elapsed:2560.46 sec
+Max  memory usage:1472088
+Epoch: 89	Time elapsed:2587.36 sec
+Max  memory usage:1472088
+Epoch: 90	Time elapsed:2614.73 sec
+Max  memory usage:1472088
+Epoch: 91	Time elapsed:2642.54 sec
+Max  memory usage:1472088
+Epoch: 92	Time elapsed:2671.04 sec
+Max  memory usage:1472088
+Epoch: 93	Time elapsed:2698.89 sec
+Max  memory usage:1472088
+Epoch: 94	Time elapsed:2726.12 sec
+Max  memory usage:1472088
+Epoch: 95	Time elapsed:2755.37 sec
+Max  memory usage:1472088
+Epoch: 96	Time elapsed:2783.56 sec
+Max  memory usage:1472088
+Epoch: 97	Time elapsed:2811.87 sec
+Max  memory usage:1472088
+Epoch: 98	Time elapsed:2844.43 sec
+Max  memory usage:1472092
+Epoch: 99	Time elapsed:2875.74 sec
+Max  memory usage:1472092
+Epoch: 100	Time elapsed:2906.06 sec
+Max  memory usage:1472092
+Epoch: 101	Time elapsed:2934.46 sec
+Max  memory usage:1472092
+Epoch: 102	Time elapsed:2963.26 sec
+Max  memory usage:1472092
+Epoch: 103	Time elapsed:2991.26 sec
+Max  memory usage:1472092
+Epoch: 104	Time elapsed:3019.33 sec
+Max  memory usage:1472092
+Epoch: 105	Time elapsed:3046.30 sec
+Max  memory usage:1472092
+Epoch: 106	Time elapsed:3078.79 sec
+Max  memory usage:1472092
+Epoch: 107	Time elapsed:3106.36 sec
+Max  memory usage:1472092
+Epoch: 108	Time elapsed:3134.60 sec
+Max  memory usage:1472092
+Epoch: 109	Time elapsed:3162.83 sec
+Max  memory usage:1472092
+Epoch: 110	Time elapsed:3192.04 sec
+Max  memory usage:1472092
+Epoch: 111	Time elapsed:3221.24 sec
+Max  memory usage:1472092
+Epoch: 112	Time elapsed:3249.85 sec
+Max  memory usage:1472092
+Epoch: 113	Time elapsed:3278.18 sec
+Max  memory usage:1472092
+Epoch: 114	Time elapsed:3306.60 sec
+Max  memory usage:1472092
+Epoch: 115	Time elapsed:3335.17 sec
+Max  memory usage:1472092
+Epoch: 116	Time elapsed:3362.78 sec
+Max  memory usage:1472092
+Epoch: 117	Time elapsed:3391.66 sec
+Max  memory usage:1472096
+Epoch: 118	Time elapsed:3419.37 sec
+Max  memory usage:1472096
+Epoch: 119	Time elapsed:3447.20 sec
+Max  memory usage:1472096
+Epoch: 120	Time elapsed:3474.48 sec
+Max  memory usage:1472096
+Epoch: 121	Time elapsed:3502.87 sec
+Max  memory usage:1472096
+Epoch: 122	Time elapsed:3531.16 sec
+Max  memory usage:1472096
+Epoch: 123	Time elapsed:3560.98 sec
+Max  memory usage:1472096
+Epoch: 124	Time elapsed:3589.95 sec
+Max  memory usage:1472096
+Epoch: 125	Time elapsed:3620.93 sec
+Max  memory usage:1472096
+Epoch: 126	Time elapsed:3649.72 sec
+Max  memory usage:1472100
+Epoch: 127	Time elapsed:3679.02 sec
+Max  memory usage:1472100
+Epoch: 128	Time elapsed:3708.78 sec
+Max  memory usage:1472100
+Epoch: 129	Time elapsed:3740.08 sec
+Max  memory usage:1472100
+Epoch: 130	Time elapsed:3768.03 sec
+Max  memory usage:1472100
+Epoch: 131	Time elapsed:3795.37 sec
+Max  memory usage:1472100
+Epoch: 132	Time elapsed:3824.75 sec
+Max  memory usage:1472100
+Epoch: 133	Time elapsed:3852.47 sec
+Max  memory usage:1472100
+Epoch: 134	Time elapsed:3881.38 sec
+Max  memory usage:1472100
+Epoch: 135	Time elapsed:3910.48 sec
+Max  memory usage:1472100
+Epoch: 136	Time elapsed:3940.19 sec
+Max  memory usage:1472100
+Epoch: 137	Time elapsed:3966.92 sec
+Max  memory usage:1472100
+Epoch: 138	Time elapsed:3994.61 sec
+Max  memory usage:1472100
+Epoch: 139	Time elapsed:4022.90 sec
+Max  memory usage:1472100
+Epoch: 140	Time elapsed:4050.87 sec
+Max  memory usage:1472100
+Epoch: 141	Time elapsed:4079.66 sec
+Max  memory usage:1472104
+Epoch: 142	Time elapsed:4107.70 sec
+Max  memory usage:1477680
+Epoch: 143	Time elapsed:4136.06 sec
+Max  memory usage:1477680
+Epoch: 144	Time elapsed:4163.83 sec
+Max  memory usage:1477680
+Epoch: 145	Time elapsed:4191.80 sec
+Max  memory usage:1477680
+Epoch: 146	Time elapsed:4219.15 sec
+Max  memory usage:1477680
+Epoch: 147	Time elapsed:4248.06 sec
+Max  memory usage:1477680
+Epoch: 148	Time elapsed:4277.89 sec
+Max  memory usage:1477680
+Epoch: 149	Time elapsed:4307.16 sec
+Max  memory usage:1477680
+Epoch: 150	Time elapsed:4334.67 sec
+Max  memory usage:1477680
+Epoch: 151	Time elapsed:4364.46 sec
+Max  memory usage:1477680
+Epoch: 152	Time elapsed:4392.91 sec
+Max  memory usage:1477680
+Epoch: 153	Time elapsed:4421.95 sec
+Max  memory usage:1477680
+Epoch: 154	Time elapsed:4449.60 sec
+Max  memory usage:1477680
+Epoch: 155	Time elapsed:4477.43 sec
+Max  memory usage:1477680
+Epoch: 156	Time elapsed:4507.15 sec
+Max  memory usage:1477680
+Epoch: 157	Time elapsed:4535.40 sec
+Max  memory usage:1477680
+Epoch: 158	Time elapsed:4563.60 sec
+Max  memory usage:1477680
+Epoch: 159	Time elapsed:4592.40 sec
+Max  memory usage:1477680
+Epoch: 160	Time elapsed:4620.77 sec
+Max  memory usage:1477680
+Epoch: 161	Time elapsed:4649.12 sec
+Max  memory usage:1477680
+Epoch: 162	Time elapsed:4676.91 sec
+Max  memory usage:1477680
+Epoch: 163	Time elapsed:4706.30 sec
+Max  memory usage:1477680
+Epoch: 164	Time elapsed:4735.66 sec
+Max  memory usage:1477680
+Epoch: 165	Time elapsed:4765.57 sec
+Max  memory usage:1477680
+Epoch: 166	Time elapsed:4792.97 sec
+Max  memory usage:1477680
+Epoch: 167	Time elapsed:4822.01 sec
+Max  memory usage:1477680
+Epoch: 168	Time elapsed:4851.61 sec
+Max  memory usage:1477680
+Epoch: 169	Time elapsed:4881.09 sec
+Max  memory usage:1477680
+Epoch: 170	Time elapsed:4910.26 sec
+Max  memory usage:1477680
+Epoch: 171	Time elapsed:4937.58 sec
+Max  memory usage:1477680
+Epoch: 172	Time elapsed:4965.28 sec
+Max  memory usage:1477680
+Epoch: 173	Time elapsed:4993.04 sec
+Max  memory usage:1477680
+Epoch: 174	Time elapsed:5021.54 sec
+Max  memory usage:1477680
+Epoch: 175	Time elapsed:5050.09 sec
+Max  memory usage:1477680
+Epoch: 176	Time elapsed:5078.23 sec
+Max  memory usage:1477680
+Epoch: 177	Time elapsed:5107.60 sec
+Max  memory usage:1477680
+Epoch: 178	Time elapsed:5137.98 sec
+Max  memory usage:1477680
+Epoch: 179	Time elapsed:5167.79 sec
+Max  memory usage:1477680
+Epoch: 180	Time elapsed:5196.21 sec
+Max  memory usage:1477680
+Epoch: 181	Time elapsed:5227.39 sec
+Max  memory usage:1477680
+Epoch: 182	Time elapsed:5258.99 sec
+Max  memory usage:1477680
+Epoch: 183	Time elapsed:5288.01 sec
+Max  memory usage:1477680
+Epoch: 184	Time elapsed:5316.39 sec
+Max  memory usage:1477680
+Epoch: 185	Time elapsed:5346.66 sec
+Max  memory usage:1477680
+Epoch: 186	Time elapsed:5376.65 sec
+Max  memory usage:1477680
+Epoch: 187	Time elapsed:5405.14 sec
+Max  memory usage:1477680
+Epoch: 188	Time elapsed:5433.51 sec
+Max  memory usage:1477680
+Epoch: 189	Time elapsed:5464.23 sec
+Max  memory usage:1477680
+Epoch: 190	Time elapsed:5494.62 sec
+Max  memory usage:1477680
+Epoch: 191	Time elapsed:5521.39 sec
+Max  memory usage:1477680
+Epoch: 192	Time elapsed:5550.76 sec
+Max  memory usage:1477680
+Epoch: 193	Time elapsed:5578.98 sec
+Max  memory usage:1477680
+Epoch: 194	Time elapsed:5606.91 sec
+Max  memory usage:1477680
+Epoch: 195	Time elapsed:5635.68 sec
+Max  memory usage:1477680
+Epoch: 196	Time elapsed:5663.84 sec
+Max  memory usage:1477680
+Epoch: 197	Time elapsed:5690.55 sec
+Max  memory usage:1477680
+Epoch: 198	Time elapsed:5718.84 sec
+Max  memory usage:1477680
+Epoch: 199	Time elapsed:5746.94 sec
+Max  memory usage:1477680
+Epoch: 200	Time elapsed:5776.65 sec
+Max  memory usage:1477680
+Epoch: 201	Time elapsed:5807.36 sec
+Max  memory usage:1477680
+Epoch: 202	Time elapsed:5836.58 sec
+Max  memory usage:1477680
+Epoch: 203	Time elapsed:5865.54 sec
+Max  memory usage:1477680
+Epoch: 204	Time elapsed:5893.08 sec
+Max  memory usage:1477680
+Epoch: 205	Time elapsed:5921.71 sec
+Max  memory usage:1477680
+Epoch: 206	Time elapsed:5950.10 sec
+Max  memory usage:1477680
+Epoch: 207	Time elapsed:5978.10 sec
+Max  memory usage:1477680
+Epoch: 208	Time elapsed:6005.40 sec
+Max  memory usage:1477680
+Epoch: 209	Time elapsed:6033.53 sec
+Max  memory usage:1477680
+Epoch: 210	Time elapsed:6062.24 sec
+Max  memory usage:1477680
+Epoch: 211	Time elapsed:6090.49 sec
+Max  memory usage:1477680
+Epoch: 212	Time elapsed:6117.29 sec
+Max  memory usage:1477680
+Epoch: 213	Time elapsed:6146.12 sec
+Max  memory usage:1477680
+Epoch: 214	Time elapsed:6173.65 sec
+Max  memory usage:1477680
+Epoch: 215	Time elapsed:6202.46 sec
+Max  memory usage:1477680
+Epoch: 216	Time elapsed:6231.90 sec
+Max  memory usage:1477680
+Epoch: 217	Time elapsed:6259.73 sec
+Max  memory usage:1477680
+Epoch: 218	Time elapsed:6289.47 sec
+Max  memory usage:1477680
+Epoch: 219	Time elapsed:6330.59 sec
+Max  memory usage:1477680
+Epoch: 220	Time elapsed:6372.13 sec
+Max  memory usage:1477680
+Epoch: 221	Time elapsed:6411.28 sec
+Max  memory usage:1477680
+Epoch: 222	Time elapsed:6447.25 sec
+Max  memory usage:1477680
+Epoch: 223	Time elapsed:6481.09 sec
+Max  memory usage:1477680
+Epoch: 224	Time elapsed:6515.75 sec
+Max  memory usage:1477680
+Epoch: 225	Time elapsed:6551.35 sec
+Max  memory usage:1477680
+Epoch: 226	Time elapsed:6589.20 sec
+Max  memory usage:1477680
+Epoch: 227	Time elapsed:6624.16 sec
+Max  memory usage:1477680
+Epoch: 228	Time elapsed:6658.32 sec
+Max  memory usage:1477680
+Epoch: 229	Time elapsed:6693.84 sec
+Max  memory usage:1477680
+Epoch: 230	Time elapsed:6728.90 sec
+Max  memory usage:1477680
+Epoch: 231	Time elapsed:6766.42 sec
+Max  memory usage:1477680
+Epoch: 232	Time elapsed:6802.30 sec
+Max  memory usage:1477680
+Epoch: 233	Time elapsed:6837.70 sec
+Max  memory usage:1477680
+Epoch: 234	Time elapsed:6873.21 sec
+Max  memory usage:1477680
+Epoch: 235	Time elapsed:6909.28 sec
+Max  memory usage:1477680
+Epoch: 236	Time elapsed:6945.22 sec
+Max  memory usage:1477680
+Epoch: 237	Time elapsed:6979.35 sec
+Max  memory usage:1477680
+Epoch: 238	Time elapsed:7011.28 sec
+Max  memory usage:1477680
+Epoch: 239	Time elapsed:7044.74 sec
+Max  memory usage:1477680
+Epoch: 240	Time elapsed:7080.83 sec
+Max  memory usage:1477680
+Epoch: 241	Time elapsed:7114.20 sec
+Max  memory usage:1477680
+Epoch: 242	Time elapsed:7147.52 sec
+Max  memory usage:1477680
+Epoch: 243	Time elapsed:7180.89 sec
+Max  memory usage:1477680
+Epoch: 244	Time elapsed:7213.93 sec
+Max  memory usage:1477680
+Epoch: 245	Time elapsed:7246.71 sec
+Max  memory usage:1477680
+Epoch: 246	Time elapsed:7280.67 sec
+Max  memory usage:1477680
+Epoch: 247	Time elapsed:7314.72 sec
+Max  memory usage:1477684
+Epoch: 248	Time elapsed:7345.27 sec
+Max  memory usage:1477684
+Epoch: 249	Time elapsed:7376.22 sec
+Max  memory usage:1477684
+Epoch: 250	Time elapsed:7409.95 sec
+Max  memory usage:1477684
+Epoch: 251	Time elapsed:7447.24 sec
+Max  memory usage:1477684
+Epoch: 252	Time elapsed:7480.92 sec
+Max  memory usage:1477684
+Epoch: 253	Time elapsed:7514.86 sec
+Max  memory usage:1477684
+Epoch: 254	Time elapsed:7546.66 sec
+Max  memory usage:1477684
+Epoch: 255	Time elapsed:7580.24 sec
+Max  memory usage:1477688
+Epoch: 256	Time elapsed:7615.61 sec
+Max  memory usage:1477688
+Epoch: 257	Time elapsed:7649.64 sec
+Max  memory usage:1477688
+Epoch: 258	Time elapsed:7681.44 sec
+Max  memory usage:1477688
+Epoch: 259	Time elapsed:7720.40 sec
+Max  memory usage:1477688
+Epoch: 260	Time elapsed:7756.63 sec
+Max  memory usage:1477688
+Epoch: 261	Time elapsed:7788.68 sec
+Max  memory usage:1477688
+Epoch: 262	Time elapsed:7822.09 sec
+Max  memory usage:1477688
+Epoch: 263	Time elapsed:7856.38 sec
+Max  memory usage:1477688
+Epoch: 264	Time elapsed:7892.22 sec
+Max  memory usage:1477688
+Epoch: 265	Time elapsed:7928.97 sec
+Max  memory usage:1477688
+Epoch: 266	Time elapsed:7966.37 sec
+Max  memory usage:1477688
+Epoch: 267	Time elapsed:7998.77 sec
+Max  memory usage:1477688
+Epoch: 268	Time elapsed:8030.90 sec
+Max  memory usage:1477688
+Epoch: 269	Time elapsed:8065.54 sec
+Max  memory usage:1477688
+Epoch: 270	Time elapsed:8100.77 sec
+Max  memory usage:1477688
+Epoch: 271	Time elapsed:8134.38 sec
+Max  memory usage:1477688
+Epoch: 272	Time elapsed:8168.12 sec
+Max  memory usage:1477688
+Epoch: 273	Time elapsed:8203.57 sec
+Max  memory usage:1477688
+Epoch: 274	Time elapsed:8243.02 sec
+Max  memory usage:1477688
+Epoch: 275	Time elapsed:8280.32 sec
+Max  memory usage:1477688
+Epoch: 276	Time elapsed:8319.93 sec
+Max  memory usage:1477688
+Epoch: 277	Time elapsed:8361.82 sec
+Max  memory usage:1477688
+Epoch: 278	Time elapsed:8401.57 sec
+Max  memory usage:1477688
+Epoch: 279	Time elapsed:8441.21 sec
+Max  memory usage:1477688
+Epoch: 280	Time elapsed:8477.59 sec
+Max  memory usage:1477688
+Epoch: 281	Time elapsed:8518.99 sec
+Max  memory usage:1477688
+Epoch: 282	Time elapsed:8559.59 sec
+Max  memory usage:1477688
+Epoch: 283	Time elapsed:8599.07 sec
+Max  memory usage:1477688
+Epoch: 284	Time elapsed:8634.00 sec
+Max  memory usage:1477688
+Epoch: 285	Time elapsed:8667.63 sec
+Max  memory usage:1477688
+Epoch: 286	Time elapsed:8703.36 sec
+Max  memory usage:1477688
+Epoch: 287	Time elapsed:8734.63 sec
+Max  memory usage:1477688
+Epoch: 288	Time elapsed:8765.22 sec
+Max  memory usage:1477688
+Epoch: 289	Time elapsed:8798.74 sec
+Max  memory usage:1477688
+Epoch: 290	Time elapsed:8833.79 sec
+Max  memory usage:1477688
+Epoch: 291	Time elapsed:8864.76 sec
+Max  memory usage:1477688
+Epoch: 292	Time elapsed:8893.93 sec
+Max  memory usage:1477688
+Epoch: 293	Time elapsed:8923.52 sec
+Max  memory usage:1477688
+Epoch: 294	Time elapsed:8951.82 sec
+Max  memory usage:1477688
+Epoch: 295	Time elapsed:8982.34 sec
+Max  memory usage:1477688
+Epoch: 296	Time elapsed:9011.94 sec
+Max  memory usage:1477688
+Epoch: 297	Time elapsed:9041.51 sec
+Max  memory usage:1477688
+Epoch: 298	Time elapsed:9071.08 sec
+Max  memory usage:1477688
+Epoch: 299	Time elapsed:9099.48 sec
+Max  memory usage:1477688
+Epoch: 300	Time elapsed:9130.70 sec
+Max  memory usage:1477688
+Epoch: 301	Time elapsed:9161.24 sec
+Max  memory usage:1477688
+Epoch: 302	Time elapsed:9190.70 sec
+Max  memory usage:1477688
+Epoch: 303	Time elapsed:9220.54 sec
+Max  memory usage:1477688
+Epoch: 304	Time elapsed:9249.21 sec
+Max  memory usage:1477688
+Epoch: 305	Time elapsed:9278.03 sec
+Max  memory usage:1477688
+Epoch: 306	Time elapsed:9306.24 sec
+Max  memory usage:1477688
+Epoch: 307	Time elapsed:9335.81 sec
+Max  memory usage:1477688
+Epoch: 308	Time elapsed:9364.52 sec
+Max  memory usage:1477688
+Epoch: 309	Time elapsed:9393.73 sec
+Max  memory usage:1477688
+Epoch: 310	Time elapsed:9422.36 sec
+Max  memory usage:1477688
+Epoch: 311	Time elapsed:9450.31 sec
+Max  memory usage:1477688
+Epoch: 312	Time elapsed:9479.42 sec
+Max  memory usage:1477688
+Epoch: 313	Time elapsed:9507.17 sec
+Max  memory usage:1477688
+Epoch: 314	Time elapsed:9535.15 sec
+Max  memory usage:1477688
+Epoch: 315	Time elapsed:9562.50 sec
+Max  memory usage:1477688
+Epoch: 316	Time elapsed:9591.09 sec
+Max  memory usage:1477688
+Epoch: 317	Time elapsed:9620.17 sec
+Max  memory usage:1477688
+Epoch: 318	Time elapsed:9647.22 sec
+Max  memory usage:1477688
+Epoch: 319	Time elapsed:9678.12 sec
+Max  memory usage:1477688
+Epoch: 320	Time elapsed:9707.26 sec
+Max  memory usage:1477688
+Epoch: 321	Time elapsed:9735.78 sec
+Max  memory usage:1477688
+Epoch: 322	Time elapsed:9764.51 sec
+Max  memory usage:1477688
+Epoch: 323	Time elapsed:9794.44 sec
+Max  memory usage:1477688
+Epoch: 324	Time elapsed:9823.78 sec
+Max  memory usage:1477688
+Epoch: 325	Time elapsed:9850.50 sec
+Max  memory usage:1477688
+Epoch: 326	Time elapsed:9881.13 sec
+Max  memory usage:1477688
+Epoch: 327	Time elapsed:9908.91 sec
+Max  memory usage:1477688
+Epoch: 328	Time elapsed:9939.11 sec
+Max  memory usage:1477688
+Epoch: 329	Time elapsed:9967.97 sec
+Max  memory usage:1477688
+Epoch: 330	Time elapsed:9998.01 sec
+Max  memory usage:1477688
+Epoch: 331	Time elapsed:10026.24 sec
+Max  memory usage:1477688
+Epoch: 332	Time elapsed:10056.70 sec
+Max  memory usage:1477688
+Epoch: 333	Time elapsed:10085.58 sec
+Max  memory usage:1477688
+Epoch: 334	Time elapsed:10113.39 sec
+Max  memory usage:1477688
+Epoch: 335	Time elapsed:10145.80 sec
+Max  memory usage:1477688
+Epoch: 336	Time elapsed:10175.26 sec
+Max  memory usage:1477688
+Epoch: 337	Time elapsed:10204.82 sec
+Max  memory usage:1477688
+Epoch: 338	Time elapsed:10235.16 sec
+Max  memory usage:1477688
+Epoch: 339	Time elapsed:10264.10 sec
+Max  memory usage:1477688
+Epoch: 340	Time elapsed:10294.13 sec
+Max  memory usage:1477688
+Epoch: 341	Time elapsed:10324.89 sec
+Max  memory usage:1477688
+Epoch: 342	Time elapsed:10354.23 sec
+Max  memory usage:1477688
+Epoch: 343	Time elapsed:10382.39 sec
+Max  memory usage:1477688
+Epoch: 344	Time elapsed:10411.84 sec
+Max  memory usage:1477688
+Epoch: 345	Time elapsed:10440.35 sec
+Max  memory usage:1477688
+Epoch: 346	Time elapsed:10468.66 sec
+Max  memory usage:1477688
+Epoch: 347	Time elapsed:10498.26 sec
+Max  memory usage:1477688
+Epoch: 348	Time elapsed:10528.69 sec
+Max  memory usage:1477692
+Epoch: 349	Time elapsed:10558.08 sec
+Max  memory usage:1477692
+Epoch: 350	Time elapsed:10586.95 sec
+Max  memory usage:1477692
+Epoch: 351	Time elapsed:10615.36 sec
+Max  memory usage:1477692
+Epoch: 352	Time elapsed:10644.15 sec
+Max  memory usage:1477692
+Epoch: 353	Time elapsed:10672.46 sec
+Max  memory usage:1477692
+Epoch: 354	Time elapsed:10700.06 sec
+Max  memory usage:1477692
+Epoch: 355	Time elapsed:10729.83 sec
+Max  memory usage:1477692
+Epoch: 356	Time elapsed:10758.84 sec
+Max  memory usage:1477692
+Epoch: 357	Time elapsed:10789.83 sec
+Max  memory usage:1477732
+Epoch: 358	Time elapsed:10818.63 sec
+Max  memory usage:1477732
+Epoch: 359	Time elapsed:10846.63 sec
+Max  memory usage:1477732
+Epoch: 360	Time elapsed:10878.98 sec
+Max  memory usage:1477732
+Epoch: 361	Time elapsed:10908.25 sec
+Max  memory usage:1477732
+Epoch: 362	Time elapsed:10936.84 sec
+Max  memory usage:1477732
+Epoch: 363	Time elapsed:10967.57 sec
+Max  memory usage:1477732
+Epoch: 364	Time elapsed:10997.61 sec
+Max  memory usage:1477732
+Epoch: 365	Time elapsed:11026.36 sec
+Max  memory usage:1477732
+Epoch: 366	Time elapsed:11057.39 sec
+Max  memory usage:1477732
+Epoch: 367	Time elapsed:11085.86 sec
+Max  memory usage:1477732
+Epoch: 368	Time elapsed:11114.66 sec
+Max  memory usage:1477732
+Epoch: 369	Time elapsed:11145.62 sec
+Max  memory usage:1477736
+Epoch: 370	Time elapsed:11174.51 sec
+Max  memory usage:1477736
+Epoch: 371	Time elapsed:11203.87 sec
+Max  memory usage:1477736
+Epoch: 372	Time elapsed:11233.18 sec
+Max  memory usage:1477736
+Epoch: 373	Time elapsed:11262.14 sec
+Max  memory usage:1477736
+Epoch: 374	Time elapsed:11293.06 sec
+Max  memory usage:1477736
+Epoch: 375	Time elapsed:11320.67 sec
+Max  memory usage:1477736
+Epoch: 376	Time elapsed:11350.41 sec
+Max  memory usage:1477736
+Epoch: 377	Time elapsed:11379.51 sec
+Max  memory usage:1477736
+Epoch: 378	Time elapsed:11406.62 sec
+Max  memory usage:1477736
+Epoch: 379	Time elapsed:11437.44 sec
+Max  memory usage:1477736
+Epoch: 380	Time elapsed:11466.95 sec
+Max  memory usage:1477736
+Epoch: 381	Time elapsed:11497.21 sec
+Max  memory usage:1477736
+Epoch: 382	Time elapsed:11525.60 sec
+Max  memory usage:1477736
+Epoch: 383	Time elapsed:11554.71 sec
+Max  memory usage:1477736
+Epoch: 384	Time elapsed:11582.42 sec
+Max  memory usage:1477736
+Epoch: 385	Time elapsed:11610.46 sec
+Max  memory usage:1477736
+Epoch: 386	Time elapsed:11639.82 sec
+Max  memory usage:1477736
+Epoch: 387	Time elapsed:11667.90 sec
+Max  memory usage:1477736
+Epoch: 388	Time elapsed:11697.57 sec
+Max  memory usage:1477740
+Epoch: 389	Time elapsed:11727.66 sec
+Max  memory usage:1477740
+Epoch: 390	Time elapsed:11756.59 sec
+Max  memory usage:1477740
+Epoch: 391	Time elapsed:11785.59 sec
+Max  memory usage:1477740
+Epoch: 392	Time elapsed:11814.55 sec
+Max  memory usage:1477740
+Epoch: 393	Time elapsed:11844.71 sec
+Max  memory usage:1477740
+Epoch: 394	Time elapsed:11872.62 sec
+Max  memory usage:1477740
+Epoch: 395	Time elapsed:11903.82 sec
+Max  memory usage:1477740
+Epoch: 396	Time elapsed:11932.66 sec
+Max  memory usage:1477740
+Epoch: 397	Time elapsed:11960.57 sec
+Max  memory usage:1477740
+Epoch: 398	Time elapsed:11988.87 sec
+Max  memory usage:1477740
+Epoch: 399	Time elapsed:12017.27 sec
+Max  memory usage:1477740
+Epoch: 400	Time elapsed:12044.94 sec
+Max  memory usage:1477740
+Epoch: 401	Time elapsed:12074.14 sec
+Max  memory usage:1477740
+Epoch: 402	Time elapsed:12103.68 sec
+Max  memory usage:1477740
+Epoch: 403	Time elapsed:12130.93 sec
+Max  memory usage:1477740
+Epoch: 404	Time elapsed:12158.43 sec
+Max  memory usage:1477740
+Epoch: 405	Time elapsed:12187.20 sec
+Max  memory usage:1477740
+Epoch: 406	Time elapsed:12215.46 sec
+Max  memory usage:1477740
+Epoch: 407	Time elapsed:12243.74 sec
+Max  memory usage:1477740
+Epoch: 408	Time elapsed:12274.01 sec
+Max  memory usage:1477740
+Epoch: 409	Time elapsed:12305.32 sec
+Max  memory usage:1477740
+Epoch: 410	Time elapsed:12335.03 sec
+Max  memory usage:1477740
+Epoch: 411	Time elapsed:12364.28 sec
+Max  memory usage:1477740
+Epoch: 412	Time elapsed:12393.74 sec
+Max  memory usage:1477740
+Epoch: 413	Time elapsed:12423.04 sec
+Max  memory usage:1477740
+Epoch: 414	Time elapsed:12452.01 sec
+Max  memory usage:1477740
+Epoch: 415	Time elapsed:12481.28 sec
+Max  memory usage:1477740
+Epoch: 416	Time elapsed:12508.58 sec
+Max  memory usage:1477740
+Epoch: 417	Time elapsed:12537.57 sec
+Max  memory usage:1477740
+Epoch: 418	Time elapsed:12565.39 sec
+Max  memory usage:1477740
+Epoch: 419	Time elapsed:12595.05 sec
+Max  memory usage:1477740
+Epoch: 420	Time elapsed:12623.08 sec
+Max  memory usage:1477740
+Epoch: 421	Time elapsed:12652.00 sec
+Max  memory usage:1477740
+Epoch: 422	Time elapsed:12681.88 sec
+Max  memory usage:1477740
+Epoch: 423	Time elapsed:12709.72 sec
+Max  memory usage:1477740
+Epoch: 424	Time elapsed:12738.62 sec
+Max  memory usage:1477740
+Epoch: 425	Time elapsed:12766.90 sec
+Max  memory usage:1477740
+Epoch: 426	Time elapsed:12795.85 sec
+Max  memory usage:1477740
+Epoch: 427	Time elapsed:12824.44 sec
+Max  memory usage:1477740
+Epoch: 428	Time elapsed:12853.08 sec
+Max  memory usage:1477740
+Epoch: 429	Time elapsed:12882.85 sec
+Max  memory usage:1477740
+Epoch: 430	Time elapsed:12910.73 sec
+Max  memory usage:1477740
+Epoch: 431	Time elapsed:12940.18 sec
+Max  memory usage:1477740
+Epoch: 432	Time elapsed:12968.53 sec
+Max  memory usage:1477840
+Epoch: 433	Time elapsed:12998.24 sec
+Max  memory usage:1477840
+Epoch: 434	Time elapsed:13027.21 sec
+Max  memory usage:1477840
+Epoch: 435	Time elapsed:13055.91 sec
+Max  memory usage:1477840
+Epoch: 436	Time elapsed:13084.54 sec
+Max  memory usage:1477840
+Epoch: 437	Time elapsed:13114.33 sec
+Max  memory usage:1477840
+Epoch: 438	Time elapsed:13142.45 sec
+Max  memory usage:1477840
+Epoch: 439	Time elapsed:13170.93 sec
+Max  memory usage:1477840
+Epoch: 440	Time elapsed:13200.41 sec
+Max  memory usage:1477840
+Epoch: 441	Time elapsed:13230.75 sec
+Max  memory usage:1477840
+Epoch: 442	Time elapsed:13259.53 sec
+Max  memory usage:1477840
+Epoch: 443	Time elapsed:13289.05 sec
+Max  memory usage:1477840
+Epoch: 444	Time elapsed:13317.70 sec
+Max  memory usage:1477840
+Epoch: 445	Time elapsed:13346.21 sec
+Max  memory usage:1477840
+Epoch: 446	Time elapsed:13374.75 sec
+Max  memory usage:1477840
+Epoch: 447	Time elapsed:13402.33 sec
+Max  memory usage:1477840
+Epoch: 448	Time elapsed:13431.72 sec
+Max  memory usage:1477840
+Epoch: 449	Time elapsed:13459.17 sec
+Max  memory usage:1477840
+Epoch: 450	Time elapsed:13488.05 sec
+Max  memory usage:1477840
+Epoch: 451	Time elapsed:13516.05 sec
+Max  memory usage:1477840
+Epoch: 452	Time elapsed:13543.47 sec
+Max  memory usage:1477840
+Epoch: 453	Time elapsed:13572.28 sec
+Max  memory usage:1477840
+Epoch: 454	Time elapsed:13601.93 sec
+Max  memory usage:1477840
+Epoch: 455	Time elapsed:13630.76 sec
+Max  memory usage:1477840
+Epoch: 456	Time elapsed:13660.78 sec
+Max  memory usage:1477840
+Epoch: 457	Time elapsed:13689.53 sec
+Max  memory usage:1477840
+Epoch: 458	Time elapsed:13718.48 sec
+Max  memory usage:1477840
+Epoch: 459	Time elapsed:13747.38 sec
+Max  memory usage:1477840
+Epoch: 460	Time elapsed:13776.12 sec
+Max  memory usage:1477840
+Epoch: 461	Time elapsed:13805.74 sec
+Max  memory usage:1477912
+Epoch: 462	Time elapsed:13835.12 sec
+Max  memory usage:1477912
+Epoch: 463	Time elapsed:13864.88 sec
+Max  memory usage:1477960
+Epoch: 464	Time elapsed:13898.26 sec
+Max  memory usage:1477960
+Epoch: 465	Time elapsed:13928.58 sec
+Max  memory usage:1477960
+Epoch: 466	Time elapsed:13957.15 sec
+Max  memory usage:1477960
+Epoch: 467	Time elapsed:13987.43 sec
+Max  memory usage:1477960
+Epoch: 468	Time elapsed:14017.69 sec
+Max  memory usage:1477960
+Epoch: 469	Time elapsed:14045.95 sec
+Max  memory usage:1477960
+Epoch: 470	Time elapsed:14075.86 sec
+Max  memory usage:1477960
+Epoch: 471	Time elapsed:14104.67 sec
+Max  memory usage:1477960
+Epoch: 472	Time elapsed:14133.66 sec
+Max  memory usage:1477960
+Epoch: 473	Time elapsed:14162.60 sec
+Max  memory usage:1477964
+Epoch: 474	Time elapsed:14192.81 sec
+Max  memory usage:1477964
+Epoch: 475	Time elapsed:14222.63 sec
+Max  memory usage:1477964
+Epoch: 476	Time elapsed:14250.92 sec
+Max  memory usage:1477964
+Epoch: 477	Time elapsed:14280.60 sec
+Max  memory usage:1477964
+Epoch: 478	Time elapsed:14310.53 sec
+Max  memory usage:1477964
+Epoch: 479	Time elapsed:14340.19 sec
+Max  memory usage:1477964
+Epoch: 480	Time elapsed:14370.08 sec
+Max  memory usage:1477964
+Epoch: 481	Time elapsed:14399.65 sec
+Max  memory usage:1477964
+Epoch: 482	Time elapsed:14428.77 sec
+Max  memory usage:1477964
+Epoch: 483	Time elapsed:14457.78 sec
+Max  memory usage:1477964
+Epoch: 484	Time elapsed:14488.49 sec
+Max  memory usage:1477964
+Epoch: 485	Time elapsed:14516.63 sec
+Max  memory usage:1477964
+Epoch: 486	Time elapsed:14545.85 sec
+Max  memory usage:1477964
+Epoch: 487	Time elapsed:14574.97 sec
+Max  memory usage:1477964
+Epoch: 488	Time elapsed:14604.51 sec
+Max  memory usage:1477964
+Epoch: 489	Time elapsed:14634.38 sec
+Max  memory usage:1477964
+Epoch: 490	Time elapsed:14663.44 sec
+Max  memory usage:1477964
+Epoch: 491	Time elapsed:14692.73 sec
+Max  memory usage:1477968
+Epoch: 492	Time elapsed:14722.32 sec
+Max  memory usage:1477968
+Epoch: 493	Time elapsed:14750.75 sec
+Max  memory usage:1477968
+Epoch: 494	Time elapsed:14778.77 sec
+Max  memory usage:1477968
+Epoch: 495	Time elapsed:14807.73 sec
+Max  memory usage:1477968
+Epoch: 496	Time elapsed:14835.37 sec
+Max  memory usage:1477968
+Epoch: 497	Time elapsed:14863.73 sec
+Max  memory usage:1477968
+Epoch: 498	Time elapsed:14892.58 sec
+Max  memory usage:1477968
+Epoch: 499	Time elapsed:14922.00 sec
+Saving Graph of loss function
+Saving Latent space
+Loading saved model...
