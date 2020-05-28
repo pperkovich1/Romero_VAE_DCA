@@ -224,13 +224,14 @@ if __name__ == "__main__":
                 msa.remove_seqs_below_mean(return_kept_indices=True)
         
         weights_above_mean = reweighting.compute_weights_from_aligned_msa(
-                msa_above_mean, 
+                msa_above_mean.msa, 
                 threshold=msa.optimal_theta_after_mean_removal,
                 device = device
             )
         weights = np.zeros(msa.num_seqs, dtype=np.float)
         weights[kept_indices] = weights_above_mean
-        np.save(args.output_filename, weights, allow_pickle=False)
+        weights = (weights / weights.sum()) * msa.num_seqs
+        np.save(args.neutral_evo_weights, weights, allow_pickle=False)
  
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
