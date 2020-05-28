@@ -27,6 +27,7 @@ import numpy as np
 import yaml
 
 import dataloader
+import reweighting
 
 class MSA:
     """ Perform manipulations on MSA 
@@ -39,6 +40,17 @@ class MSA:
     def __init__(self, msa, name=""):
         self.msa = msa
         self.name = name
+
+    @property
+    def num_seqs(self):
+        return self.msa.shape[0]
+
+    @property
+    def seq_length(self):
+        return self.msa.shape[1]
+
+    def calc_avg_dist_from_seq(self, seq):
+        return (self.msa != seq).sum(axis=1).mean()
 
 
 class MSAwt(MSA):
@@ -65,23 +77,12 @@ class MSAwt(MSA):
         super(MSAwt, self).__init__(msa=msa, name=name)
 
     @property
-    def num_seqs(self):
-        return self.msa.shape[0]
-
-    @property
-    def seq_length(self):
-        return self.msa.shape[1]
-
-    @property
     def avg_dist_from_wt(self):
         return self.calc_avg_dist_from_seq(self.wt)
 
     @property
     def avg_dist_from_wt_pct(self):
         return self.avg_dist_from_wt  / self.seq_length * 100
-
-    def calc_avg_dist_from_seq(self, seq):
-        return (self.msa != seq).sum(axis=1).mean()
 
     @property
     @functools.lru_cache(1) # save last calculation. Can use @cachedproperty for python 3.8+
@@ -107,7 +108,6 @@ class MSAwt(MSA):
     def optimal_theta_after_mean_removal(self):
         return 1 - (self.avg_dist_from_wt_pct + self.avg_pairwise_dist_pct) \
                         / (2 * 100)
-
 
     def get_stats_dict(self):
         return {
@@ -138,13 +138,25 @@ class MSAwt(MSA):
                 # no need to close fh now as whatever passed it in will take care of it
             yaml.dump(self.get_stats_dict(), fh)
 
-    def remove_seqs_below_mean(self):
-        """ Return a new MSA with seqs below mean dist from WT removed """
-        dist_from_wt = (self.msa != self.wt).sum(axis=1)
+    def remove_seqs_below_mean(self, return_kept_indices=True):
+        """ Return a new MSA with seqs below mean distance from WT removed 
+            Args:
+                return_kept_indices: If True a tuple (newMSA, kept_indices) 
+                                        is returned
+        """
         # make a shallow copy
-        return MSAwt(msa=self.msa[dist_from_wt < self.avg_dist_from_wt, :],
+        indices_to_keep = ~ self.get_indices_seqs_below_mean()
+        ret = MSAwt(msa=self.msa[indices_to_keep, :],
                     wt = self.wt,
                     name = self.name)
+        if return_kept_indices:
+            ret = (ret, indices_to_keep)
+        return (ret)
+
+    def get_indices_seqs_below_mean(self):
+        """ Get indices of sequences below avg distance from WT"""
+        dist_from_wt = (self.msa != self.wt).sum(axis=1)
+        return dist_from_wt < self.avg_dist_from_wt
         
     def write_msa_to_file(self, filename):
         """ Only supported writing gzip aln files for now"""
@@ -170,6 +182,7 @@ class MSAwt(MSA):
 if __name__ == "__main__":
     import time
     import argparse
+    import read_config
  
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--msa_filename",
@@ -183,6 +196,11 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--remove_below_mean_filename", 
                     help="filename to save new MSA with seqeuences " 
                          "below mean removed")
+    parser.add_argument("-n", "--neutral_evo_weights",
+                    help="Output filename for weights", default="weights_ne.npy")
+    parser.add_argument("-d", "--device",
+                    help="Device to use", default="")
+                         
     args = parser.parse_args()
 
     start_time = time.time()
@@ -193,9 +211,28 @@ if __name__ == "__main__":
         msa.write_stats_dict(args.stats_filename)
 
     if args.remove_below_mean_filename: # remove seqs closer than avg dist to WT
-        msa_above_mean = msa.remove_seqs_below_mean()
+        msa_above_mean = msa.remove_seqs_below_mean(return_kept_indices=False)
         msa_above_mean.write_msa_to_file(args.remove_below_mean_filename)
 
+    if not args.device:
+        device = read_config.get_best_device()
+    else:
+        device = args.device
+
+    if args.neutral_evo_weights: # use msa_above_mean and kept_indices
+        msa_above_mean, kept_indices = \
+                msa.remove_seqs_below_mean(return_kept_indices=True)
+        
+        weights_above_mean = reweighting.compute_weights_from_aligned_msa(
+                msa_above_mean.msa, 
+                threshold=msa.optimal_theta_after_mean_removal,
+                device = device
+            )
+        weights = np.zeros(msa.num_seqs, dtype=np.float)
+        weights[kept_indices] = weights_above_mean
+        weights = (weights / weights.sum()) * msa.num_seqs
+        np.save(args.neutral_evo_weights, weights, allow_pickle=False)
+ 
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
 
