@@ -71,6 +71,49 @@ def get_saved_latent_space_as_numpy(latent_fullpath):
         vecs = pickle.load(fh)
     return convert_torch_latent_space_to_numpy(vecs['latent'])
 
+def calc_reconstruction_identity(model, loader, sample_size, device):
+    with torch.no_grad():
+        idents = torch.zeros(len(loader.dataset))
+        batch_size = loader.batch_size
+        left = 0 
+        for batch_id, (input_images, weights) in enumerate(loader):
+            input_images = input_images.to(device)
+            weight = weights.to(device)
+
+            for i in range(sample_size):
+                z_mean, z_log_var, encoded, recon_images = model(input_images)
+                recon_images = utils.softmax(recon_images)
+                ident_matrix = torch.mul(recon_images, input_images)
+                recon_idents = ident_matrix.sum(1)
+                idents[left:left+batch_size] += recon_idents
+            left += batch_size
+            if left > 100:
+                break
+        idents = idents/sample_size
+    return idents
+
+
+def get_reconstruction_identity_from_config(config, batch_size = None,
+                                            sample_size = 1):
+    # args: sample_size - number of times a vector is passed through model to
+    #                            calculate average reconstruction identity
+    dataset = MSADataset(config.aligned_msa_fullpath,
+            transform=OneHotTransform(21))
+    input_length = utils.get_input_length(dataset)
+    model = load_model_from_config(input_length=input_length, config=config)
+    
+    if batch_size is None:
+        batch_size = config.batch_size
+    loader = DataLoader(dataset = dataset, batch_size = batch_size)
+
+    idents = calc_reconstruction_identity(model, loader, sample_size, 
+                                          device=config.device)
+    with open(config.reconstruction_identity_fullpath, 'wb') as fh:
+        pickle.dump({'idents':idents}, fh)
+
+
+
+
 if __name__=='__main__':
     import argparse
 
@@ -82,7 +125,10 @@ if __name__=='__main__':
     config = Config(args.config_filename)
 
     print ("Saving Graph of loss function")
-    graph_loss(config)
+    # graph_loss(config)
 
     print ("Saving Latent space")
-    save_latent_space_from_config(config)
+    # save_latent_space_from_config(config)
+
+    print("Calculating reconstruction identity")
+    get_reconstruction_identity_from_config(config)

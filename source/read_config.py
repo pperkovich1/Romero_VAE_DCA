@@ -143,6 +143,12 @@ class Config:
                 pathlib.Path(self.model_name + "_latent").with_suffix(".pkl")
 
     @property
+    def reconstruction_identity_fullpath(self):
+        """Complete path to saved reconstruction identity"""
+        return self.working_dir /\
+                pathlib.Path(self.model_name+"_recon_ident").with_suffix(".pkl")
+
+    @property
     def loss_fullpath(self):
         """Complete path to the saved loss"""
         return self.working_dir / \

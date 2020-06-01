@@ -1,13 +1,14 @@
 
-.PHONY: clean deepclean submit_reweighting
+.PHONY: clean deepclean chtc_submit_reweighting chtc_submit_training
 
 CONFIG := config.yaml
 
 # clean logs and error files and code that is staged
 clean:
-	rm -f logs/*
+	rm -rf logs/*
 	rm -f staging.tar.gz
 	rm -f docker_stderror
+	rm -f config.yaml
 
 # clean all output files 
 deepclean: clean
@@ -30,4 +31,6 @@ chtc_submit_reweighting: staging.tar.gz
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \
 	#		chtc_reweighting.sub
-
+chtc_submit_training: staging.tar.gz
+	condor_submit \
+			chtc_train_model.sub
