@@ -17,6 +17,9 @@ def graph_loss(config):
     with open(config.loss_fullpath, 'rb') as fh:
         loss = pickle.load(fh)
     plt.plot(loss['loss'])
+    plt.title("Training Loss")
+    plt.xlabel("Round Number")
+    plt.ylabel("Loss")
     plt.savefig(config.lossgraph_fullpath, bbox_inches='tight')
 
 

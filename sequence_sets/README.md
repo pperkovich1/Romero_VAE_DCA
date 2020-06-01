@@ -19,3 +19,7 @@ Here, the `unaligned.fasta` file contains the same sequences as
   cut-off)
 - Identical to `cmx_alignment.fasta`, but removed any positions with >90%
   blanks.
+
+## cmx\_wildtype.fasta
+
+- Just picked a random sequence to be wildtype. (TODO: replace with an actual WT if once exists)

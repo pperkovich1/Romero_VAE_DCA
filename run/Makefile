@@ -1,6 +1,8 @@
 
 .PHONY: clean deepclean chtc_submit_reweighting chtc_submit_training
 
+CONFIG := config.yaml
+
 # clean logs and error files and code that is staged
 clean:
 	rm -rf logs/*
@@ -10,7 +12,7 @@ clean:
 
 # clean all output files 
 deepclean: clean
-	rm -f output*.tar.gz
+	rm -f *output*.tar.gz
 
 # Rule to make the staging archive which is sent to chtc jobs
 staging.tar.gz :
@@ -19,7 +21,7 @@ staging.tar.gz :
 			-czvf staging.tar.gz -C ../ \
 			./source \
 			./sequence_sets \
-			config.yaml
+			$(CONFIG)
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz
