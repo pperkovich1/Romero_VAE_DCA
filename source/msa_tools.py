@@ -68,11 +68,10 @@ class MSAwt(MSA):
             wt     : Numpy array of shape (1, L) or (L,)  dtype "|S1"
             name   : A string name for the MSA
         """
-        self.wt = wt
-        wt = wt.squeeze()
-        if len(wt.shape) != 1:
+        self.wt = wt.squeeze()
+        if len(self.wt.shape) != 1:
             raise ValueError("WildType filename must have only one value in it")
-        if wt.shape[0] != msa.shape[1]:
+        if self.wt.shape[0] != msa.shape[1]:
             raise ValueError("WildType and MSA files have different length sequences in them")
         super(MSAwt, self).__init__(msa=msa, name=name)
 
@@ -153,6 +152,12 @@ class MSAwt(MSA):
             ret = (ret, indices_to_keep)
         return (ret)
 
+    def add_wildtype_to_msa(self):
+        return MSAwt(msa=np.vstack([self.wt[np.newaxis, :], self.msa]),
+                    wt = self.wt,
+                    name = self.name)
+
+
     def get_indices_seqs_below_mean(self):
         """ Get indices of sequences below avg distance from WT"""
         dist_from_wt = (self.msa != self.wt).sum(axis=1)
@@ -197,9 +202,11 @@ if __name__ == "__main__":
                     help="filename to save new MSA with seqeuences " 
                          "below mean removed")
     parser.add_argument("-n", "--neutral_evo_weights",
-                    help="Output filename for weights", default="weights_ne.npy")
+                    help="Output filename for weights", default=None)
     parser.add_argument("-d", "--device",
                     help="Device to use", default="")
+    parser.add_argument("-a", "--add_wildtype",
+                    help="Add WildType to MSA", action='store_true')
                          
     args = parser.parse_args()
 
@@ -212,6 +219,8 @@ if __name__ == "__main__":
 
     if args.remove_below_mean_filename: # remove seqs closer than avg dist to WT
         msa_above_mean = msa.remove_seqs_below_mean(return_kept_indices=False)
+        if args.add_wildtype:
+            msa_above_mean = msa_above_mean.add_wildtype_to_msa()
         msa_above_mean.write_msa_to_file(args.remove_below_mean_filename)
 
     if not args.device:
