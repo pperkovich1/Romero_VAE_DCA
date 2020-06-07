@@ -24,7 +24,10 @@ tar -zxf sequences.tar.gz
 # create the output directory where we can store stuff to return
 mkdir output
 
-cp "$config" output
+# because 'config' is written from perspective in source
+cd source
+cp "$config" ../output
+cd ..
 
 # TODO: make editing config file less janky
 # TODO: it'd be nice if I could replace ../config.yaml with $config
@@ -44,8 +47,11 @@ chmod +x run/*.sh
 # pass config file location to the python program
 run/runmodel.sh $config
 
+# for debuging
+ls -aR
 # tar up the output directory
-tar -zcf training_output_"$Process".tar.gz ./output 
+mv ./output ./output_"$Process" #rename output
+tar -zcf training_output_"$Process".tar.gz ./output_"$Process"
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then

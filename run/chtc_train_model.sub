@@ -31,6 +31,7 @@ transfer_input_files = staging.tar.gz, chtc_root.txt, chtc_train_model.sh, $(squ
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
+# output_destination = url://fs.biochem.wisc.edu/Groups/RomeroGrp/General/James_W/server_runs/drop_point
   
 # We must request 1 CPU in addition to 1 GPU (if needed)
 request_cpus = 1
@@ -49,8 +50,8 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 20GB
-request_disk = 10GB
+request_memory = 1GB
+request_disk = 50GB
 
 if ! defined DISABLE_FLOCKING
     +WantFlocking = false
@@ -58,4 +59,4 @@ endif
 
 # Tell HTCondor to run on each dataset in datasets.txt
 # queue dataset,hidden,latent from datasets.txt
-queue config from configs.txt
+queue config from big_configs.txt
