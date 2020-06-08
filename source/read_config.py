@@ -1,7 +1,10 @@
-import yaml
+import functools
 import pathlib
+
 import torch
 from torch import nn
+
+import yaml
 
 class Config:
     """Miscellaneous properties for config, derived from a config.yaml file
