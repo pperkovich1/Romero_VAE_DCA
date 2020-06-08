@@ -117,8 +117,7 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, 
-            filterX=False):
+    def __init__(self, msa_file, size_limit=None, weights=None, transform=None):
         self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()
@@ -129,8 +128,6 @@ class MSADataset(Dataset):
         else:
             self.weights = np.array(weights).astype(np.float).squeeze()
         assert(self.weights.shape[0]==N)
-        if filterX:
-            self.filterX()
 
     def get_raw_data(self, msa_file, size_limit):
         return get_msa_from_file(msa_file, size_limit=size_limit, as_numpy=False)
