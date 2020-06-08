@@ -154,14 +154,16 @@ class MSADataset(Dataset):
 
 class OneHotTransform:
     
-    def __init__(self, num_labels, to_float=True):
+    def __init__(self, num_labels, to_float=True, flatten=True):
         self.num_labels = num_labels
         self.to_float = to_float
+        self.flatten = flatten
 
     def __call__(self, sample):
         ret = F.one_hot(sample, self.num_labels)
         if self.to_float:
             ret = ret.float()
-        ret = ret.flatten()
+        if self.flatten:
+            ret = ret.flatten()
         return ret
 
