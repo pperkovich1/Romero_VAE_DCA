@@ -132,14 +132,6 @@ class MSADataset(Dataset):
         if filterX:
             self.filterX()
 
-
-    #TODO: I'm not sure if this method actually works or not
-    def filterX(self):
-        print('WARNING: filterX method might be wrong')
-        ''' Filters out the proteins and weights for proteins with an X amino acid'''
-        g = ((x,w) for (x,w) in zip(self.raw_data, self.weights) if x.find('X'))
-        [self.raw_data, self.weights] = list(zip(*g))
-
     def get_raw_data(self, msa_file, size_limit):
         return get_msa_from_file(msa_file, size_limit=size_limit, as_numpy=False)
 
