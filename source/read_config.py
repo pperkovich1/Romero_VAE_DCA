@@ -104,7 +104,7 @@ class Config:
 
     @property
     def learning_rate(self):
-        """ Something something gradient descent? """
+        """ Parameter to scale gradient descent updates """
         return self.safe_get_key('learning_rate')
 
     @property
@@ -124,7 +124,7 @@ class Config:
 
     @property
     def device(self):
-        """ name of file to save model """
+        """ device to run the model on"""
         device = self.safe_get_key('device', '')
         if device == '' or device == 'auto':
             device = get_best_device()
