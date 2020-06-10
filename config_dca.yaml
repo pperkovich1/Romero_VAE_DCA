@@ -10,9 +10,4 @@ model_name: model
 learning_rate: .001
 epochs: 50
 
-# batch_size of -1 means the entire dataset
-# If our MSA's ever get very large we can look into
-# mini-batch and stochastic gradient descent
-batch_size: -1
-
 device: auto # possible options are cpu, cuda, auto
