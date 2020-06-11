@@ -45,3 +45,18 @@ See the [contributor's page](https://github.com/RomeroLab/VAEs/graphs/contributo
 * The underlying VAE code has been taken from the [AE-VAE example](https://github.com/rasbt/deeplearning-models/blob/master/pytorch_ipynb/autoencoder/ae-var.ipynb) of Sebastian Raschka's [Deep Learning Models github archive](https://github.com/rasbt/deeplearning-models). 
 * The method for re-weighting sequences has been taken from *Riesselman, Adam J., John B. Ingraham, and Debora S. Marks. "Deep generative models of genetic variation capture the effects of mutations." Nature methods 15.10 (2018): 816-822.*
 
+
+### Overview of this repository
+
+- [bin/](bin/) shell scripts that can be used from outside this repository
+- [*.yaml](config.yaml) Example config files to run various types of models
+- [images/](images/)
+- [Makefile](Makefile) Easily run various types of models
+- [run/](run/) 
+  - scripts that are run from inside this repository
+  - chtc submit scripts, 
+- [sequence_sets/](sequence_sets/) Data files are stored here
+- [source/](source/) 
+  - Most python source files are for the various models. 
+  - `\_tools.py` files are for the shell scripts in the [bin/](bin/) directory
+working
