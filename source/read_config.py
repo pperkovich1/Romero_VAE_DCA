@@ -1,7 +1,10 @@
-import yaml
+import functools
 import pathlib
+
 import torch
 from torch import nn
+
+import yaml
 
 class Config:
     """Miscellaneous properties for config, derived from a config.yaml file
@@ -104,7 +107,7 @@ class Config:
 
     @property
     def learning_rate(self):
-        """ Something something gradient descent? """
+        """ Parameter to scale gradient descent updates """
         return self.safe_get_key('learning_rate')
 
     @property
@@ -124,7 +127,7 @@ class Config:
 
     @property
     def device(self):
-        """ name of file to save model """
+        """ device to run the model on"""
         device = self.safe_get_key('device', '')
         if device == '' or device == 'auto':
             device = get_best_device()
@@ -187,14 +190,24 @@ class Config:
 
     @property
     def latent_plot_output_fullpath(self):
-        return self.working_dir / \
-                pathlib.Path(
+        return self.working_dir / pathlib.Path(
                         self.latent_plot_output_filename
                         ).with_suffix(".png")
 
     @property
     def latent_plot_archive_fullpath(self):
         return self.latent_plot_output_fullpath.with_suffix(".pkl")
+
+    @property
+    def dca_params_filename(self):
+        return self.safe_get_key('dca_params_filename', 
+                default=self.model_name + "_dca_params.pkl")
+
+    @property
+    def dca_params_fullpath(self):
+        return self.working_dir / pathlib.Path(
+                        self.dca_params_filename,
+                        ).with_suffix(".pkl")
 
 
 def get_best_device():
