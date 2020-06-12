@@ -9,6 +9,7 @@
 """
 
 import numpy as np
+import torch
 import dca
 
 if __name__ == "__main__":
