@@ -4,7 +4,7 @@
     to the input layer with an almost dense layer. 
 
     This pytorch implementation shall closely mimic sokrypton's seqmodel
-    implementation by Sergey  Ovchinnikov
+    implementation by Sergey Ovchinnikov.
     https://github.com/sokrypton/seqmodels/blob/master/seqmodels.ipynb
 
 """
@@ -87,45 +87,59 @@ class DCA(torch.nn.Module):
             return DCA(ncol=ncol, ncat=ncat, Neff=Neff, b_ini=b_ini, 
                                 *args, **kwargs)
 
+    def create_loss_function():
+        """ Create a function that will compute cross entropy loss """
+        ce_loss_func = torch.nn.CrossEntropyLoss(reduction='none')
+        
+        def calc_loss(x_logit, x_cat, x_weights, model):
+            loss_ce = ce_loss_func(x_logit.permute(0,2,1), x_cat)
+            loss_ce = loss_ce.sum(dim=-1)
+            loss_ce = (loss_ce * x_weights).sum()
 
-def create_loss_function():
-    """ Create a function that will compute cross entropy loss """
-    ce_loss_func = torch.nn.CrossEntropyLoss(reduction='none')
-    
-    def calc_loss(x_logit, x_cat, x_weights, model):
-        loss_ce = ce_loss_func(x_logit.permute(0,2,1), x_cat)
-        loss_ce = loss_ce.sum(dim=-1)
-        loss_ce = (loss_ce * x_weights).sum()
+            reg = model.calc_reg_w() + model.calc_reg_b()
+        
+            loss = (loss_ce + reg) / model.Neff
+            return loss
+        return calc_loss
 
-        reg = model.calc_reg_w() + model.calc_reg_b()
-    
-        loss = (loss_ce + reg) / model.Neff
-        return loss
-    return calc_loss
+    def make_train_step(model, loss_fn, optimizer):
+        """Builds function that performs a step in the train loop """
+        def train_step(x, x_weights, x_cat):
+            # Sets model to TRAIN mode
+            model.train()
+            # Makes predictions
+            x_logit = model(x)
+            # Computes loss
+            loss = loss_fn(x_logit, x_cat, x_weights, model)
+            # Computes gradients
+            loss.backward()
+            # Updates parameters and zeroes gradients
+            optimizer.step()
+            optimizer.zero_grad()
+            # Returns the loss
+            return loss.item()
 
-def make_train_step(model, loss_fn, optimizer):
-    """Builds function that performs a step in the train loop """
-    def train_step(x, x_weights, x_cat):
-        # Sets model to TRAIN mode
-        model.train()
-        # Makes predictions
-        x_logit = model(x)
-        # Computes loss
-        loss = loss_fn(x_logit, x_cat, x_weights, model)
-        # Computes gradients
-        loss.backward()
-        # Updates parameters and zeroes gradients
-        optimizer.step()
-        optimizer.zero_grad()
-        # Returns the loss
-        return loss.item()
+        # Returns the function that will be called inside the train loop
+        return train_step
 
-    # Returns the function that will be called inside the train loop
-    return train_step
-
+    def plot_loss_curve(losses, annotatation_str="", save_fig_path=None):
+        """ Save graph of loss curves 
+            FIXME: This function is quite generic and should live in utils or
+            somewhere else so that it can be merged with the VAE model plotting
+            code as well.
+        """
+        import matplotlib.pyplot as plt # hide this import here so we don't pollute
+        plt.plot(losses, "o-")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Loss Curve")
+        bbox = dict(boxstyle="round", fc="0.8")
+        plt.annotate(annotatation_str, (0.5, 0.5), xycoords='axes fraction',
+                    bbox=bbox);
+        if savefig is not None:
+            plt.savefig(save_fig_path)
 
 def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True):
-
     weights = None
     if weights_path is None:
         print(f"weights_path is none. Setting all weights to 1.")
@@ -161,7 +175,7 @@ def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate,
 
     # Tell the optimizer which weights we want to update
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    train_step = make_train_step(model, create_loss_function(), optimizer)
+    train_step = DCA.make_train_step(model, DCA.create_loss_function(), optimizer)
 
     losses = []
     for epoch in range(num_epochs):
@@ -172,8 +186,51 @@ def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate,
     if ret_losses_only:
         ret = losses
     else:
-        ret = {'losses':losses, 'model':model, 'optimizer':optimizer}
+        ret = {'losses':losses, 'model':model, 'optimizer':optimizer,
+                'weights': model.weights.detach().numpy(),
+                'bias': model.bias.detach().numpy()
+                }
     return ret
 
 if __name__ == "__main__":
-    pass
+    import time
+    import argparse
+    import read_config
+    import pickle
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_filename",
+                    help="input config file in yaml format")
+    args = parser.parse_args()
+
+    config = read_config.Config(args.config_filename)
+
+    msa, msa_weights = load_full_msa_with_weights(
+            msa_path=config.aligned_msa_fullpath,
+            weights_path=config.weights_fullpath)
+    ret = train_dca_model(device=config.device,
+                       msa=msa, msa_weights=msa_weights,
+                       learning_rate = config.learning_rate,
+                       #num_epochs=config.epochs)
+                       num_epochs=10)
+
+    # save parameters
+    
+    with open(config.dca_params_fullpath, 'wb') as fh:
+        pickle.dump({k:ret[k] for k in ["weights", "bias"]}, fh) 
+
+    # plot loss curve
+    DCA.plot_loss_curve(losses=ret['losses'],  
+            annotatation_str = str(ret['optimizer']),
+            save_fig_path = config.lossgraph_fullpath)
+
+    # save loss curve data
+    with open(config.loss_fullpath, 'wb') as fh:
+        pickle.dump(ret['losses'], fh) 
+
+    # save model state
+    torch.save(ret['model'].state_dict(), config.model_fullpath)
+
+
+     
+

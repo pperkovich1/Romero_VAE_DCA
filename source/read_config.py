@@ -190,14 +190,24 @@ class Config:
 
     @property
     def latent_plot_output_fullpath(self):
-        return self.working_dir / \
-                pathlib.Path(
+        return self.working_dir / pathlib.Path(
                         self.latent_plot_output_filename
                         ).with_suffix(".png")
 
     @property
     def latent_plot_archive_fullpath(self):
         return self.latent_plot_output_fullpath.with_suffix(".pkl")
+
+    @property
+    def dca_params_filename(self):
+        return self.safe_get_key('dca_params_filename', 
+                default=self.model_name + "_dca_params.pkl")
+
+    @property
+    def dca_params_fullpath(self):
+        return self.working_dir / pathlib.Path(
+                        self.dca_params_filename,
+                        ).with_suffix(".pkl")
 
 
 def get_best_device():

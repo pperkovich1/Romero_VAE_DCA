@@ -5,7 +5,7 @@ reweighting_threshold: 0.8
 dataset_dir: sequence_sets
 working_dir: working
 
-model_name: model
+model_name: cmx_dca
 
 learning_rate: .001
 epochs: 50
