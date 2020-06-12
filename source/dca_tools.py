@@ -30,6 +30,9 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--learning_rate",
             help="Learning rate for ADAM optimizer",
             type=float, default=0.01)
+    parser.add_argument("-n", "--epochs",
+            help="Number of training steps",
+            type=int, default=50)
     parser.add_argument("-s", "--save_model_path",
             help="Path to save model state dictionary",
             default=None)
