@@ -50,13 +50,9 @@ class DCA(torch.nn.Module):
         # symmetrize w so that the weight between (i,a) and (j, b) is the
         # same as the weight between (j, b) and (i, a)
 
-        # Why does sokrypton not divide by 2 here?
-        #       Not sure but here is a possible explanation....
-        #       There are certain transformations of weights and biases that
-        #       change the intractable normalizing constant (Z) in a way that
-        #       gives the same probability distribution. (Gauage Invariance)
-        #       However, regularization fixes a guage so this could just be an
-        #       oversight.
+        # These are the real weights of the model. Although we do the gradient 
+        # descent step on the w we need to use the symmetrized weights
+        # self.weights to get the coupling values e_ij(a,b)
         self.weights = w_eye + w_eye.permute(2,3,0,1)
         x_logit = torch.tensordot(x_msa, self.weights, 2) + self.bias
         return x_logit
@@ -122,7 +118,8 @@ class DCA(torch.nn.Module):
         # Returns the function that will be called inside the train loop
         return train_step
 
-    def plot_loss_curve(losses, annotatation_str="", save_fig_path=None):
+    def plot_loss_curve(losses, annotatation_str="", save_fig_path=None, 
+            model_name=""):
         """ Save graph of loss curves 
             FIXME: This function is quite generic and should live in utils or
             somewhere else so that it can be merged with the VAE model plotting
@@ -132,7 +129,7 @@ class DCA(torch.nn.Module):
         plt.plot(losses, "o-")
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
-        plt.title("Loss Curve")
+        plt.title(f"Loss Curve :{model_name}")
         bbox = dict(boxstyle="round", fc="0.8")
         plt.annotate(annotatation_str, (0.5, 0.5), xycoords='axes fraction',
                     bbox=bbox);
@@ -221,7 +218,8 @@ if __name__ == "__main__":
     # plot loss curve
     DCA.plot_loss_curve(losses=ret['losses'],  
             annotatation_str = str(ret['optimizer']),
-            save_fig_path = config.lossgraph_fullpath)
+            save_fig_path = config.lossgraph_fullpath,
+            model_name= config.model_name)
 
     # save loss curve data
     with open(config.loss_fullpath, 'wb') as fh:
