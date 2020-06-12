@@ -44,10 +44,10 @@ if __name__ == "__main__":
         device = args.device
 
 
-    msa, msa_weights = load_full_msa_with_weights(
+    msa, msa_weights = dca.load_full_msa_with_weights(
             msa_path=args.msa_filename,
             weights_path=args.weights_filename)
-    ret = train_dca_model(device=device,
+    ret = dca.train_dca_model(device=device,
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = args.learning_rate,
                        num_epochs=args.epochs)
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     if args.lossgraph_path:
         # plot loss curve
-        DCA.plot_loss_curve(losses=ret['losses'],  
+        dca.DCA.plot_loss_curve(losses=ret['losses'],  
                 annotatation_str = str(ret['optimizer']),
                 save_fig_path = args.lossgraph_path,
                 model_name="")
