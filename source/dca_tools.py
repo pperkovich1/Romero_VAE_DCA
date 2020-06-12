@@ -18,11 +18,13 @@ if __name__ == "__main__":
  
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--msa_filename",
-                    help="input msa in ALN or FASTA format")
+                    help="input msa in ALN or FASTA format",
+                    required=True)
     parser.add_argument("-w", "--weights_filename",
                     help="Output filename for weights", default=None)
     parser.add_argument("-o", "--output_filename",
-            help="Output filename for model params (npz) format")
+            help="Output filename for model params (npz) format",
+            required=True)
     parser.add_argument("-d", "--device",
                     help="Device to use", default="")
     parser.add_argument("-l", "--learning_rate",
