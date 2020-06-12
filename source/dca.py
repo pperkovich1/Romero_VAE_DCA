@@ -202,6 +202,7 @@ if __name__ == "__main__":
 
     config = read_config.Config(args.config_filename)
 
+    start_time = time.time()
     msa, msa_weights = load_full_msa_with_weights(
             msa_path=config.aligned_msa_fullpath,
             weights_path=config.weights_fullpath)
@@ -209,6 +210,7 @@ if __name__ == "__main__":
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = config.learning_rate,
                        num_epochs=config.epochs)
+    print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
     # save parameters
     
