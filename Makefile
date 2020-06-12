@@ -4,6 +4,7 @@
 RUNDIR=run
 CONFIG=config.yaml
 CONFIG2D=config2d.yaml # config file with latent space of dimension 2
+CONFIGDCA=config_dca.yaml
 
 CONDA_PYTORCH_ENV=pytorch-docker
 
@@ -22,10 +23,13 @@ deepclean: clean
 	rm -f output/*
 
 reweighting:
-	${RUNDIR}/reweighting.sh ../${CONFIG}
+	${RUNDIR}/reweighting.sh "../${CONFIG}"
 
 runmodel:
-	${RUNDIR}/runmodel.sh ../${CONFIG}
+	${RUNDIR}/runmodel.sh "../${CONFIG}"
 
 plotlatent:
-	${RUNDIR}/plotlatent.sh ../${CONFIG2D}
+	${RUNDIR}/plotlatent.sh "../${CONFIG2D}"
+
+rundca:
+	${RUNDIR}/rundca.sh "../${CONFIGDCA}"
