@@ -8,7 +8,7 @@
 
 """
 
-import pickle
+import numpy as np
 import dca
 
 if __name__ == "__main__":
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--weights_filename",
                     help="Output filename for weights", default=None)
     parser.add_argument("-o", "--output_filename",
-            help="Output filename for model params")
+            help="Output filename for model params (npz) format")
     parser.add_argument("-d", "--device",
                     help="Device to use", default="")
     parser.add_argument("-l", "--learning_rate",
@@ -51,9 +51,10 @@ if __name__ == "__main__":
                        num_epochs=args.epochs)
 
     # save parameters
-    
     with open(args.output_filename, 'wb') as fh:
-        pickle.dump({k:ret[k] for k in ["weights", "bias"]}, fh) 
+        np.savez(args.output_filename, weights=ret['weights']
+                biases=ret['bias'])
+
 
     if args.lossgraph_path
         # plot loss curve
