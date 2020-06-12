@@ -9,6 +9,7 @@
 """
 
 import numpy as np
+import torch
 import dca
 
 if __name__ == "__main__":
@@ -18,16 +19,21 @@ if __name__ == "__main__":
  
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--msa_filename",
-                    help="input msa in ALN or FASTA format")
+                    help="input msa in ALN or FASTA format",
+                    required=True)
     parser.add_argument("-w", "--weights_filename",
                     help="Output filename for weights", default=None)
     parser.add_argument("-o", "--output_filename",
-            help="Output filename for model params (npz) format")
+            help="Output filename for model params (npz) format",
+            required=True)
     parser.add_argument("-d", "--device",
                     help="Device to use", default="")
     parser.add_argument("-l", "--learning_rate",
             help="Learning rate for ADAM optimizer",
             type=float, default=0.01)
+    parser.add_argument("-n", "--epochs",
+            help="Number of training steps",
+            type=int, default=50)
     parser.add_argument("-s", "--save_model_path",
             help="Path to save model state dictionary",
             default=None)
@@ -42,23 +48,23 @@ if __name__ == "__main__":
         device = args.device
 
 
-    msa, msa_weights = load_full_msa_with_weights(
+    msa, msa_weights = dca.load_full_msa_with_weights(
             msa_path=args.msa_filename,
             weights_path=args.weights_filename)
-    ret = train_dca_model(device=device,
+    ret = dca.train_dca_model(device=device,
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = args.learning_rate,
                        num_epochs=args.epochs)
 
     # save parameters
     with open(args.output_filename, 'wb') as fh:
-        np.savez(args.output_filename, weights=ret['weights']
+        np.savez(args.output_filename, 
+                weights=ret['weights'],
                 biases=ret['bias'])
 
-
-    if args.lossgraph_path
+    if args.lossgraph_path:
         # plot loss curve
-        DCA.plot_loss_curve(losses=ret['losses'],  
+        dca.DCA.plot_loss_curve(losses=ret['losses'],  
                 annotatation_str = str(ret['optimizer']),
                 save_fig_path = args.lossgraph_path,
                 model_name="")
