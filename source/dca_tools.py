@@ -56,8 +56,7 @@ if __name__ == "__main__":
                 weights=ret['weights'],
                 biases=ret['bias'])
 
-
-    if args.lossgraph_path
+   if args.lossgraph_path:
         # plot loss curve
         DCA.plot_loss_curve(losses=ret['losses'],  
                 annotatation_str = str(ret['optimizer']),
