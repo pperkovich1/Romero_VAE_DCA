@@ -52,7 +52,8 @@ if __name__ == "__main__":
 
     # save parameters
     with open(args.output_filename, 'wb') as fh:
-        np.savez(args.output_filename, weights=ret['weights']
+        np.savez(args.output_filename, 
+                weights=ret['weights'],
                 biases=ret['bias'])
 
 
