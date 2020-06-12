@@ -136,7 +136,7 @@ class DCA(torch.nn.Module):
         bbox = dict(boxstyle="round", fc="0.8")
         plt.annotate(annotatation_str, (0.5, 0.5), xycoords='axes fraction',
                     bbox=bbox);
-        if savefig is not None:
+        if save_fig_path is not None:
             plt.savefig(save_fig_path)
 
 def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True):
@@ -211,8 +211,7 @@ if __name__ == "__main__":
     ret = train_dca_model(device=config.device,
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = config.learning_rate,
-                       #num_epochs=config.epochs)
-                       num_epochs=10)
+                       num_epochs=config.epochs)
 
     # save parameters
     
