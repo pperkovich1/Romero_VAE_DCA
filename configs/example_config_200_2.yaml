@@ -1,0 +1,12 @@
+aligned_msa_filename: processed_cmx_uniref100_90_80_10_100.fasta
+reweighting_threshold: 0.8
+dataset_dir: sequence_sets
+working_dir: output
+model_name: model
+hidden_layer_size: 200
+latent_layer_size: 2
+activation_function: sigmoid
+learning_rate: .001
+epochs: 1000
+batch_size: 128
+device: auto
