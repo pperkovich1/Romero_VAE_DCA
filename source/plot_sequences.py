@@ -1,3 +1,5 @@
+import pickle
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -6,7 +8,6 @@ import matplotlib.pyplot as plt
 # local imports
 import examine_model
 import utils
-import vae
 from dataloader import MSADataset, OneHotTransform
 
 
@@ -48,6 +49,13 @@ def save_latent_space_plot(config):
                  label=config.foreground_sequences_label)
     plt.legend();
     plt.savefig(config.latent_plot_output_fullpath)    
+
+    # Now save all the elements of the plot to an archive
+    plotd = {'label': config.model_name,
+             'background_latent': mean,
+             'foreground_latent': foreground_means}
+    with config.latent_plot_archive_fullpath.open('wb') as fh:
+        pickle.dump(plotd, fh)
 
 if __name__ == "__main__":
     import argparse
