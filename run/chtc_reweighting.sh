@@ -15,6 +15,7 @@ fi
 
 # set up the staging environment
 tar -zxvf staging.tar.gz
+tar -zxvf sequences.tar.gz
 # create the output directory where we can store stuff to return
 mkdir output
 
@@ -25,7 +26,7 @@ chmod +x *.sh
 ./reweighting.sh "${@:2}"
 
 # tar up the output directory
-cd ..
+# cd ..
 tar -zcvf reweighting_output_"$1".tar.gz -C output/ .
 
 # clean up all subdirectories

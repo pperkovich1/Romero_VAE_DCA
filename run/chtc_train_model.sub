@@ -10,7 +10,7 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # sends output to a subdirectory
-initialdir = /home/jlwang5/VAEs/run
+initialdir = /home/jlwang5/VAEs/run/logs_2
 # config = ../config.yaml
 squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 # dataset = processed_cmx_uniref100_90_80_10_100.fasta
@@ -22,12 +22,12 @@ output = chtc_model_training_$(Process).out
 
 
 # set the executable to run
-executable = chtc_train_model.sh
+executable = run/chtc_train_model.sh
 # arguments = $(Cluster) $(Process) $(dataset) $(hidden) $(latent) $(config)
 arguments = $(Cluster) $(Process) $(config)
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz, chtc_root.txt, chtc_train_model.sh, $(squid)/sequences.tar.gz
+transfer_input_files = ../staging.tar.gz, ../chtc_root.txt, ../chtc_train_model.sh, $(squid)/sequences.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -50,8 +50,8 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 1GB
-request_disk = 50GB
+request_memory = 50GB
+request_disk = 1GB
 
 if ! defined DISABLE_FLOCKING
     +WantFlocking = false
@@ -59,4 +59,4 @@ endif
 
 # Tell HTCondor to run on each dataset in datasets.txt
 # queue dataset,hidden,latent from datasets.txt
-queue config from big_configs.txt
+queue config from run/test_config.txt
