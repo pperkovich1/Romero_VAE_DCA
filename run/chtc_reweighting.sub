@@ -29,7 +29,7 @@ if ! defined DISABLE_GPU
 # condor_submit DISABLE_GPU=1 chtc_reweighting.sub
   request_gpus = 1
   # We require a machine with a modern version of the CUDA driver
-  Requirements = (Target.CUDADriverVersion >= 10.1)
+  Requirements = (Target.CUDADriverVersion >= 10.1) && (Target.CUDACapability >= 5)
 
   +WantGPULab = true
   +GPUJobLength = "short"

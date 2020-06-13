@@ -4,6 +4,7 @@
 RUNDIR=run
 CONFIG=config.yaml
 CONFIG2D=config2d.yaml # config file with latent space of dimension 2
+CONFIGDCA=config_dca.yaml
 
 CONDA_PYTORCH_ENV=pytorch-docker
 
@@ -30,7 +31,10 @@ runmodel: check_env
 	${RUNDIR}/runmodel.sh ../${CONFIG}
 
 plotlatent: check_env
-	${RUNDIR}/plotlatent.sh ../${CONFIG2D} 
+	${RUNDIR}/plotlatent.sh ../${CONFIG2D}
+
+rundca: check_env
+	${RUNDIR}/rundca.sh "../${CONFIGDCA}"
 
 staging.tar.gz : 
 	tar --exclude='.git' \

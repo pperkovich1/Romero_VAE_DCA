@@ -35,3 +35,14 @@ def bce(recon_images, input_images, weights):
 
     return F.binary_cross_entropy(recon_images, input_images, reduction='sum')
                                   #weight=weights, reduction='sum')# weights is incorrect dimension when batch size isn't 1
+
+def softmax(recon_images):
+    #each row of recon_images is a sequence
+    for seq in recon_images:
+        for i in range(len(seq)//21):
+            left = i*21
+            right = (i+1)*21
+            x, index = seq[left:right].max(0)
+            seq[left:right]= 0
+            seq[left+index] = 1
+    return recon_images
