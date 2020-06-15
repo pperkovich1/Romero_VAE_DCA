@@ -30,7 +30,7 @@ if __name__ == "__main__":
                     help="Device to use", default="")
     parser.add_argument("-l", "--learning_rate",
             help="Learning rate for ADAM optimizer",
-            type=float, default=0.01)
+            type=float, default=0.001)
     parser.add_argument("-n", "--epochs",
             help="Number of training steps",
             type=int, default=50)
