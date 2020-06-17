@@ -87,8 +87,6 @@ def calc_reconstruction_identity(model, loader, sample_size, device):
                 recon_idents = ident_matrix.sum(1)
                 idents[left:left+batch_size] += recon_idents
             left += batch_size
-            if left > 100:
-                break
         idents = idents/sample_size
     return idents
 
