@@ -15,6 +15,7 @@ fi
 
 # set up the staging environment
 tar -zxvf staging.tar.gz
+tar -zxvf sequences.tar.gz
 # create the output directory where we can store stuff to return
 mkdir working
 
