@@ -66,7 +66,7 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
             activation_func, device)
     if os.path.exists(model_fullpath):
         print("Loading saved model...")
-        model.load_state_dict(torch.load(model_fullpath))
+        model.load_state_dict(torch.load(model_fullpath, map_location=device))
         # TODO: Do we need to run model.eval() here? see,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
     model.to(device)

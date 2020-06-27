@@ -46,3 +46,18 @@ def softmax(recon_images):
             seq[left:right]= 0
             seq[left+index] = 1
     return recon_images
+
+import pickle
+import torch
+import io
+
+class cpkl(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == 'torch.storage' and name == '_load_from_bytes':
+            return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
+        else: return super().find_class(module, name)
+
+def load_to_cpu(path):
+    file = open(path, 'rb')
+    return cpkl.cpkl(file).load()
+

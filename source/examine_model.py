@@ -1,13 +1,13 @@
+# libraries
 import pickle
 from matplotlib import pyplot as plt
 import torch
 from torch.utils.data import DataLoader
-import pickle
 
-#debug libraries
+# debug libraries
 import time
 
-#local files
+# local files
 import utils
 from train_model import load_model_from_config
 from dataloader import MSADataset, OneHotTransform
@@ -87,8 +87,6 @@ def calc_reconstruction_identity(model, loader, sample_size, device):
                 recon_idents = ident_matrix.sum(1)
                 idents[left:left+batch_size] += recon_idents
             left += batch_size
-            if left > 100:
-                break
         idents = idents/sample_size
     return idents
 
@@ -111,7 +109,9 @@ def get_reconstruction_identity_from_config(config, batch_size = None,
     with open(config.reconstruction_identity_fullpath, 'wb') as fh:
         pickle.dump({'idents':idents}, fh)
 
-
+def get_saved_recon_identity_as_numpy(config):
+    return pickle.load(open(config.reconstruction_identity_fullpath,
+                            'rb'))['idents'].numpy()
 
 
 if __name__=='__main__':
@@ -124,11 +124,11 @@ if __name__=='__main__':
 
     config = Config(args.config_filename)
 
-    print ("Saving Graph of loss function")
+    # print ("Saving Graph of loss function")
     # graph_loss(config)
 
     print ("Saving Latent space")
-    # save_latent_space_from_config(config)
+    save_latent_space_from_config(config)
 
-    print("Calculating reconstruction identity")
-    get_reconstruction_identity_from_config(config)
+    # print("Calculating reconstruction identity")
+    # get_reconstruction_identity_from_config(config)
