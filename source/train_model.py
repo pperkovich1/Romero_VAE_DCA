@@ -59,19 +59,6 @@ def train_model(device, model, loader, max_epochs, learning_rate,
     with open(loss_fullpath, 'wb') as fh:
         pickle.dump({'loss':loss_history}, fh)
 
-
-def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
-        latent_layer_size, activation_func, device):
-    model = VAE(input_length, hidden_layer_size, latent_layer_size, 
-            activation_func, device)
-    if os.path.exists(model_fullpath):
-        print("Loading saved model...")
-        model.load_state_dict(torch.load(model_fullpath, map_location=device))
-        # TODO: Do we need to run model.eval() here? see,
-        # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
-    model.to(device)
-    return model
-
 def load_model_from_config(input_length, config):
     model = load_model_from_path(model_fullpath = config.model_fullpath,
             input_length = input_length,

@@ -9,7 +9,6 @@ import time
 
 # local files
 import utils
-from train_model import load_model_from_config
 from dataloader import MSADataset, OneHotTransform
 from read_config import Config
 
@@ -42,7 +41,7 @@ def calc_latent_space_from_config(dataset, config,
         batch_size = None):
     """Takes an MSADataset and config file and returns the latent space """
     input_length = utils.get_input_length(dataset)
-    model = load_model_from_config(input_length=input_length, config=config)
+    model = utils.load_model_from_config(config)
 
     if batch_size is None:
         batch_size = config.batch_size
@@ -66,6 +65,7 @@ def convert_torch_latent_space_to_numpy(latent_vecs):
     log_vars = torch.stack(tuple(v[1] for v in latent_vecs)).numpy()
     return means, log_vars
 
+#TODO: move this to utils?
 def get_saved_latent_space_as_numpy(latent_fullpath):
     with open(latent_fullpath, 'rb') as fh:
         vecs = pickle.load(fh)
@@ -98,7 +98,7 @@ def get_reconstruction_identity_from_config(config, batch_size = None,
     dataset = MSADataset(config.aligned_msa_fullpath,
             transform=OneHotTransform(21))
     input_length = utils.get_input_length(dataset)
-    model = load_model_from_config(input_length=input_length, config=config)
+    model = utils.load_model_from_config(config)
     
     if batch_size is None:
         batch_size = config.batch_size
@@ -112,6 +112,19 @@ def get_reconstruction_identity_from_config(config, batch_size = None,
 def get_saved_recon_identity_as_numpy(config):
     return pickle.load(open(config.reconstruction_identity_fullpath,
                             'rb'))['idents'].numpy()
+
+def plot_seq_freq_heatmap(seqs, image_name = 'freq.png'):
+    """seqs: pytorch tensor of 1-hot encoded sequences"""
+    samples = len(seqs)
+    counts = seqs.sum(0)
+    counts = counts.reshape(-1, 21)
+    freqs = counts/samples
+    freqs = torch.transpose(freqs, 0, 1)
+
+    plt.imshow(freqs)
+    # plt.savefig(image_name, dpi=300)
+    return freqs
+
 
 
 if __name__=='__main__':

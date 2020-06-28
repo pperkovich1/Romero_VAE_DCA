@@ -61,3 +61,36 @@ def load_to_cpu(path):
     file = open(path, 'rb')
     return cpkl.cpkl(file).load()
 
+from  dataloader import MSADataset, OneHotTransform
+def get_dataset_from_config(config):
+    return MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
+
+from model import VAE
+import os
+def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
+        latent_layer_size, activation_func, device):
+    model = VAE(input_length, hidden_layer_size, latent_layer_size, 
+            activation_func, device)
+    if os.path.exists(model_fullpath):
+        print("Loading saved model...")
+        model.load_state_dict(torch.load(model_fullpath, map_location=device))
+        # TODO: Do we need to run model.eval() here? see,
+        # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
+    model.to(device)
+    return model
+
+def load_model_from_config(config):
+    dataset = get_dataset_from_config(config)
+    input_length = get_input_length(dataset)
+
+    model = VAE(input_length, config.hidden_layer_size, config.latent_layer_size,
+                config.activation_function, config.device)
+    if os.path.exists(config.model_fullpath):
+        print("Loading saved model...")
+        model.load_state_dict(torch.load(config.model_fullpath, map_location=config.device))
+        # TODO: Do we need to run model.eval() here? see,
+        # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
+    # model.to(config.device)
+
+    return model
+
