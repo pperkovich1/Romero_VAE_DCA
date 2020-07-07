@@ -59,4 +59,4 @@ endif
 
 # Tell HTCondor to run on each dataset in datasets.txt
 # queue dataset,hidden,latent from datasets.txt
-queue config from run/test_config.txt
+queue config from run/example_configs.txt
