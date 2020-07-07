@@ -1,6 +1,6 @@
 ## Scripts to launch jobs on CHTC
 
-### Usage instructions 
+### Reweighting dataset
 Checkout this repo at CHTC. 
 ```shell
 
@@ -10,8 +10,8 @@ git clone https://github.com/RomeroLab/VAEs
 # Copy your aligned fasta file to the sequence_sets directory
 cp my_aligned_msa.fasta sequence_sets/
 
-# change to the chtc directory
-cd chtc
+# change to the run directory
+cd run
 
 # edit the pytorch_reweighting.sub file to change the input
 # fasta file. Use nano/emacs/vi or your favourite editor
@@ -21,6 +21,39 @@ cd chtc
 
 # run makefile
 make chtc_submit_reweighting
+```
+
+### Training
+Checkout this repo at CHTC.
+```shell
+
+# Clone this repository
+git clone https://github.com/RomeroLab/VAEs
+
+# Copy your aligned fasa file to the sequence_sets directory
+cp mv_aligned_mas.fasta sequence_sets/
+
+# Change to the configs directory
+cd configs
+
+# Create a config file stating your fasta file name and model parameters
+# See example for a template.
+# If you are testing multiple parameters, you can edit 'make_configs.py'
+
+# Change to the run directory
+cd ../run
+
+# If you didnt run make_config.py, create a .txt file with the names of your config files.
+# See example_configs.txt as a template
+
+# If you ran 'make_configs.py', it will have already generated one in the 'config' directory. You need to move it to 'run'
+mv ../configs/configs.txt .
+
+# Edit the the last line of chtc_submit_training.sub file
+queue config from run/your_configs.txt
+
+# run makefile
+make submit_training
 ```
 
 ### Expected Run Times for Reweighting
