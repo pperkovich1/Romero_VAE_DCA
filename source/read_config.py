@@ -208,6 +208,21 @@ class Config:
         return self.working_dir / pathlib.Path(
                         self.dca_params_filename,
                         ).with_suffix(".pkl")
+    @property
+    def kernel_size(self):
+        """ Parameter to set kernel size for CNNs """
+        return self.safe_get_key('kernel_size')
+    
+    @property
+    def stride(self):
+        """ Parameter to set stride steps for CNNs """
+        return self.safe_get_key('stride')
+    
+    @property
+    def padding(self):
+        """ Parameter to set padding at the edges of the input for CNNs """
+        return self.safe_get_key('padding')
+    
 
 
 def get_best_device():
@@ -217,6 +232,7 @@ def get_best_device():
     """
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     return device
+
 
 
 if __name__ == "__main__":

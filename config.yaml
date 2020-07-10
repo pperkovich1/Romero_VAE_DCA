@@ -13,13 +13,22 @@ working_dir: output
 #  2. model_loss.pkl (saved loss function)
 #  3. model_loss.png (loss function graphed)
 #  4. model_latent.pkl (saved latent space)
-model_name: model
+model_name: vae # options vae, cnnvae1d. used to determine which downstream functions to use.
 
+#vae parameters
 hidden_layer_size: 500
 latent_layer_size: 200
+
+#cnn parameters
+kernel_size: 3
+stride: 1
+padding: 1
+
+#general parameters
 activation_function: sigmoid
 learning_rate: .001
-epochs: 500
-batch_size: 128
+epochs: 5
+batch_size: 1
 
-device: auto # possible options are cpu, cuda, auto
+# device selection
+device: cuda # possible options are cpu, cuda, auto

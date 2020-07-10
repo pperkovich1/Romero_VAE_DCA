@@ -60,7 +60,7 @@ def train_model(device, model, loader, max_epochs, learning_rate,
         pickle.dump({'loss':loss_history}, fh)
 
 
-def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
+def load_vae_from_path(model_fullpath, input_length, hidden_layer_size,
         latent_layer_size, activation_func, device):
     model = VAE(input_length, hidden_layer_size, latent_layer_size, 
             activation_func, device)
@@ -72,7 +72,7 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
     model.to(device)
     return model
 
-def load_model_from_config(input_length, config):
+def load_vae_from_config(input_length, config):
     model = load_model_from_path(model_fullpath = config.model_fullpath,
             input_length = input_length,
             hidden_layer_size = config.hidden_layer_size,
@@ -80,6 +80,33 @@ def load_model_from_config(input_length, config):
             activation_func = config.activation_function,
             device = config.device)
     return model
+
+def load_cnn_vae_1d_from_path(model_fullpath, in_channels, out_channels,
+        kernel_size, stride, padding, out_padding, activation_function,
+        device):
+    model = CnnVae1D(in_channels, out_channels, kernel_size, stride, 
+            padding, out_padding, activation_func, device)
+    if os.path.exists(model_fullpath):
+        print("Loading saved model...")
+        model.load_state_dict(torch.load(model_fullpath))
+        # TODO: Do we need to run model.eval() here? see,
+        # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
+        # (JRD - only if using it in inference mode. Don't use eval() if it was checkpointed to continue training.)
+        # https://stackoverflow.com/questions/60018578/what-does-model-eval-do-in-pytorch
+    model.to(device)
+    return model
+
+def load_cnn_vae_1d_from_config(input_length, config):
+    model = load_model_from_path(model_fullpath = config.model_fullpath,
+            input_length = input_length,
+            hidden_layer_size = config.hidden_layer_size,
+            latent_layer_size = config.latent_layer_size,
+            activation_func = config.activation_function,
+            device = config.device,
+            model_object = config.model_object)
+    return model
+
+
 
 def load_sampler(num_samples, config):
     sampler = None
@@ -90,6 +117,12 @@ def load_sampler(num_samples, config):
     else:
         print("Weights do not exist. No weighted sampling will be done.")
     return sampler
+
+def train_and_save_cnn_vae_1d(config):
+    return None
+
+def train_and_save_vae(config):
+    return None
 
 def train_and_save_model(config):
     dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
@@ -116,7 +149,5 @@ if __name__=='__main__':
     parser.add_argument("config_filename",
                     help="input config file in yaml format")
     args = parser.parse_args()
-
     config = Config(args.config_filename)
-
     train_and_save_model(config)

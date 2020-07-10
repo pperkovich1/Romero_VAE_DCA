@@ -167,3 +167,17 @@ class OneHotTransform:
             ret = ret.flatten()
         return ret
 
+class CnnOneHotTransform(OneHotTransform):
+    """Class to appropriately one-hot encode protein sequences into tensors and
+    resahpe the output in the form (batch_size, channels, sequence_length)
+    where N is the number of sequences in the batch. 
+    """
+    def __call__(self, sample):
+        ret = F.one_hot(sample, self.num_labels)
+        if self.to_float:
+            ret = ret.float()
+        if self.flatten:
+            ret = ret.flatten()
+        # only added unqueeze(0) to properly format. otherwise identical
+        # to OneHotTransform
+        return ret.unsqueeze(0) 
