@@ -34,9 +34,12 @@ Make sure that the loss function converges. It should look something like the im
 <img align="right" src="images/training_loss.png" width="200" title="training loss" />
 
 ### Contributors
-1. **James Wang** 
-1. **Juan Diaz** 
-1. **Sameer D'Costa** 
+
+|  |   |
+| --- | --- |
+| **James Wang** | VAEs, CHTC scripts |
+| **Juan Diaz** | VAEs, 1D-CNN VAEs, CHTC scripts, preprocessing scripts |
+| **Sameer D'Costa** |  VAEs, DCA, CHTC scripts |
 
 See the [contributor's page](https://github.com/RomeroLab/VAEs/graphs/contributors) for more details. 
 
