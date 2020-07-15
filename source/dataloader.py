@@ -20,7 +20,7 @@ AA_map = {a:idx for idx,a in enumerate(AAs)} # map each amino acid to an index
 AA_map_str = {a:idx for idx, a in enumerate(AAs_string)}
 
 def get_msa_from_fasta(fasta_filename, size_limit=None, 
-                            as_numpy=True):
+                            as_numpy=True, as_iter=False):
     """Reads a fasta file and returns an MSA
 
     Takes a fasta filename and reads it with SeqIO and converts to a numpy
@@ -33,6 +33,8 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
         as_numpy        : return numpy byte array instead of list of seqs
 
     Returns:
+        if as_iter is True:
+            An iterator of sequences in raw string format
         if as_numpy is False:
             A list of sequences in Bio.Seq format
         if as_numpy is True:
@@ -46,7 +48,9 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
     seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
     seqs = (seq.seq.upper() for seq in seq_io_gen_slice)
     ret = None
-    if as_numpy:
+    if as_iter:
+        yield from (str(s) for s in seqs)
+    elif as_numpy:
         # convert to lists of lists for easy numpy conversion to 2D array
         ret = np.array([list(str(s)) for s in seqs], dtype="|S1")
     else:
@@ -54,7 +58,7 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
     return ret
 
 def get_msa_from_aln(aln_filename, size_limit=None, 
-                            as_numpy=True):
+                            as_numpy=True, as_iter=False):
     """Reads a (plain text) aln file (can be gzipped also) and returns an MSA
 
     Takes a simple text file (ALN) which has one sequence per line. Returns 
@@ -64,8 +68,11 @@ def get_msa_from_aln(aln_filename, size_limit=None,
         aln_filename    : Filename or filename of ALN file to read
         size_limit      : Return upto size_limit sequences
         as_numpy        : return numpy byte array instead of list of seqs
+        as_iter         : return the raw string iterator instead 
 
     Returns:
+        if as_iter is True:
+            A raw string iterator
         if as_numpy is False:
             A list of sequences in Bio.Seq format
         if as_numpy is True:
@@ -83,7 +90,9 @@ def get_msa_from_aln(aln_filename, size_limit=None,
         seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
         seqs = (seq.upper() for seq in seq_io_gen_slice)
         ret = None
-        if as_numpy:
+        if as_iter: # return the raw iterator
+            yield from seqs
+        elif as_numpy:
             # convert to lists of lists for easy numpy conversion to 2D array
             ret = np.array([list(s) for s in seqs], dtype="|S1")
         else:
@@ -91,7 +100,7 @@ def get_msa_from_aln(aln_filename, size_limit=None,
         return ret
 
 
-def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
+def get_msa_from_file(msa_file, size_limit=None, as_numpy=True, as_iter=False):
     """
         Read in the filename and call the right function to read in the MSA
         by looking at the extension
@@ -111,7 +120,8 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
                   f".fasta.gz/.a2m.gz/.txt.gz/.text.gz/.aln.gz if compressed." \
                   f"Found extension {suffix}"
         raise ValueError(err_str)
-    return file_reader_func(msa_file, size_limit=size_limit, as_numpy=as_numpy)
+    return file_reader_func(msa_file, size_limit=size_limit, as_numpy=as_numpy,
+            as_iter=as_iter)
 
 
 class MSADataset(Dataset):
