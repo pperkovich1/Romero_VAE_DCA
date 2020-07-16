@@ -34,6 +34,8 @@ import textwrap # for looping over codons
 import numpy as np
 import pandas as pd
 
+from scipy.special import logsumexp
+
 import Bio
 
 import dataloader
@@ -100,9 +102,11 @@ if __name__ == "__main__":
                     help="Path to weights output file (numpy archive)")
     args = parser.parse_args()
 
+    start_time = time.time()
+
     nt_trans_mat = pd.read_pickle(args.transition_file)
     codon_trans_mat = create_codon_transition_matrix(nt_trans_mat)
-    print(codon_trans_mat)
+    #print(codon_trans_mat)
 
     # create a mapping for non-degenerate codons
     # This will be used for one-hot encoding the sequences
@@ -110,21 +114,54 @@ if __name__ == "__main__":
     codon_map = {c:i for i, c in enumerate(
                         sorted(codon_table.forward_table.keys()))}
 
-    wt = get_codon_msa_as_int_array(args.MSAs[0], codon_map)
-    x = get_codon_msa_as_int_array(args.MSAs[1], codon_map)
+    msa_prev = get_codon_msa_as_int_array(args.MSAs[0], codon_map)
+    msa_curr = get_codon_msa_as_int_array(args.MSAs[1], codon_map)
 
     print(args.MSAs)
 
+    # create indexing for rows and columns of transition matrix
+    # in the same order as the codon_map
     codon_rows = np.array([i for i, c in enumerate(codon_trans_mat.index) 
                                 if c in codon_map]) 
     codon_cols = np.array([i for i, c in enumerate(codon_trans_mat.columns) 
                                 if c in codon_map]) 
-    # non-degenerate codon transition matrix
-    nondeg_codon_trans_mat = codon_trans_mat.iloc[codon_cols, 
-                                        codon_rows].to_numpy()
+    # q = 61 non-dengerate codons
+    # L = 186 Residue Length of protein
+    # n = number of proteins in msa_prev
+    # m = number of proteins in msa_curr
 
-    start_time = time.time()
+    # subset transition map to non-degenerate codon transition matrix
+    # Probabilities are stored as log probability
+    # Probability of transition goes from columns to rows
+    # Shape (q, q)
+    nondeg_codon_trans_mat = np.log(codon_trans_mat.iloc[codon_rows, 
+                                        codon_cols].to_numpy())
+
+    # numpy integer array for indexing
+    # shape (L,)
+    range_prot = np.arange(msa_curr.shape[1], dtype=np.uint8)
+
+    # Probability of transition from previous MSA codons to any other codon
+    ptrans = nondeg_codon_trans_mat[:, msa_prev] # shape (L, n, q)
+    ptrans = np.moveaxis(ptrans, [1,2], [0,1]) # shape (n, L, q)
+
+    # one protein in the current MSA
+    # selecting first protein in current MSA
+    y = msa_curr[0, :] # shape (L,) 
+    # probability of transition from msa_prev to y split out by codon position
+    ptrans_y = ptrans[:, range_prot, y] # shape (n, L)
+    # probability of transition from msa_prev to y aggregated
+    ptrans_y_agg = ptrans_y.sum(axis=1) # shape (n, )
+
+    # probability of transition from msa_prev to single mutants of y
+    ptrans_y_muts = (ptrans + ptrans_y_agg[:, np.newaxis, np.newaxis] - 
+            ptrans_y[:, :, np.newaxis]) # shape (n, L, q)
+    # earlier we were adding log probability now we need to actually add
+    # probability. So we use logsumexp instead of sum.
+    ptrans_y_muts_agg = logsumexp(ptrans_y_muts, axis=0)
+
+
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
-    #np.save(config.weights_fullpath, weights, allow_pickle=False)
+    np.save(args.output_weights, ptrans_y_muts_agg, allow_pickle=False)
  
