@@ -23,26 +23,23 @@
 
   Typical usage example: (from the command line)
 	python evo_weight_tools.py \
-		-i pd_transition_matrix.pkl \
-		-o ../working/evo_weights.npy \
-		#-m ../working/evo_msa.txt.gz 
-                msa_round_1.txt.gz msa2_round_2.txt.gz
+		--nt_transition_file pd_transition_matrix.pkl \
+		--output_weights ../working/evo_weights.npy \
+                --msa_prev  msa_round_1.txt.gz
+		--msa  msa2_round_2.txt.gz
 
 """
-import textwrap # for looping over codons
 
 import numpy as np
 import pandas as pd
 
-from scipy.special import logsumexp
+import torch
+import tqdm # for progress bar
 
+from scipy.special import logsumexp
 import Bio
 
 import dataloader
-
-def calc_transition_probability(seq_from, seq_to, 
-                                    transition_mat):
-    return transition_mat.lookup(list(str(seq_to)), list(str(seq_from))).prod()
 
 def create_codon_transition_matrix(nucleotide_trans_mat):
     """ Calculate codon transition matrix from nucleotide transition matrix
@@ -93,9 +90,11 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('MSAs', metavar='MSAs', type=str, nargs='*',
-                                help='MSA files')
-    parser.add_argument("-i", "--transition_file", type=str, required=True,
+    parser.add_argument("-p", "--msa_prev", type=str, required=True,
+                    help="Path to Previous MSA")
+    parser.add_argument("-m", "--msa", type=str, required=True,
+                    help="Path to Current MSA")
+    parser.add_argument("-t", "--nt_transition_file", type=str, required=True,
                     help="Path to Nucleotide Transition Matrix"
                          " (pandas pickle format)")
     parser.add_argument("-o", "--output_weights", type=str, required=True,
@@ -114,10 +113,8 @@ if __name__ == "__main__":
     codon_map = {c:i for i, c in enumerate(
                         sorted(codon_table.forward_table.keys()))}
 
-    msa_prev = get_codon_msa_as_int_array(args.MSAs[0], codon_map)
-    msa_curr = get_codon_msa_as_int_array(args.MSAs[1], codon_map)
-
-    print(args.MSAs)
+    msa_prev = get_codon_msa_as_int_array(args.msa_prev, codon_map)
+    msa_curr = get_codon_msa_as_int_array(args.msa, codon_map)
 
     # create indexing for rows and columns of transition matrix
     # in the same order as the codon_map
@@ -145,23 +142,27 @@ if __name__ == "__main__":
     ptrans = nondeg_codon_trans_mat[:, msa_prev] # shape (L, n, q)
     ptrans = np.moveaxis(ptrans, [1,2], [0,1]) # shape (n, L, q)
 
-    # one protein in the current MSA
-    # selecting first protein in current MSA
-    y = msa_curr[0, :] # shape (L,) 
-    # probability of transition from msa_prev to y split out by codon position
-    ptrans_y = ptrans[:, range_prot, y] # shape (n, L)
-    # probability of transition from msa_prev to y aggregated
-    ptrans_y_agg = ptrans_y.sum(axis=1) # shape (n, )
+    N_curr = msa_curr.shape[0] # number of elements in current MSA
+    output_weights = np.zeros((N_curr, ptrans.shape[1], ptrans.shape[2]),
+            dtype=np.float) # shape (N_curr, L, q)
+    for i in tqdm.trange(N_curr):
+        # one protein in the current MSA
+        y = msa_curr[i, :] # shape (L,) 
+        # probability of transition from msa_prev to y split out by codon position
+        ptrans_y = ptrans[:, range_prot, y] # shape (n, L)
+        # probability of transition from msa_prev to y aggregated
+        ptrans_y_agg = ptrans_y.sum(axis=1) # shape (n, )
 
-    # probability of transition from msa_prev to single mutants of y
-    ptrans_y_muts = (ptrans + ptrans_y_agg[:, np.newaxis, np.newaxis] - 
-            ptrans_y[:, :, np.newaxis]) # shape (n, L, q)
-    # earlier we were adding log probability now we need to actually add
-    # probability. So we use logsumexp instead of sum.
-    ptrans_y_muts_agg = logsumexp(ptrans_y_muts, axis=0)
-
+        # probability of transition from msa_prev to single mutants of y
+        ptrans_y_muts = (ptrans + ptrans_y_agg[:, np.newaxis, np.newaxis] - 
+                ptrans_y[:, :, np.newaxis]) # shape (n, L, q)
+        # earlier we were adding log probability but now we need to actually add
+        # probability. So we use logsumexp instead of sum.
+        ptrans_y_muts_agg = logsumexp(ptrans_y_muts, axis=0)
+        output_weights[i, :, :] = ptrans_y_muts_agg
+        #if (i > 3): break
 
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
-    np.save(args.output_weights, ptrans_y_muts_agg, allow_pickle=False)
+    np.save(args.output_weights, output_weights, allow_pickle=False)
  
