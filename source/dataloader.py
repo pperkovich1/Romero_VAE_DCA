@@ -19,6 +19,22 @@ AA_map = {a:idx for idx,a in enumerate(AAs)} # map each amino acid to an index
 # same map as above but with ascii indices
 AA_map_str = {a:idx for idx, a in enumerate(AAs_string)}
 
+def get_msa_from_fasta_iter(fasta_filename, size_limit=None):
+    """Reads a fasta file and returns a string iterator  
+
+    Args:
+        fasta_filename  : Filename or filehandle of fasta file to read
+
+    """
+    seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
+    # Read only size_limit elements of the generator
+    # if size_limit is None then we will read in everything
+    seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
+    # Here we can return a generator expression because SeqIO.parse
+    # is handling the file handle
+    return (seq.seq.upper() for seq in seq_io_gen_slice)
+ 
+
 def get_msa_from_fasta(fasta_filename, size_limit=None, 
                             as_numpy=True, as_iter=False):
     """Reads a fasta file and returns an MSA
@@ -42,20 +58,37 @@ def get_msa_from_fasta(fasta_filename, size_limit=None,
             The first axis is the sequence number. The second axis is the
             residue number. 
     """
-    seq_io_gen = SeqIO.parse(fasta_filename, "fasta") # generator of sequences
-    # Read only size_limit elements of the generator
-    # if size_limit is None then we will read in everything
-    seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
-    seqs = (seq.seq.upper() for seq in seq_io_gen_slice)
+    seqs = get_msa_from_fasta_iter(fasta_filename, size_limit)
     ret = None
     if as_iter:
-        yield from (str(s) for s in seqs)
+        ret = seqs
     elif as_numpy:
         # convert to lists of lists for easy numpy conversion to 2D array
         ret = np.array([list(str(s)) for s in seqs], dtype="|S1")
     else:
         ret = list(seqs)
     return ret
+
+def get_msa_from_aln_iter(aln_filename, size_limit):
+    """Reads a (plain text) aln file (can be gzipped also) and iterate
+        over string sequences 
+
+    Args:
+        aln_filename    : Filename or filename of ALN file to read
+        size_limit      : Return upto size_limit sequences
+    """
+    opener = open
+    if aln_filename.endswith(".gz"):
+        opener = gzip.open
+    with opener(aln_filename, "rt") as fh:
+        seq_io_gen = (line.strip() for line in fh)
+        # Read only size_limit elements of the generator
+        # if size_limit is None then we will read in everything
+        seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
+        # We need the yield from statement below so that the file
+        # handle is kept open as long as we are reading from it
+        # returning a generator expression would close fh
+        yield from (seq.upper() for seq in seq_io_gen_slice)
 
 def get_msa_from_aln(aln_filename, size_limit=None, 
                             as_numpy=True, as_iter=False):
@@ -80,24 +113,16 @@ def get_msa_from_aln(aln_filename, size_limit=None,
             The first axis is the sequence number. The second axis is the
             residue number. 
     """
-    opener = open
-    if aln_filename.endswith(".gz"):
-        opener = gzip.open
-    with opener(aln_filename, "rt") as fh:
-        seq_io_gen = (line.strip() for line in fh)
-        # Read only size_limit elements of the generator
-        # if size_limit is None then we will read in everything
-        seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
-        seqs = (seq.upper() for seq in seq_io_gen_slice)
-        ret = None
-        if as_iter: # return the raw iterator
-            yield from seqs
-        elif as_numpy:
-            # convert to lists of lists for easy numpy conversion to 2D array
-            ret = np.array([list(s) for s in seqs], dtype="|S1")
-        else:
-            ret = [Seq.Seq(s) for s in seqs]
-        return ret
+    seqs = get_msa_from_aln_iter(aln_filename, size_limit)
+    ret = None
+    if as_iter: # return the raw iterator
+        ret = seqs
+    elif as_numpy:
+        # convert to lists of lists for easy numpy conversion to 2D array
+        ret = np.array([list(s) for s in seqs], dtype="|S1")
+    else:
+        ret = [Seq.Seq(s) for s in seqs]
+    return ret
 
 
 def get_msa_from_file(msa_file, size_limit=None, as_numpy=True, as_iter=False):
