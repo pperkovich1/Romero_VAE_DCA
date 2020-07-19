@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    nt_trans_mat = pd.read_pickle(args.transition_file)
+    nt_trans_mat = pd.read_pickle(args.nt_transition_file)
     codon_trans_mat = create_codon_transition_matrix(nt_trans_mat)
     #print(codon_trans_mat)
 
