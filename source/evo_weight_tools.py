@@ -107,12 +107,7 @@ if __name__ == "__main__":
     codon_trans_mat = create_codon_transition_matrix(nt_trans_mat)
     #print(codon_trans_mat)
 
-    # create a mapping for non-degenerate codons
-    # This will be used for one-hot encoding the sequences
-    codon_table = Bio.Data.CodonTable.standard_dna_table
-    codon_map = {c:i for i, c in enumerate(
-                        sorted(codon_table.forward_table.keys()))}
-
+    from dataloader import codon_map
     msa_prev = get_codon_msa_as_int_array(args.msa_prev, codon_map)
     msa_curr = get_codon_msa_as_int_array(args.msa, codon_map)
 
