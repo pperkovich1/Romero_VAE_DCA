@@ -62,8 +62,17 @@ def load_to_cpu(path):
     return cpkl.cpkl(file).load()
 
 from  dataloader import MSADataset, OneHotTransform
-def get_dataset_from_config(config):
-    return MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
+# TODO: move OneHotTransform to the config file
+def get_dataset_from_config(config, transform=OneHotTransform(21)):
+    return MSADataset(config.aligned_msa_fullpath, transform=transform)
+
+def get_proteins_from_dataset(dataset):
+    no_weights = [val[0] for val in dataset] #removes weights from dataset
+    tensor_2d = torch.stack(no_weights) # convert to pytorch tensor
+    tensor_3d = tensor_2d.reshape(tensor_2d.size()[0], -1, 21)
+    prots = one_hots_to_proteins(tensor_3d)
+    
+    return prots
 
 from model import VAE
 import os
@@ -94,3 +103,26 @@ def load_model_from_config(config):
 
     return model
 
+from dataloader import AAs_string
+def one_hots_to_proteins(one_hots):
+    # expected input: [encodings x protein_position x amino_acids]
+    indices = torch.argmax(one_hots, dim=2)
+    proteins = [[AAs_string[i] for i in seq] for seq in indices]
+    return proteins
+
+import numpy as np
+def remove_gaps(seq, paired = None):
+    # expected input:
+    #   seq: 1D np array of chars
+    #   paired: np array with dims n x len(seq)
+    # output: (seq with all '-' removed, corresponding columns in paired removed)
+    if paired is None:
+        return np.ma.masked_where(seq=='-', seq).compressed()
+    else:
+        to_mask = seq.reshape(1, -1)
+        to_mask = np.concatenate((to_mask, paired))
+        print(to_mask)
+        masked = np.ma.masked_where(to_mask == '-', to_mask)
+        return np.ma.compress_cols(masked)
+    
+    

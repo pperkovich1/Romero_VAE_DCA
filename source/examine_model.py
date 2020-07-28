@@ -112,18 +112,32 @@ def get_reconstruction_identity_from_config(config, batch_size = None,
 def get_saved_recon_identity_as_numpy(config):
     return pickle.load(open(config.reconstruction_identity_fullpath,
                             'rb'))['idents'].numpy()
-
-def plot_seq_freq_heatmap(seqs, image_name = 'freq.png'):
-    """seqs: pytorch tensor of 1-hot encoded sequences"""
+def seqs_to_freqs(seqs):
+    # converts set of one-hot encoded sequences to a single "one-hot encoding" with the frequency of each position
     samples = len(seqs)
     counts = seqs.sum(0)
-    counts = counts.reshape(-1, 21)
     freqs = counts/samples
-    freqs = torch.transpose(freqs, 0, 1)
 
-    plt.imshow(freqs)
-    # plt.savefig(image_name, dpi=300)
     return freqs
+
+def seqs_to_freqs_2D(many_seqs):
+    # seqs_to_freqs, but for a set of different sets of seqs
+    return torch.stack([seqs_to_freqs(seqs) for seqs in many_seqs])
+
+def seqs_to_freqs_dict(seqs_dict, keys = ['free', 'fixed', 'one_free', 'one_fixed']):
+    #seqs_to_freqs_2D, but a dictionary containing sets of seqs
+    #returns dictionary with same keys
+    freqs = {}
+    for key in keys:
+        freqs[key] = seqs_to_freqs_2D(seqs_dict[key])
+    return freqs
+    
+    
+
+def plot_freq_heatmap(freqs, image_name = 'freq.png'):
+    """seqs: pytorch tensor of 1-hot encoded sequences"""
+    freqs = seqs_to_freqs(seqs)
+    return plt.imshow(freqs)
 
 
 
