@@ -26,7 +26,9 @@ class VAE(torch.nn.Module):
 
     def reparameterize(self, z_mu, z_log_var):
         # Sample epsilon from standard normal distribution
-        eps = torch.randn(z_mu.size(0), z_mu.size(1)).to(self.device)
+        # eps = torch.randn(z_mu.size(0), z_mu.size(1)).to(self.device)
+        eps = torch.randn(z_mu.size()).to(self.device)
+        # print(eps*torch.exp(z_log_var/2.))
         # note that log(x^2) = 2*log(x); hence divide by 2 to get std_dev
         # i.e., std_dev = exp(log(std_dev^2)/2) = exp(log(var)/2)
         z = z_mu + eps * torch.exp(z_log_var/2.) 
@@ -39,6 +41,7 @@ class VAE(torch.nn.Module):
             x=self.activation_func(layer(x))
         z_mean = self.z_mean(x)
         z_log_var = self.z_log_var(x)
+        #TODO: move this to decoding method? That makes more sense to me
         encoded = self.reparameterize(z_mean, z_log_var)
         return z_mean, z_log_var, encoded
     
