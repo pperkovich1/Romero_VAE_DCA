@@ -59,7 +59,7 @@ class cpkl(pickle.Unpickler):
 
 def load_to_cpu(path):
     file = open(path, 'rb')
-    return cpkl.cpkl(file).load()
+    return cpkl(file).load()
 
 from  dataloader import MSADataset, OneHotTransform
 # TODO: move OneHotTransform to the config file
@@ -107,7 +107,7 @@ from dataloader import AAs_string
 def one_hots_to_proteins(one_hots):
     # expected input: [encodings x protein_position x amino_acids]
     indices = torch.argmax(one_hots, dim=2)
-    proteins = [[AAs_string[i] for i in seq] for seq in indices]
+    proteins = np.array([[AAs_string[i] for i in seq] for seq in indices])
     return proteins
 
 import numpy as np
@@ -121,7 +121,6 @@ def remove_gaps(seq, paired = None):
     else:
         to_mask = seq.reshape(1, -1)
         to_mask = np.concatenate((to_mask, paired))
-        print(to_mask)
         masked = np.ma.masked_where(to_mask == '-', to_mask)
         return np.ma.compress_cols(masked)
     

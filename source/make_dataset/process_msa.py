@@ -79,7 +79,8 @@ def process_alignment(stats_file='stats.csv', min_cov=1.0, min_ident=0.1, max_id
     """
     stats = pd.read_csv(stats_file)
     # filter using cutoffs
-    stats = stats[(stats['identity'] > min_ident) & (stats['identity'] < max_ident) & (stats['coverage'] > min_cov)]
+    stats = stats[(stats['identity'] > min_ident) & ((stats['identity'] >= 1) | (stats['identity'] < max_ident)) & (stats['coverage'] > min_cov)]
+
     seqs = filter_pos_by_blank([list(seq) for seq in stats['seq_aln'].values], cutoff=max_blank)
 
     # make records list and write output alignment
