@@ -117,8 +117,7 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True):
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, size_limit=None, weights=None, transform=None, 
-            filterX=False):
+    def __init__(self, msa_file, size_limit=None, weights=None, transform=None):
         self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()
@@ -129,16 +128,6 @@ class MSADataset(Dataset):
         else:
             self.weights = np.array(weights).astype(np.float).squeeze()
         assert(self.weights.shape[0]==N)
-        if filterX:
-            self.filterX()
-
-
-    #TODO: I'm not sure if this method actually works or not
-    def filterX(self):
-        print('WARNING: filterX method might be wrong')
-        ''' Filters out the proteins and weights for proteins with an X amino acid'''
-        g = ((x,w) for (x,w) in zip(self.raw_data, self.weights) if x.find('X'))
-        [self.raw_data, self.weights] = list(zip(*g))
 
     def get_raw_data(self, msa_file, size_limit):
         return get_msa_from_file(msa_file, size_limit=size_limit, as_numpy=False)
@@ -165,14 +154,16 @@ class MSADataset(Dataset):
 
 class OneHotTransform:
     
-    def __init__(self, num_labels, to_float=True):
+    def __init__(self, num_labels, to_float=True, flatten=True):
         self.num_labels = num_labels
         self.to_float = to_float
+        self.flatten = flatten
 
     def __call__(self, sample):
         ret = F.one_hot(sample, self.num_labels)
         if self.to_float:
             ret = ret.float()
-        ret = ret.flatten()
+        if self.flatten:
+            ret = ret.flatten()
         return ret
 

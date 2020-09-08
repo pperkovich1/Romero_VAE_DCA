@@ -1,5 +1,5 @@
 # aligned_msa_filename: metaclust_processed_msa.fasta
-# aligned_msa_filename: processed_cmx_uniref100_90_80_10_100.fasta
+aligned_msa_filename: processed_cmx_uniref100_90_80_10_100_small.fasta
 reweighting_threshold: 0.8
 
 # These directories need to be specified relative to the main directory
@@ -15,8 +15,8 @@ working_dir: output
 #  4. model_latent.pkl (saved latent space)
 model_name: model
 
-hidden_layer_size: 400
-latent_layer_size: 20
+hidden_layer_size: 500
+latent_layer_size: 200
 activation_function: sigmoid
 learning_rate: .001
 epochs: 500

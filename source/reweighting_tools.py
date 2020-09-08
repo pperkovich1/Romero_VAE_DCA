@@ -18,7 +18,8 @@ if __name__ == "__main__":
  
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--msa_filename",
-                    help="input msa in ALN or FASTA format")
+                    help="input msa in ALN or FASTA format",
+                    required=True)
     parser.add_argument("-t", "--theta",
                     help="Thresholding Parameter (default 0.8)", default=0.8,
                     type=float)
