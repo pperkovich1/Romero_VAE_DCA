@@ -88,14 +88,17 @@ class DCA(torch.nn.Module):
         """ Create a function that will compute cross entropy loss """
         ce_loss_func = torch.nn.CrossEntropyLoss(reduction='none')
         
-        def calc_loss(x_logit, x_cat, x_weights, model):
+        def calc_loss(x_logit, x_cat, x_weights, model, verbose=False):
             loss_ce = ce_loss_func(x_logit.permute(0,2,1), x_cat)
             loss_ce = loss_ce.sum(dim=-1)
+            if verbose: print("Loss ce", loss_ce)
             loss_ce = (loss_ce * x_weights).sum()
+            if verbose: print("Weighted Loss ce", loss_ce)
 
             reg = model.calc_reg_w() + model.calc_reg_b()
-        
+            if verbose: print("Reg", reg)
             loss = (loss_ce + reg) / model.Neff
+            if verbose: print("Loss", loss)
             return loss
         return calc_loss
 
