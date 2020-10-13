@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 
+import Bio
 from Bio import Seq, SeqIO
 
 AMINO_ACIDS = np.array([aa for aa in "RKDEQNHSTCYWAILMFVPG-"], "S1")
@@ -18,6 +19,13 @@ AA_L = AAs.size # alphabet size
 AA_map = {a:idx for idx,a in enumerate(AAs)} # map each amino acid to an index
 # same map as above but with ascii indices
 AA_map_str = {a:idx for idx, a in enumerate(AAs_string)}
+
+# create a mapping for non-degenerate codons
+# This will be used for one-hot encoding the sequences
+codon_table = Bio.Data.CodonTable.standard_dna_table
+codon_map = {c:i for i, c in enumerate(
+                    sorted(codon_table.forward_table.keys()))}
+
 
 def get_msa_from_fasta_iter(fasta_filename, size_limit=None):
     """Reads a fasta file and returns a string iterator  
@@ -130,7 +138,7 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True, as_iter=False):
         Read in the filename and call the right function to read in the MSA
         by looking at the extension
     """
-    suffixes = pathlib.Path(msa_file).suffixes
+    suffixes = pathlib.Path(str(msa_file)).suffixes
     suffix = suffixes[-1]
     if len(suffixes) > 1 and suffixes[-1] == ".gz":
         suffix = suffixes[-2] # handle .fasta.gz

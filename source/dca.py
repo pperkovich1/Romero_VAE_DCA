@@ -10,6 +10,7 @@
 """
 
 import numpy as np # Used to import weights only
+import pandas as pd # Used to return the scores
 import torch
 from dataloader import MSADataset, OneHotTransform
 
@@ -87,14 +88,17 @@ class DCA(torch.nn.Module):
         """ Create a function that will compute cross entropy loss """
         ce_loss_func = torch.nn.CrossEntropyLoss(reduction='none')
         
-        def calc_loss(x_logit, x_cat, x_weights, model):
+        def calc_loss(x_logit, x_cat, x_weights, model, verbose=False):
             loss_ce = ce_loss_func(x_logit.permute(0,2,1), x_cat)
             loss_ce = loss_ce.sum(dim=-1)
+            if verbose: print("Loss ce", loss_ce)
             loss_ce = (loss_ce * x_weights).sum()
+            if verbose: print("Weighted Loss ce", loss_ce)
 
             reg = model.calc_reg_w() + model.calc_reg_b()
-        
+            if verbose: print("Reg", reg)
             loss = (loss_ce + reg) / model.Neff
+            if verbose: print("Loss", loss)
             return loss
         return calc_loss
 
@@ -188,6 +192,47 @@ def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate,
                 'bias': model.bias.detach().numpy()
                 }
     return ret
+
+def calc_contact_score_from_weights(weights, do_apc=True, as_pandas=True, 
+        dist_greater=5, sort=True):
+    """Calculate the contact scores from the weights array
+
+    The equation numbers below correspond to 2013 Ekeberg: Improved contact
+    prediction in proteins: Using pseudo-likelihoods to infer Potts models
+
+    Args:
+        weights:        np array dims (L,q,L,q) representing coupling weights
+        do_apc:         whether to do APC correction or not. 
+        as_pandas:      whether to convert matrix of scores into a dataframe
+        dist_greater:   is only applied if as_pandas is True and it returns
+                            indices i, j where i < j and |i-j| > dist_greater
+        sort:           is only applied if as_pandas is True
+
+    """
+    # convert to zero-sum guage     
+    jprime = weights - np.mean(weights, axis=0, keepdims=True) \
+                 - np.mean(weights, axis=2, keepdims=True) \
+                 + np.mean(weights, axis=(0,2), keepdims=True)
+    # Frobenius Norm (Eqn 27)
+    fn = np.linalg.norm(jprime, axis=(1,3), ord='fro')
+
+    # Corrected Norm (Eqn 28)
+    cn = fn
+    if do_apc:
+        cn = fn - (np.mean(fn, axis=0, keepdims=True) 
+                    * np.mean(fn, axis=1, keepdims=True) 
+                    / np.mean(fn, axis=(0,1), keepdims=True))
+    ret = cn
+    if as_pandas:
+        i, j = np.triu_indices_from(cn)
+        df = pd.DataFrame({'i':i, 'j':j, 'score':cn[i,j]})
+        df = df[(df.i - df.j).abs() > dist_greater] 
+        if sort:
+            df = df.sort_values('score', ascending=False)
+            df = df.reset_index(drop=True)
+        ret = df
+    return ret
+        
 
 if __name__ == "__main__":
     import time
