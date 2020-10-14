@@ -86,7 +86,7 @@ def get_msa_from_aln_iter(aln_filename, size_limit):
         size_limit      : Return upto size_limit sequences
     """
     opener = open
-    if aln_filename.endswith(".gz"):
+    if str(aln_filename).endswith(".gz"):
         opener = gzip.open
     with opener(aln_filename, "rt") as fh:
         seq_io_gen = (line.strip() for line in fh)
