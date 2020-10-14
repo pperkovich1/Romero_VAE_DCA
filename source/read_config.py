@@ -1,8 +1,11 @@
+"""
+Python file to read config file. 
+
+This file should work with any python3 version as it needs to be run
+outside this repo. 
+"""
 import functools
 import pathlib
-
-import torch
-from torch import nn
 
 import yaml
 
@@ -21,7 +24,7 @@ class Config:
 
     # where the root directory is relative to this file
     root_dir = pathlib.Path("..")
-
+    
     def __init__(self, yaml_filename):
         self.data =  self._load_yaml(yaml_filename)
 
@@ -98,12 +101,13 @@ class Config:
 
     @property
     def activation_function(self):
-        """ Type of activation function. Options: Sigmoide, """
+        """ Type of activation function. Options: Sigmoid, """
         function = self.safe_get_key('activation_function')
+        ret = None
         if function == 'sigmoid':
-            return nn.Sigmoid()
-        else:
-            return None
+            from torch import nn
+            ret = nn.Sigmoid()
+        return ret
 
     @property
     def learning_rate(self):
@@ -215,6 +219,7 @@ def get_best_device():
 
        Return gpu device if the gpu is available else return cpu
     """
+    import torch
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     return device
 
@@ -224,9 +229,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process yaml config file')
     parser.add_argument("config_filename",
                     help="input config file in yaml format")
+
+    # All the property names are arguments
+    # If any one is specified we will print out that property only
+    property_names=[p for p in dir(Config) if 
+                    isinstance(getattr(Config,p), property)]
+    for p in property_names:
+        parser.add_argument(f"--{p}", action='store_true')
+
     args = parser.parse_args()
 
     config = Config(args.config_filename)
-    print(config)
 
+    no_args_printed = True
+    for arg in vars(args):
+        if getattr(args, arg) and (arg in property_names):
+            print(getattr(config, arg))
+            no_args_printed = False
+            break
+
+    if no_args_printed: # print entire config file
+        try:
+            print(config)
+        except ImportError: # probably an error import torch on chtc
+            print("Error: If running on CHTC then provide a property to print")
 
