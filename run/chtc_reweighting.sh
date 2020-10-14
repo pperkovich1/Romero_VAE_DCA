@@ -16,6 +16,7 @@ fi
 # set up the staging environment
 tar -zxvf staging.tar.gz
 tar -zxvf sequences.tar.gz
+
 # create the output directory where we can store stuff to return
 mkdir working
 
@@ -23,7 +24,7 @@ mkdir working
 chmod +x *.sh
 
 # pass all arguments (except the first one) to the python program
-./reweighting.sh "${@:2}"
+./run/reweighting.sh "${@:2}"
 
 # tar up the output directory
 tar -zcvf reweighting_output_"$1".tar.gz -C working/ .

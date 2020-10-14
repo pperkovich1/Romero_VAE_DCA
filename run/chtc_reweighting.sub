@@ -13,10 +13,10 @@ output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
 executable = chtc_reweighting.sh
-arguments = $(Cluster)_$(Process) $(config)
+arguments = $(Cluster)_$(Process) ../$(config)
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh,sequences.tar.gz
+transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh,sequences.tar.gz,../$(config)
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

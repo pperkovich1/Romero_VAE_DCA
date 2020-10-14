@@ -14,13 +14,23 @@ clean:
 deepclean: clean
 	rm -f *output*.tar.gz
 
+# All the scripts in the run directory
+# This should be copied over to the staging archive 
+# so that they can be found in the run directory on chtc
+runscripts := $(wildcard *.sh)
+
 # Rule to make the staging archive which is sent to chtc jobs
+# The staging archive is made in such a way that it expands out to almost the
+# same layout as the github repo
+# For example: the -C ../ option below changes the archive to create paths
+# 				relative to the parent directory
 staging.tar.gz :
 	tar --exclude='.git' \
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			config.yaml
+			config.yaml \
+			$(addprefix "run/", $(runscripts))
 			# ./sequence_sets
 
 sequences.tar.gz :
@@ -47,4 +57,3 @@ move_output:
 	mv *.err logs
 	mv *.out logs
 	mv *.log logs
-	mv *output* logs
