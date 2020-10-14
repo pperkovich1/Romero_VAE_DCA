@@ -20,10 +20,11 @@ class Config:
     """
 
     # where the root directory is relative to this file
-    root_dir = pathlib.Path("..")
+#     root_dir = pathlib.Path("..")
 
-    def __init__(self, yaml_filename):
-        self.data =  self._load_yaml(yaml_filename)
+    def __init__(self, yaml_filename, root_dir = '..'):
+        self.data =  self._load_yaml(pathlib.Path(root_dir)/yaml_filename)
+        self.root_dir = root_dir
 
     def _load_yaml(self, yaml_filename):
         """ Simple function to load yaml file """
@@ -77,13 +78,13 @@ class Config:
     @property
     def dataset_dir(self):
         """Complete path to the dataset directory """
-        return Config.root_dir / pathlib.Path(self.safe_get_key('dataset_dir', 
+        return self.root_dir / pathlib.Path(self.safe_get_key('dataset_dir', 
                 'sequence_sets'))
 
     @property
     def working_dir(self):
         """ Complete path to the working directory """
-        return Config.root_dir / pathlib.Path(self.safe_get_key('working_dir', 
+        return self.root_dir / pathlib.Path(self.safe_get_key('working_dir', 
                 'sequence_sets'))
 
     @property

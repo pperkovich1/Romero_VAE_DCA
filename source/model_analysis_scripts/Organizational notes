@@ -1,0 +1,90 @@
+THE PLAN TO IMPLEMENT UMAP and T-SNE
+1. find out how to import umap
+2. import umap
+3. make smaller latent space dataset for testing
+4. run t-sne on that space
+5. run umap on that space
+6. compare results, see if they look the same
+
+THE PLAN TO REVISUALIZE LATENT SPACE FREQUENCIES
+1. make an entirely new file
+2. write method to build libraries from latent vector
+3. make libraries
+4. write method to count amino acid numbers in each position
+5. write method to calculate diversity at each position
+6. use pyplot to graph the diversity at each position
+
+THE PLAN TO VISUALIZE FREQUENCIES IN 3D
+1. run homology search using query sequence
+2. download closest matching PDB
+3. write method to load PDB into editable format
+    convert into 2d list? similar to CSV
+4. Get sequence from PDB
+5. Align pdb sequence to query sequence? (align pdb to full MSA? realign full dataset?)
+6. label columns of MSA with ss
+7. label positions of PDB with frequencies (special color for 'not in MSA', aka 'unknown')
+8. save frequencies as 'temperature'
+9. write method to convert 2d array back into pdb format
+
+THE PLAN TO WALK AROUND THE ORIGIN
+1. sample (1,0, 0, ...) and (0, 1, 0, ...) and so on
+2. compare results
+
+THE PLAN TO MOVE AROUND IN LATENT SPACE
+1. write code to move from one point in latent space to another
+2. sample from each point in line
+3. write code to highlight similarities between 2 sequences
+    %changed
+    primarily check whether it's certain amino acids at a time being changed
+
+THE PLAN TO MAKE LATENT SPACE CHIMERAS
+1. select 2 latent space sequences
+2. write code to swap various amounts of latent nodes
+3. decode (variance = 0)
+4. use code from previous plan to compare differences
+
+
+THE PLAN TO CLEAN THIS PLACE UP
+move code from examine_model into model analysis scripts
+
+
+
+
+
+
+
+import from libraries
+
+code to plot different protein libraries in 2d protein space using a VAE
+
+LABELING TRAINING SET WITH SS
+load PDB, extract sequence (doesn't work very well)
+load sequence that's aligned with WT, also load WT sequence
+clean up the pdb extracted msa because the extraction process was a mess
+use MSA seq to align secondary structure to MSA
+combine secondary structure with WT sequence, then remove the gaps
+load entire training set
+label training set with SS
+
+GRAPHING AA FREQUENCIES
+load dataset, model
+load latent space vectors
+define method that generates seqs from latent vector input
+define method that iterates through latent space holding constant some nodes and then sampling
+define method that iterates through origin vector
+define method that plots a heatmap from input aa frequencies
+constructs SS seq that aligned to training set (again?), samples aa from WT latent and origin latent
+plots input sequence
+converts sampled libraries into aa frequencies
+plots frequencies of wt with one free node
+plots frequencies of wt with one fixed node
+defines methods to convert frequencies into diversity (2d -> 1d) and then plot as a heat map
+calculates diversity of wt at each position, and plots it
+
+PROJECTS WT DIVERISTY ON 3VDH AND GRAPHS IT
+more alignment of WT with 3vdh
+extracts editable structure data from pdb file, recalls diversity values from previous section
+Stores diveristy value as temperature in extracted pb values, saves it
+
+CHECK "LOOPLESS" DATASET
+labels position as present or not-present in "loopless" MSA, saves it as pdb

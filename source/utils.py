@@ -1,3 +1,6 @@
+#TODO: replace "get_dataset_from_config" with "load_dataset" for consistency
+#TODO: remove "_from_config" from method names
+
 import torch.nn.functional as F
 import torch
 
