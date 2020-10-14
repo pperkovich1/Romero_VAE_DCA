@@ -18,7 +18,9 @@ tar -zxvf staging.tar.gz
 tar -zxvf sequences.tar.gz
 
 # create the output directory where we can store stuff to return
-mkdir working
+# FIXME: create working directory based on config
+mkdir -p working
+mkdir -p output
 
 # just in case our sh files are not executable
 chmod +x *.sh
@@ -27,7 +29,7 @@ chmod +x *.sh
 ./run/reweighting.sh "${@:2}"
 
 # tar up the output directory
-tar -zcvf reweighting_output_"$1".tar.gz -C working/ .
+tar -zcvf reweighting_output_"$1".tar.gz -C output/ .
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then
