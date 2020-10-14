@@ -17,10 +17,16 @@ fi
 tar -zxvf staging.tar.gz
 tar -zxvf sequences.tar.gz
 
+WORKINGDIR=`python source/read_config.py config.yaml --working_dir`
+if [ -z "${WORKINGDIR}" ];
+then
+    echo "Working directory not found in config file"
+    exit 1
+fi
+      
+
 # create the output directory where we can store stuff to return
-# FIXME: create working directory based on config
-mkdir -p working
-mkdir -p output
+mkdir -p ${WORKINGDIR}
 
 # just in case our sh files are not executable
 chmod +x *.sh
@@ -29,7 +35,7 @@ chmod +x *.sh
 ./run/reweighting.sh "${@:2}"
 
 # tar up the output directory
-tar -zcvf reweighting_output_"$1".tar.gz -C output/ .
+tar -zcvf reweighting_output_"$1".tar.gz -C working/ .
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then

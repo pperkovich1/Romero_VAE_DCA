@@ -1,5 +1,9 @@
 ## Scripts to launch jobs on CHTC
 
+### First time setup
+* Install pyyaml on CHTC so that the scripts can read your config files
+  ```pip3 install --user pyyaml```
+
 ### Reweighting dataset
 Checkout this repo at CHTC. 
 ```shell
