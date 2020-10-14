@@ -185,6 +185,7 @@ class MSADataset(Dataset):
 
         N = self.__len__()
         if weights is None:
+            print("Warning: Weights are not specified, setting equal weights")
             self.weights = np.ones(N, dtype=np.float);
         else:
             self.weights = np.array(weights).astype(np.float).squeeze()
