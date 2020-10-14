@@ -36,21 +36,3 @@ plotlatent: check_env
 rundca: check_env
 	${RUNDIR}/rundca.sh "../${CONFIGDCA}"
 
-staging.tar.gz : 
-	tar --exclude='.git' \
-			--exclude='.gitignore' \
-			-czvf staging.tar.gz \
-			./source \
-			./configs\
-			run/runmodel.sh\
-			run/reweighting.sh
-
-sequences.tar.gz :
-	tar -czvf /squid/jlwang5/sequences.tar.gz ./sequence_sets
-
-chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
-	condor_submit \
-			run/chtc_reweighting.sub
-submit_training: staging.tar.gz sequences.tar.gz
-	condor_submit \
-			run/chtc_train_model.sub
