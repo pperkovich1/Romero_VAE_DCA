@@ -156,6 +156,24 @@ def get_msa_from_file(msa_file, size_limit=None, as_numpy=True, as_iter=False):
     return file_reader_func(msa_file, size_limit=size_limit, as_numpy=as_numpy,
             as_iter=as_iter)
 
+def get_codon_msa_as_int_array(filename, codon_map):
+    """
+        Returns an CODON msa MSA as a two dimension numpy array
+        (N, L) where N = Number of sequences in the MSA
+                     L = Length of the protein (# of Amino Acid Residues)
+               and each value in this array is the value of codon_map
+
+        `codon_map`: a dictionary mapping codons (as strings of length 3)
+                     to integer values
+    """
+    seq_iter = get_msa_from_file(filename, as_iter=True)
+
+    def codon_seq_to_int_list(seq): 
+        return [codon_map[seq[3*i:(3*i+3)]] for i in range(len(seq)//3)]
+    
+    return np.array([codon_seq_to_int_list(seq) for seq in seq_iter], 
+                        dtype=np.uint8) 
+
 
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
