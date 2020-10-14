@@ -5,18 +5,18 @@ universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = chtc_reweighting_$(Cluster)_$(Process).log.txt
-error = chtc_reweighting_$(Cluster)_$(Process).err.txt
-output = chtc_reweighting_$(Cluster)_$(Process).out.txt
+log = logs/chtc_reweighting_$(Cluster)_$(Process).log.txt
+error = logs/chtc_reweighting_$(Cluster)_$(Process).err.txt
+output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 
-squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
+#squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 
 # set the executable to run
 executable = chtc_reweighting.sh
 arguments = $(Cluster)_$(Process) $(config)
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh, $(squid)/sequences.tar.gz
+transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh,sequences.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -45,4 +45,4 @@ if ! defined DISABLE_FLOCKING
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue config from configs.txt
+queue config from (config.yaml)

@@ -6,7 +6,7 @@ CONFIG := config.yaml
 # clean logs and error files and code that is staged
 clean:
 	rm -rf logs/*
-	rm -f staging.tar.gz
+	rm -f staging.tar.gz sequences.tar.gz
 	rm -f docker_stderror
 	rm -f config.yaml
 
@@ -20,14 +20,14 @@ staging.tar.gz :
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			./configs\
-			run/runmodel.sh\
-			run/reweighting.sh
+			config.yaml
 			# ./sequence_sets
-			# config.yaml
 
 sequences.tar.gz :
-	tar -czvf /squid/jlwang5/sequences.tar.gz ../sequence_sets
+	tar --exclude='.git' \
+			--exclude='.gitignore' \
+			-czvf sequences.tar.gz -C ../ \
+			sequence_sets
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
@@ -36,6 +36,7 @@ chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \ #		chtc_reweighting.sub
+
 submit_training: staging.tar.gz sequences.tar.gz
 	condor_submit \
 			chtc_train_model.sub

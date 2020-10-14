@@ -1,5 +1,5 @@
 # aligned_msa_filename: metaclust_processed_msa.fasta
-aligned_msa_filename: processed_cmx_uniref100_90_80_10_100_small.fasta
+aligned_msa_filename: A1_uniref90_filtered.aln.gz
 reweighting_threshold: 0.8
 
 # These directories need to be specified relative to the main directory
@@ -13,10 +13,10 @@ working_dir: output
 #  2. model_loss.pkl (saved loss function)
 #  3. model_loss.png (loss function graphed)
 #  4. model_latent.pkl (saved latent space)
-model_name: model
+model_name: p450_dim5
 
-hidden_layer_size: 500
-latent_layer_size: 200
+hidden_layer_size: 1000
+latent_layer_size: 5
 activation_function: sigmoid
 learning_rate: .001
 epochs: 500
