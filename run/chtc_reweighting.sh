@@ -18,7 +18,8 @@ tar -zxvf staging.tar.gz
 tar -zxvf sequences.tar.gz
 
 WORKINGDIR=`python source/read_config.py config.yaml --working_dir`
-if [ -z "${WORKINGDIR}" ];
+WORKINGDIR_NOPARENT=${WORKINGDIR#../}
+if [ -z "${WORKINGDIR_NOPARENT}" ];
 then
     echo "Working directory not found in config file"
     exit 1
@@ -35,7 +36,7 @@ chmod +x *.sh
 ./run/reweighting.sh "${@:2}"
 
 # tar up the output directory
-tar -zcvf reweighting_output_"$1".tar.gz -C working/ .
+tar -zcvf reweighting_output_"$1".tar.gz -C ${WORKINGDIR_NOPARENT}/ .
 
 # clean up all subdirectories
 if [ -f "$TOPDIR_FILE" ]; then
