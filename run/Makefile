@@ -30,7 +30,7 @@ staging.tar.gz :
 			-czvf staging.tar.gz -C ../ \
 			./source \
 			config.yaml \
-			$(addprefix "run/", $(RUNSCRIPTS))
+			$(addprefix run/, $(RUNSCRIPTS))
 
 SEQUENCE_SET=$(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
 sequences.tar.gz :
