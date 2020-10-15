@@ -17,17 +17,19 @@ fi
 tar -zxvf staging.tar.gz
 tar -zxvf sequences.tar.gz
 
+# by default WORKINGDIR is '../working'
 WORKINGDIR=`python source/read_config.py config.yaml --working_dir`
-WORKINGDIR_NOPARENT=${WORKINGDIR#../}
+# remove the ../ from the directory name so that WORKINGDIR_NOPARENT is
+# 'working'
+WORKINGDIR_NOPARENT=${WORKINGDIR#../} 
 if [ -z "${WORKINGDIR_NOPARENT}" ];
 then
     echo "Working directory not found in config file"
     exit 1
 fi
-      
 
 # create the output directory where we can store stuff to return
-mkdir -p ${WORKINGDIR}
+mkdir -p ${WORKINGDIR_NOPARENT}
 
 # just in case our sh files are not executable
 chmod +x *.sh
