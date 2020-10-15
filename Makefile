@@ -1,19 +1,22 @@
 
-.PHONY : clean reweighting
+.PHONY : clean reweighting check_env
 
 RUNDIR=run
 CONFIG=config.yaml
 CONFIG2D=config2d.yaml # config file with latent space of dimension 2
 CONFIGDCA=config_dca.yaml
 
+CHECK_CONDA=1
 CONDA_PYTORCH_ENV=pytorch-docker
 
-
 check_env:
+ifeq ($(CHECK_CONDA), 1)
+	@echo "Checking for Conda environment by default. Disable this with CHECK_CONDA=0"
 	# check that we have the right conda environment
-	ifneq ($(CONDA_DEFAULT_ENV), $(CONDA_PYTORCH_ENV))
+ifneq ($(CONDA_DEFAULT_ENV), $(CONDA_PYTORCH_ENV))
 	$(error CONDA needs to be activated in $(CONDA_PYTORCH_ENV) environment )
-	endif
+endif
+endif
 
 clean:
 	rm -f working/*.npy \

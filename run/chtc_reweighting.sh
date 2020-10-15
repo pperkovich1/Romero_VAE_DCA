@@ -2,7 +2,7 @@
 
 # Shell script to launch reweighting script
 # $1 is the postfix to the output tar.gz file
-# $2 onwards are passed onto the python program
+# $2 onwards are passed onto the Makefile in the top directory
 
 CHTC_WORK_DIR="chtc_work"
 
@@ -11,7 +11,7 @@ CHTC_WORK_DIR="chtc_work"
 # anything in this directory after we are done. 
 mkdir -p "${CHTC_WORK_DIR}"
 
-mv config.yaml staging.tar.gz sequences.tar.gz "${CHTC_WORK_DIR}"
+mv staging.tar.gz sequences.tar.gz "${CHTC_WORK_DIR}"
 cd "${CHTC_WORK_DIR}"
 
 # set up the staging environment
@@ -33,15 +33,16 @@ fi
 mkdir -p ${WORKINGDIR_NOPARENT}
 
 # just in case our sh files are not executable
-chmod +x *.sh
+chmod +x run/*.sh
 
 # pass all arguments (except the first one) to the python program
-./run/reweighting.sh "${@:2}"
+make CONFIG=config.yaml CONFIGDCA=config.yaml CONFIG2d=config.yaml \
+        CHECK_CONDA=0 "${@:2}"
 
 
 MODEL_NAME=`python source/read_config.py config.yaml --model_name`
 # tar up the output directory
-OUTPUT_TAR_GZ=reweighting_output_"${MODEL_NAME}".tar.gz
+OUTPUT_TAR_GZ=output_"${MODEL_NAME}".tar.gz
 tar -zcvf ../"${OUTPUT_TAR_GZ}"  -C "${WORKINGDIR_NOPARENT}"/ .
 
 # reweighting_output_<model_name>.tar.gz should be returned automatically

@@ -50,9 +50,7 @@ chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \ 
 	#		chtc_reweighting.sub
-	# Run on GPU instead (default)
+	# Run on GPU instead (This is the default)
 	condor_submit chtc_reweighting.sub
 
-chtc_submit_training: staging.tar.gz sequences.tar.gz
-	condor_submit chtc_train_model.sub
 
