@@ -26,10 +26,11 @@ RUNSCRIPTS := $(wildcard *.sh)
 # 				relative to the parent directory
 staging.tar.gz :
 	tar --exclude='.git' \
+			--transform='s/$(CONFIG)/config.yaml/' \
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			config.yaml \
+			$(CONFIG) \
 			$(addprefix run/, $(RUNSCRIPTS))
 
 SEQUENCE_SET=$(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
