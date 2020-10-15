@@ -9,7 +9,6 @@ clean:
 	rm -rf logs/*
 	rm -f staging.tar.gz sequences.tar.gz
 	rm -f docker_stderror
-	rm -f config.yaml
 
 # clean all output files 
 deepclean: clean
@@ -44,13 +43,13 @@ sequences.tar.gz :
 			sequence_sets/"$(SEQUENCE_SET)"
 
 # submit jobs
-chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
+chtc_run: staging.tar.gz sequences.tar.gz
 	# Example submit for running on CPU only
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \ 
-	#		chtc_reweighting.sub
+	#		chtc_run.sub
 	# Run on GPU instead (This is the default)
-	condor_submit chtc_reweighting.sub
+	condor_submit chtc_run.sub
 
 

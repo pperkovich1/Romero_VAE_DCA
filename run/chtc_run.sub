@@ -12,7 +12,7 @@ output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 #squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 
 # set the executable to run
-executable = chtc_reweighting.sh
+executable = chtc_run.sh
 arguments = $(Cluster)_$(Process) reweighting 
 
 # take our python script and data to the compute node
