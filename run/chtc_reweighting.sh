@@ -42,6 +42,6 @@ chmod +x *.sh
 MODEL_NAME=`python source/read_config.py config.yaml --model_name`
 # tar up the output directory
 OUTPUT_TAR_GZ=reweighting_output_"${MODEL_NAME}".tar.gz
-tar -zcvf ../"${OUTPUT_TAR_GZ}  -C ${WORKINGDIR_NOPARENT}/ .
+tar -zcvf ../"${OUTPUT_TAR_GZ}"  -C "${WORKINGDIR_NOPARENT}"/ .
 
 # reweighting_output_<model_name>.tar.gz should be returned automatically

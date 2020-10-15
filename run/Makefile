@@ -15,9 +15,9 @@ clean:
 deepclean: clean
 	rm -f *output*.tar.gz
 
-# All the scripts in the run directory
+# All the scripts in the run directory are in this variable
 # This should be copied over to the staging archive 
-# so that they can be found in the run directory on chtc
+# so that they can be found in the run directory on a chtc node
 RUNSCRIPTS := $(wildcard *.sh)
 
 # Rule to make the staging archive which is sent to chtc jobs
@@ -56,9 +56,3 @@ chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
 chtc_submit_training: staging.tar.gz sequences.tar.gz
 	condor_submit chtc_train_model.sub
 
-move_output:
-	rm -f docker_stderror
-	rm -f config.yaml
-	mv *.err logs
-	mv *.out logs
-	mv *.log logs
