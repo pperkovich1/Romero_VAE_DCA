@@ -1,13 +1,8 @@
 #!/bin/bash
 
 # Shell script to launch reweighting script
-Cluster=$1
-Process=$2
-config=$3
-# dataset=$3
-# hidden=$4
-# latent=$5
-# config=$6
+Cluster_Process=$1
+config=$2
 
 TOPDIR_FILE=chtc_root.txt
 if [ -f "$TOPDIR_FILE" ]; then

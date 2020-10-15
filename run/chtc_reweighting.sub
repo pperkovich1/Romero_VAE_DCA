@@ -13,10 +13,10 @@ output = logs/chtc_reweighting_$(Cluster)_$(Process).out.txt
 
 # set the executable to run
 executable = chtc_reweighting.sh
-arguments = $(Cluster)_$(Process) ../$(config)
+arguments = $(Cluster)_$(Process) ../$(CONFIG)
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh,sequences.tar.gz,../$(config)
+transfer_input_files = staging.tar.gz,chtc_root.txt,sequences.tar.gz,../$(CONFIG)
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -45,4 +45,4 @@ if ! defined DISABLE_FLOCKING
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue config from (config.yaml)
+queue

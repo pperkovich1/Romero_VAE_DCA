@@ -2,37 +2,27 @@
 # TODO: make this consistent with other submit files
 # TODO: variable capitalization is inconsistent
 
-#notification = Always
-#notify_user = jlwang5@wisc.edu
-
 # Must set the universe to Docker
 universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
-# sends output to a subdirectory
-#initialdir = /home/jlwang5/VAEs/run/logs_2
-# config = ../config.yaml
-#squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
-# dataset = processed_cmx_uniref100_90_80_10_100.fasta
-
 # set the log, error and output files
-log = chtc_model_training_$(Process).log
-error = chtc_model_training_$(Process).err
-output = chtc_model_training_$(Process).out
+log = logs/chtc_model_training_$(Cluster)_$(Process).log
+error = logs/chtc_model_training_$(Cluster)_$(Process).err
+output = logs/chtc_model_training_$(Cluster)_$(Process).out
 
 
 # set the executable to run
 executable = chtc_train_model.sh
 # arguments = $(Cluster) $(Process) $(dataset) $(hidden) $(latent) $(config)
-arguments = $(Cluster) $(Process) $(config)
+arguments = $(Cluster)_$(Process) ../$(config)
 
 # take our python script and data to the compute node
 #transfer_input_files = ../staging.tar.gz, ../chtc_root.txt, ../chtc_train_model.sh, $(squid)/sequences.tar.gz
-transfer_input_files = staging.tar.gz, chtc_root.txt, sequences.tar.gz
+transfer_input_files = staging.tar.gz, chtc_root.txt, sequences.tar.gz, ../$(config)
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-# output_destination = url://fs.biochem.wisc.edu/Groups/RomeroGrp/General/James_W/server_runs/drop_point
   
 # We must request 1 CPU in addition to 1 GPU (if needed)
 request_cpus = 1
@@ -50,7 +40,7 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 10GB
+request_memory = 4GB
 request_disk = 1GB
 
 if ! defined DISABLE_FLOCKING

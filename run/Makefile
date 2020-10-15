@@ -1,6 +1,7 @@
 
 .PHONY: clean deepclean chtc_submit_reweighting chtc_submit_training
 
+# default config file but it can be changed on the command line
 CONFIG := config.yaml
 
 # clean logs and error files and code that is staged
@@ -42,14 +43,14 @@ sequences.tar.gz :
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
-	condor_submit \
+	condor_submit CONFIG=$(CONFIG) \
 			chtc_reweighting.sub
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
 	#		DISABLE_GPU=1 \ #		chtc_reweighting.sub
 
 submit_training: staging.tar.gz sequences.tar.gz
-	condor_submit \
+	condor_submit CONFIG=$(CONFIG) \
 			chtc_train_model.sub
 
 move_output:
