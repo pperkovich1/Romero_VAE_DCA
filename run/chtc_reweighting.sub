@@ -37,8 +37,8 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 50GB
-request_disk = 500MB
+request_memory = 2GB
+request_disk = 1GB
 
 if ! defined DISABLE_FLOCKING
     +WantFlocking = true

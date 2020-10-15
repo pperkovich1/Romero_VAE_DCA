@@ -17,7 +17,7 @@ deepclean: clean
 # All the scripts in the run directory
 # This should be copied over to the staging archive 
 # so that they can be found in the run directory on chtc
-runscripts := $(wildcard *.sh)
+RUNSCRIPTS := $(wildcard *.sh)
 
 # Rule to make the staging archive which is sent to chtc jobs
 # The staging archive is made in such a way that it expands out to almost the
@@ -30,14 +30,14 @@ staging.tar.gz :
 			-czvf staging.tar.gz -C ../ \
 			./source \
 			config.yaml \
-			$(addprefix "run/", $(runscripts))
-			# ./sequence_sets
+			$(addprefix "run/", $(RUNSCRIPTS))
 
+SEQUENCE_SET=$(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
 sequences.tar.gz :
 	tar --exclude='.git' \
 			--exclude='.gitignore' \
 			-czvf sequences.tar.gz -C ../ \
-			sequence_sets
+			sequence_sets/$(SEQUENCE_SET)
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
