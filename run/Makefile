@@ -25,33 +25,36 @@ RUNSCRIPTS := $(wildcard *.sh)
 # same layout as the github repo
 # For example: the -C ../ option below changes the archive to create paths
 # 				relative to the parent directory
+# We rename the $(CONFIG) file to be config.yaml
 staging.tar.gz :
 	tar --exclude='.git' \
 			--transform='s/$(CONFIG)/config.yaml/' \
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			$(CONFIG) \
+			"$(CONFIG)" \
+			Makefile \
 			$(addprefix run/, $(RUNSCRIPTS))
 
-SEQUENCE_SET=$(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
+SEQUENCE_SET := $(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
 sequences.tar.gz :
 	tar --exclude='.git' \
 			--exclude='.gitignore' \
 			-czvf sequences.tar.gz -C ../ \
-			sequence_sets/$(SEQUENCE_SET)
+			sequence_sets/"$(SEQUENCE_SET)"
 
 # submit jobs
 chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
-	condor_submit CONFIG=$(CONFIG) \
-			chtc_reweighting.sub
+	# Example submit for running on CPU only
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
-	#		DISABLE_GPU=1 \ #		chtc_reweighting.sub
+	#		DISABLE_GPU=1 \ 
+	#		chtc_reweighting.sub
+	# Run on GPU instead (default)
+	condor_submit chtc_reweighting.sub
 
-submit_training: staging.tar.gz sequences.tar.gz
-	condor_submit CONFIG=$(CONFIG) \
-			chtc_train_model.sub
+chtc_submit_training: staging.tar.gz sequences.tar.gz
+	condor_submit chtc_train_model.sub
 
 move_output:
 	rm -f docker_stderror
