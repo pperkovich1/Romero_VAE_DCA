@@ -11,9 +11,11 @@ CONFIG_DIR := ..
 CHTC_MAKE_COMMAND = reweighting
 
 
-
-
 CONFIG_DIR_REAL = $(realpath $(CONFIG_DIR))
+
+# empty target
+Nothing: 
+
 
 # clean logs and error files and code that is staged
 clean:
