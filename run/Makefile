@@ -1,8 +1,19 @@
 
-.PHONY: clean deepclean chtc_submit_reweighting chtc_submit_training
+.PHONY: clean deepclean chtc_run
 
 # default config file but it can be changed on the command line
 CONFIG := config.yaml
+# default directory that the config file is in (relative to this makefile)
+# or can be an absolute path
+CONFIG_DIR := ..
+# can be changed on the command line to any target in the Makefile in the 
+# parent directory
+CHTC_MAKE_COMMAND = reweighting
+
+
+
+
+CONFIG_DIR_REAL = $(realpath $(CONFIG_DIR))
 
 # clean logs and error files and code that is staged
 clean:
@@ -31,9 +42,10 @@ staging.tar.gz :
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			"$(CONFIG)" \
 			Makefile \
-			$(addprefix run/, $(RUNSCRIPTS))
+			$(addprefix run/, $(RUNSCRIPTS)) \
+			-C $(CONFIG_DIR_REAL) \
+			"$(CONFIG)" \
 
 SEQUENCE_SET := $(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
 sequences.tar.gz :
@@ -50,6 +62,6 @@ chtc_run: staging.tar.gz sequences.tar.gz
 	#		DISABLE_GPU=1 \ 
 	#		chtc_run.sub
 	# Run on GPU instead (This is the default)
-	condor_submit chtc_run.sub
+	condor_submit CHTC_MAKE_COMMAND=$(CHTC_MAKE_COMMAND) chtc_run.sub
 
 

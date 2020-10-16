@@ -6,7 +6,7 @@
 # This script is supposed to be run from the run directory on CHTC 
 # > ./get_config_chtc.sh ../config.yaml --working_dir
 
-# In both cases, the CHTC server and the group server, this script should be
-# able to find the source directory and the read_config.py script 
+# To see the help run the command with argument -h
+# > ./get_config_chtc.sh -h
 
 python3 "../source/read_config.py" "$@"
