@@ -33,6 +33,10 @@ reweighting: check_env
 runmodel: check_env
 	${RUNDIR}/runmodel.sh ../${CONFIG}
 
+reweight_and_run: check_env
+	${RUNDIR}/reweighting.sh ../${CONFIG}
+	${RUNDIR}/runmodel.sh ../${CONFIG}
+
 plotlatent: check_env
 	${RUNDIR}/plotlatent.sh ../${CONFIG2D}
 
