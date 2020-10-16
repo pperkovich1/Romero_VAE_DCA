@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Shell script to launch reweighting script
+# Shell script to launch run script
 # $1 is the postfix to the output tar.gz file
 # $2 onwards are passed onto the Makefile in the top directory
 
@@ -45,4 +45,4 @@ MODEL_NAME=`python source/read_config.py config.yaml --model_name`
 OUTPUT_TAR_GZ=output_"${MODEL_NAME}".tar.gz
 tar -zcvf ../"${OUTPUT_TAR_GZ}"  -C "${WORKINGDIR_NOPARENT}"/ .
 
-# reweighting_output_<model_name>.tar.gz should be returned automatically
+# output_<model_name>.tar.gz should be returned automatically

@@ -16,7 +16,7 @@ if [ $# -lt 2 ]
 then
     echo "$# arguments supplied. Must supply atleast two."
     echo "Usage: $0 make_file_command config [configs...]"
-    echo "Example: $0 reweighting ../config.yaml ../config_some.yaml"
+    echo "Example: $0 reweight_and_run ../config.yaml ../config_some.yaml"
     exit 1
 fi
 

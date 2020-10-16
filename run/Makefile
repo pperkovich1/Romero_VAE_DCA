@@ -16,11 +16,13 @@ CONFIG_DIR_REAL = $(realpath $(CONFIG_DIR))
 # empty target
 Nothing: 
 
-
-# clean logs and error files and code that is staged
-clean:
-	rm -rf logs/*
+# clean code that was staged
+clean_chtc_tarballs:
 	rm -f staging.tar.gz sequences.tar.gz
+
+# clean logs and error files 
+clean: clean_chtc_tarballs
+	rm -rf logs/*
 	rm -f docker_stderror
 
 # clean all output files 
@@ -38,7 +40,7 @@ RUNSCRIPTS := $(wildcard *.sh)
 # For example: the -C ../ option below changes the archive to create paths
 # 				relative to the parent directory
 # We rename the $(CONFIG) file to be config.yaml
-staging.tar.gz :
+staging.tar.gz : $(CONFIG_DIR_REAL)/$(CONFIG)
 	tar --exclude='.git' \
 			--transform='s/$(CONFIG)/config.yaml/' \
 			--exclude='.gitignore' \
@@ -50,11 +52,13 @@ staging.tar.gz :
 			"$(CONFIG)" \
 
 SEQUENCE_SET := $(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
-sequences.tar.gz :
+SEQUENCE_FULL_PATH_REL_ROOT := "sequence_sets/$(SEQUENCE_SET)"
+
+sequences.tar.gz : ../$(SEQUENCE_FULL_PATH_REL_ROOT)
 	tar --exclude='.git' \
 			--exclude='.gitignore' \
 			-czvf sequences.tar.gz -C ../ \
-			sequence_sets/"$(SEQUENCE_SET)"
+			"$(SEQUENCE_FULL_PATH_REL_ROOT)"
 
 # submit jobs
 chtc_run: staging.tar.gz sequences.tar.gz
