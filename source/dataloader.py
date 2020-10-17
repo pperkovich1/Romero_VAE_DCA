@@ -86,7 +86,7 @@ def get_msa_from_aln_iter(aln_filename, size_limit):
         size_limit      : Return upto size_limit sequences
     """
     opener = open
-    if aln_filename.endswith(".gz"):
+    if str(aln_filename).endswith(".gz"):
         opener = gzip.open
     with opener(aln_filename, "rt") as fh:
         seq_io_gen = (line.strip() for line in fh)
@@ -185,6 +185,7 @@ class MSADataset(Dataset):
 
         N = self.__len__()
         if weights is None:
+            print("Warning: Weights are not specified, setting equal weights")
             self.weights = np.ones(N, dtype=np.float);
         else:
             self.weights = np.array(weights).astype(np.float).squeeze()

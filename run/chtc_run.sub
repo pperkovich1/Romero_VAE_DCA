@@ -1,22 +1,22 @@
-# submit file for VAEs in Pytorch
+# submit file for running CHTC MSAs in Pytorch
 
 # Must set the universe to Docker
 universe = docker
 docker_image = romerolab/chtc:pytorch-nvidia-v16Dec19
 
 # set the log, error and output files 
-log = chtc_reweighting_$(Cluster)_$(Process).log.txt
-error = chtc_reweighting_$(Cluster)_$(Process).err.txt
-output = chtc_reweighting_$(Cluster)_$(Process).out.txt
+log = logs/chtc_run_$(Cluster)_$(Process).log.txt
+error = logs/chtc_run_$(Cluster)_$(Process).err.txt
+output = logs/chtc_run_$(Cluster)_$(Process).out.txt
 
-squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
+#squid = http://proxy.chtc.wisc.edu/SQUID/jlwang5
 
 # set the executable to run
-executable = chtc_reweighting.sh
-arguments = $(Cluster)_$(Process) $(config)
+executable = chtc_run.sh
+arguments = $(Cluster)_$(Process) $(CHTC_MAKE_COMMAND) 
 
 # take our python script and data to the compute node
-transfer_input_files = staging.tar.gz,chtc_root.txt,reweighting.sh, $(squid)/sequences.tar.gz
+transfer_input_files = staging.tar.gz,sequences.tar.gz
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -26,7 +26,7 @@ request_cpus = 1
 
 if ! defined DISABLE_GPU
 # condor_submit was run from the command line like 
-# condor_submit DISABLE_GPU=1 chtc_reweighting.sub
+# condor_submit DISABLE_GPU=1 chtc_run.sub
   request_gpus = 1
   # We require a machine with a modern version of the CUDA driver
   Requirements = (Target.CUDADriverVersion >= 10.1) && (Target.CUDACapability >= 5)
@@ -37,12 +37,12 @@ if ! defined DISABLE_GPU
 endif
 
 # select some memory and disk space
-request_memory = 50GB
-request_disk = 500MB
+request_memory = 2GB
+request_disk = 1GB
 
 if ! defined DISABLE_FLOCKING
     +WantFlocking = true
 endif
 
 # Tell HTCondor to run 1 instances of our job:
-queue config from configs.txt
+queue

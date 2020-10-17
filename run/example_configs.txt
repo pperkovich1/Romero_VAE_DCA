@@ -1,3 +1,0 @@
-../configs/example_config_200_10.yaml
-../configs/example_config_200_5.yaml
-../configs/example_config_200_2.yaml

@@ -1,6 +1,10 @@
 ## Scripts to launch jobs on CHTC
 
-### Reweighting dataset
+### First time setup
+* Install pyyaml on CHTC so that the scripts can read your config files
+  ```pip3 install --user pyyaml```
+
+### Running scripts on dataset
 Checkout this repo at CHTC. 
 ```shell
 
@@ -8,52 +12,34 @@ Checkout this repo at CHTC.
 git clone https://github.com/RomeroLab/VAEs
 
 # Copy your aligned fasta file to the sequence_sets directory
+# Compress it with gzip if it is large
 cp my_aligned_msa.fasta sequence_sets/
+
+# edit config file "config.yaml" to set the right aligned_msa
+# fasta file. Use nano/emacs/vi or your favourite editor
 
 # change to the run directory
 cd run
 
-# edit the pytorch_reweighting.sub file to change the input
-# fasta file. Use nano/emacs/vi or your favourite editor
-
-# Replace cmx_aligned_blank_90 with my_aligned_msa in the
-# second last line. Also set the threshold param (default 0.8)
-
-# run makefile
-make chtc_submit_reweighting
+# clean the output directory if there is anything left over from previous runs
+make deepclean 
+# run makefile to submit your job and msa to 
+make CHTC_MAKE_COMMAND=reweight_and_run chtc_run
 ```
 
-### Training
-Checkout this repo at CHTC.
+### Running multiple configs
+
 ```shell
 
-# Clone this repository
-git clone https://github.com/RomeroLab/VAEs
+# Edit your config.yaml files using vi/nano etc
+# Make sure that each config file has a different model name
+# so that they do not overwrite each other
+# Let us assume they are labeled config_1.yaml, config_2.yaml etc
+# and they live in the root directory of this repository
 
-# Copy your aligned fasa file to the sequence_sets directory
-cp mv_aligned_mas.fasta sequence_sets/
-
-# Change to the configs directory
-cd configs
-
-# Create a config file stating your fasta file name and model parameters
-# See example for a template.
-# If you are testing multiple parameters, you can edit 'make_configs.py'
-
-# Change to the run directory
-cd ../run
-
-# If you didnt run make_config.py, create a .txt file with the names of your config files.
-# See example_configs.txt as a template
-
-# If you ran 'make_configs.py', it will have already generated one in the 'config' directory. You need to move it to 'run'
-mv ../configs/configs.txt .
-
-# Edit the the last line of chtc_submit_training.sub file
-queue config from run/your_configs.txt
-
-# run makefile
-make submit_training
+cd run
+# submit all configs to CHTC nodes
+./submit_all_configs.sh reweight_and_run ../config_*.yaml
 ```
 
 ### Expected Run Times for Reweighting

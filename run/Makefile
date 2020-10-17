@@ -1,49 +1,73 @@
 
-.PHONY: clean deepclean chtc_submit_reweighting chtc_submit_training
+.PHONY: clean deepclean chtc_run
 
+# default config file but it can be changed on the command line
 CONFIG := config.yaml
+# default directory that the config file is in (relative to this makefile)
+# or can be an absolute path
+CONFIG_DIR := ..
+# can be changed on the command line to any target in the Makefile in the 
+# parent directory
+CHTC_MAKE_COMMAND = reweighting
 
-# clean logs and error files and code that is staged
-clean:
+
+CONFIG_DIR_REAL = $(realpath $(CONFIG_DIR))
+
+# empty target
+Nothing: 
+
+# clean code that was staged
+clean_chtc_tarballs:
+	rm -f staging.tar.gz sequences.tar.gz
+
+# clean logs and error files 
+clean: clean_chtc_tarballs
 	rm -rf logs/*
-	rm -f staging.tar.gz
 	rm -f docker_stderror
-	rm -f config.yaml
 
 # clean all output files 
 deepclean: clean
 	rm -f *output*.tar.gz
 
+# All the scripts in the run directory are in this variable
+# This should be copied over to the staging archive 
+# so that they can be found in the run directory on a chtc node
+RUNSCRIPTS := $(wildcard *.sh)
+
 # Rule to make the staging archive which is sent to chtc jobs
-staging.tar.gz :
+# The staging archive is made in such a way that it expands out to almost the
+# same layout as the github repo
+# For example: the -C ../ option below changes the archive to create paths
+# 				relative to the parent directory
+# We rename the $(CONFIG) file to be config.yaml
+staging.tar.gz : $(CONFIG_DIR_REAL)/$(CONFIG)
 	tar --exclude='.git' \
+			--transform='s/$(CONFIG)/config.yaml/' \
 			--exclude='.gitignore' \
 			-czvf staging.tar.gz -C ../ \
 			./source \
-			./configs\
-			run/runmodel.sh\
-			run/reweighting.sh
-			# ./sequence_sets
-			# config.yaml
+			Makefile \
+			$(addprefix run/, $(RUNSCRIPTS)) \
+			-C $(CONFIG_DIR_REAL) \
+			"$(CONFIG)" \
 
-sequences.tar.gz :
-	tar -czvf /squid/jlwang5/sequences.tar.gz ../sequence_sets
+SEQUENCE_SET := $(shell ./get_config_chtc.sh ../$(CONFIG) --aligned_msa_filename)
+SEQUENCE_FULL_PATH_REL_ROOT := "sequence_sets/$(SEQUENCE_SET)"
+
+sequences.tar.gz : ../$(SEQUENCE_FULL_PATH_REL_ROOT)
+	tar --exclude='.git' \
+			--exclude='.gitignore' \
+			-czvf sequences.tar.gz -C ../ \
+			"$(SEQUENCE_FULL_PATH_REL_ROOT)"
 
 # submit jobs
-chtc_submit_reweighting: staging.tar.gz sequences.tar.gz
-	condor_submit \
-			chtc_reweighting.sub
+chtc_run: staging.tar.gz sequences.tar.gz
+	# Example submit for running on CPU only
 	#condor_submit \
 	#		DISABLE_FLOCKING=1 \
-	#		DISABLE_GPU=1 \ #		chtc_reweighting.sub
-submit_training: staging.tar.gz sequences.tar.gz
-	condor_submit \
-			chtc_train_model.sub
+	#		DISABLE_GPU=1 \ 
+	#		chtc_run.sub
+	# Run on GPU instead (This is the default)
+	condor_submit CHTC_MAKE_COMMAND=$(CHTC_MAKE_COMMAND) chtc_run.sub
 
-move_output:
-	rm -f docker_stderror
-	rm -f config.yaml
-	mv *.err logs
-	mv *.out logs
-	mv *.log logs
-	mv *output* logs
+
