@@ -213,6 +213,10 @@ class Config:
                         self.dca_params_filename,
                         ).with_suffix(".pkl")
 
+    @property
+    def convert_unknown_aa_to_gap(self):
+        return self.safe_get_key('convert_unknown_aa_to_gap', False)
+
 
 def get_best_device():
     """Get the device to use for pytorch

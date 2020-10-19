@@ -178,11 +178,16 @@ def get_codon_msa_as_int_array(filename, codon_map):
 class MSADataset(Dataset):
     '''Reads an MSA and converts to pytorch dataset'''
 
-    def __init__(self, msa_file, size_limit=None, weights=None, transform=None):
+    def __init__(self, msa_file, size_limit=None, weights=None, 
+                 transform=None,
+                 convert_unknown_aa_to_gap=False):
         self.raw_data = self.get_raw_data(msa_file, size_limit)
         self.transform = transform
         self.AA_enc = self.get_encoding_dict()
-
+        if convert_unknown_aa_to_gap:
+            gap_enc = self.AA_enc['-']
+            for k in "BJOUXZ":  # set these amino acids to gap
+                self.AA_enc[k] = gap_enc
         N = self.__len__()
         if weights is None:
             print("Warning: Weights are not specified, setting equal weights")
@@ -194,7 +199,11 @@ class MSADataset(Dataset):
     def get_raw_data(self, msa_file, size_limit):
         return get_msa_from_file(msa_file, size_limit=size_limit, as_numpy=False)
 
-    def get_encoding_dict(self):
+    def get_used_encoding_dict():
+        return self.AA_enc.copy()
+
+    @staticmethod
+    def get_encoding_dict(): # default encoding dictionary
         return AA_map_str.copy()
 
     def __len__(self):

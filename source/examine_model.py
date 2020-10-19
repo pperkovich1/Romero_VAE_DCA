@@ -56,7 +56,8 @@ def save_latent_space_from_config(config):
     # sequences and in the same order. Batch sampling is not necessarily
     # sequential
     dataset = MSADataset(config.aligned_msa_fullpath, 
-            transform=OneHotTransform(21))
+            transform=OneHotTransform(21),
+            convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
     latent_vecs = calc_latent_space_from_config(dataset, config)
     with open(config.latent_fullpath, 'wb') as fh:
         pickle.dump({'latent':latent_vecs}, fh)
@@ -96,7 +97,8 @@ def get_reconstruction_identity_from_config(config, batch_size = None,
     # args: sample_size - number of times a vector is passed through model to
     #                            calculate average reconstruction identity
     dataset = MSADataset(config.aligned_msa_fullpath,
-            transform=OneHotTransform(21))
+            transform=OneHotTransform(21),
+            convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
     input_length = utils.get_input_length(dataset)
     model = load_model_from_config(input_length=input_length, config=config)
     

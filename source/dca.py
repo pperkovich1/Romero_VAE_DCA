@@ -140,7 +140,8 @@ class DCA(torch.nn.Module):
         if save_fig_path is not None:
             plt.savefig(save_fig_path)
 
-def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True):
+def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True,
+        convert_unknown_aa_to_gap=True):
     weights = None
     if weights_path is None:
         print(f"weights_path is none. Setting all weights to 1.")
@@ -149,7 +150,8 @@ def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True):
         weights = np.load(weights_path)
 
     dataset = MSADataset(msa_path, weights=weights,
-                     transform=OneHotTransform(21, flatten=False))
+                     transform=OneHotTransform(21, flatten=False),
+                     convert_unknown_aa_to_gap=convert_unknown_aa_to_gap)
     msa = torch.utils.data.DataLoader(dataset, len(dataset))
     
     # only load the first element of the dataset enumerator
@@ -250,7 +252,8 @@ if __name__ == "__main__":
     start_time = time.time()
     msa, msa_weights = load_full_msa_with_weights(
             msa_path=config.aligned_msa_fullpath,
-            weights_path=config.weights_fullpath)
+            weights_path=config.weights_fullpath,
+            convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
     ret = train_dca_model(device=config.device,
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = config.learning_rate,

@@ -26,7 +26,9 @@ def save_latent_space_plot(config):
     foreground_latent_space = None
     if config.foreground_sequences_filename != "":
         foreground_dataset = MSADataset(config.foreground_sequences_fullpath, 
-                                        transform=OneHotTransform(21))
+                                        transform=OneHotTransform(21),
+                                        convert_unknown_aa_to_gap = \
+                                            config.convert_unknown_aa_to_gap)
         foreground_latent_space = examine_model.calc_latent_space_from_config(
                 dataset=foreground_dataset,
                 config=config,
