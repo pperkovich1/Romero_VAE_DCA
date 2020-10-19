@@ -92,7 +92,8 @@ def load_sampler(num_samples, config):
     return sampler
 
 def train_and_save_model(config):
-    dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21))
+    dataset = MSADataset(config.aligned_msa_fullpath, transform=OneHotTransform(21),
+            convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
 
     input_length = utils.get_input_length(dataset)
     model = load_model_from_config(input_length=input_length, config=config)
