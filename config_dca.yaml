@@ -5,6 +5,8 @@ reweighting_threshold: 0.8
 dataset_dir: sequence_sets
 working_dir: working
 
+convert_unknown_aa_to_gap: True
+
 model_name: cmx_dca
 
 dca_params_filename: cmx_dca_params.pkl

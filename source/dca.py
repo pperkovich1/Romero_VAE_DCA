@@ -18,7 +18,8 @@ class DCA(torch.nn.Module):
 
     """Pseudo-likelihood method to estimate maximum entropy probability dist"""
 
-    def __init__(self, ncol, ncat, Neff, lam_w=0.01, lam_b=0.01, b_ini=None):
+    def __init__(self, ncol, ncat, Neff, lam_w=0.01, lam_b=0.01, b_ini=None,
+                regularization = "l2"):
         super().__init__()
         # weights
         self.w = torch.nn.Parameter(torch.zeros((ncol, ncat, ncol, ncat),
@@ -39,6 +40,7 @@ class DCA(torch.nn.Module):
         self.lam_b = lam_b
         self.ncol = ncol # required to compute regularization loss
         self.ncat = ncat # not used but saved anyway
+        self.regularization = regularization
 
 
     def forward(self, x):
@@ -59,12 +61,20 @@ class DCA(torch.nn.Module):
         return x_logit
 
     def calc_reg_w(self):
-        return self.lam_w * \
+        if self.regularization == "l1":
+            ret = self.lam_w * self.weights.abs().sum()
+        else: # l2 regularization
+            ret = self.lam_w * \
                     torch.sum(torch.mul(self.weights, self.weights)) * \
                     0.5 * (self.ncol-1) * 20.0
+        return ret
 
     def calc_reg_b(self):
-        return self.lam_b * torch.sum(torch.mul(self.bias, self.bias))
+        if self.regularization == "l1":
+            ret = self.lam_b * self.bias.abs().sum() 
+        else: # l2 regularization
+            ret = self.lam_b * torch.sum(torch.mul(self.bias, self.bias))
+        return ret
 
     def create_dca_model(msa, msa_weights, *args, **kwargs):
         """Factory function to create a model with a pseudocount bias term"""
@@ -167,13 +177,14 @@ def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True,
     return msa, msa_weights
 
 def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate, 
-        verbose=True, ret_losses_only=False):
+        regularization = "l2", verbose=True, ret_losses_only=False):
     # MSA one-hot and large so don't want to make copies unless necessary
     msa = msa.to(device) 
     msa_weights = msa_weights.to(device)
     msa_cat = msa.argmax(dim=2) # type LongTensor
 
-    model = DCA.create_dca_model(msa, msa_weights)
+    model = DCA.create_dca_model(msa, msa_weights, 
+                                    regularization=regularization)
     model.to(device)
 
     # Tell the optimizer which weights we want to update
@@ -257,7 +268,8 @@ if __name__ == "__main__":
     ret = train_dca_model(device=config.device,
                        msa=msa, msa_weights=msa_weights,
                        learning_rate = config.learning_rate,
-                       num_epochs=config.epochs)
+                       num_epochs=config.epochs, 
+                       regularization=config.dca_regularization)
     print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
 
     # save parameters

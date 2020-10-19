@@ -73,7 +73,8 @@ class Config:
     @property
     def weights_fullpath(self):
         """Complete path to the output weights npy file"""
-        msa_filename_stem = str(pathlib.Path(self.aligned_msa_filename).stem)
+        msa_filename_stem = pathlib.Path(self.aligned_msa_filename
+                                            ).stem.split('.')[0]
         return (self.working_dir / pathlib.Path(msa_filename_stem + 
                     "_weights")).with_suffix('.npy')
 
@@ -201,6 +202,11 @@ class Config:
     @property
     def latent_plot_archive_fullpath(self):
         return self.latent_plot_output_fullpath.with_suffix(".pkl")
+
+    @property
+    def dca_regularization(self):
+        """ Options are l2 or l1 """
+        return self.safe_get_key('dca_regularization', default="l2")
 
     @property
     def dca_params_filename(self):
