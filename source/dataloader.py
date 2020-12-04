@@ -193,7 +193,7 @@ class MSADataset(Dataset):
             print("Warning: Weights are not specified, setting equal weights")
             self.weights = np.ones(N, dtype=np.float);
         else:
-            self.weights = np.array(weights).astype(np.float).squeeze()
+            self.weights = np.array(np.load(weights)).astype(np.float).squeeze()
         assert(self.weights.shape[0]==N)
 
     def get_raw_data(self, msa_file, size_limit):
