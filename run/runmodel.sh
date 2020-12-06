@@ -15,5 +15,5 @@
 
 cd source || { echo "Error: Cannot change to source directory" ; exit 1; }
 python train_model.py "$@"
-python examine_model.py "$@"
+# python examine_model.py "$@"
 cd ..
