@@ -3,6 +3,7 @@ import pickle
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
 #debug libraries
@@ -15,39 +16,39 @@ from dataloader import MSADataset, OneHotTransform
 
 
 class VAE(torch.nn.Module):
-    """ This code originally copied from 
-    https://github.com/rasbt/deeplearning-models/blob/master/pytorch_ipynb/autoencoder/ae-var.ipynb
+    """ This class originally copied from 
+    github/rasbt/deeplearning-models/blob/master/pytorch_ipynb/autoencoder/ae-var.ipynb
     and then modified """
-    def __init__(self, ncol, ncat, num_hidden, num_latent, activation_func, device):
-        """ `ncol`: Number of residues in MSA
-            `ncat` : Number of letters in alphabet (usually 20 or 21)
+    def __init__(self, input_length, num_hidden, num_latent, activation_func, device):
+        """ `input_length`: Number of binary variables 
+                            (Length of protein x alphabet size)
             `num_hidden` : size of hidden layers. (If this is a list then 
-                            it is expanded to multiple hidden layers on the encoder
-                            as well as the decoder)
+                            it is expanded to multiple hidden layers on the
+                            encoder as well as the decoder)
             `num_latent` : size of latent layer
             `activation_func`: Usually sigmoid
             `device` : whether to run on cpu or gpu
         """
         super(VAE, self).__init__()
-        input_length = ncol * ncat
+        self.input_length = input_length
         
         ### MISC
-        if not (isinstance(num_hidden, list):
+        if not (isinstance(num_hidden, list)):
             num_hidden = [num_hidden]
         nums = [input_length, *num_hidden, num_latent]
         self.activation_func = activation_func
         self.device = device
 
         ### ENCODER
-        self.hidden_in = torch.nn.ModuleList([torch.nn.Linear(nums[i],
+        self.hidden_in = [torch.nn.Linear(nums[i],
                                 nums[i+1]).to(self.device) for i in
-                                range(len(nums)-2)]).to(self.device)
+                                range(len(nums)-2)]
         self.z_mean = torch.nn.Linear(nums[-2], num_latent).to(self.device)
         self.z_log_var = torch.nn.Linear(nums[-2], num_latent).to(self.device)
         
         ### DECODER
-        self.hidden_out = torch.nn.ModuleList([torch.nn.Linear(nums[i-1], nums[i-2])
-                                  for i in range(len(nums),2, -1)]).to(self.device)
+        self.hidden_out = [torch.nn.Linear(nums[i-1], nums[i-2]).to(self.device)
+                                  for i in range(len(nums),2, -1)]
         self.linear_4 = torch.nn.Linear(nums[1], input_length).to(self.device)
 
     def reparameterize(self, z_mu, z_log_var):
@@ -123,8 +124,8 @@ def train_model(device, model, loader, max_epochs, learning_rate,
 
             z_mean, z_log_var, encoded, recon_images = model(input_images)
             kld = kl_divergence(z_mean, z_log_var)
-            bce = bce(recon_images, input_images, weights)
-            loss = kld+bce
+            bce_loss = bce(recon_images, input_images, weights)
+            loss = kld+bce_loss
 
             optimizer.zero_grad()
             loss.backward()
