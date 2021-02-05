@@ -38,9 +38,9 @@ def get_msa_from_filename_iter(filename, filetype, size_limit):
     if str(filename).endswith(".gz"):
         opener = gzip.open
     with opener(filename, "rt") as fh:
-        seq_io_gen = None 
+        seq_io_gen = None  # raw string iterator over sequences
         if filetype == "fasta":
-            seq_io_gen = SeqIO.parse(fh, "fasta") # generator of sequences
+            seq_io_gen = (str(r.seq) for r in SeqIO.parse(fh, "fasta")) 
         elif filetype == "aln":
             seq_io_gen = (line.strip() for line in fh)
         if seq_io_gen is None:
@@ -50,7 +50,7 @@ def get_msa_from_filename_iter(filename, filetype, size_limit):
         seq_io_gen_slice = itertools.islice(seq_io_gen, size_limit) 
         # Here we can return a generator expression because SeqIO.parse
         # is handling the file handle
-        yield from (seq.seq.upper() for seq in seq_io_gen_slice)
+        yield from (seq.upper() for seq in seq_io_gen_slice)
   
 
 def get_msa_from_filename(filename, filetype, size_limit=None, 
