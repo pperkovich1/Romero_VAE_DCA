@@ -1,5 +1,6 @@
 import os
 import pickle
+import logging
 
 import numpy as np
 import torch
@@ -8,7 +9,6 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 
 #debug libraries
 import time
-import resource
 
 #local files
 import utils
@@ -94,9 +94,7 @@ def kl_divergence(z_mean, z_log_var, weight=1):
     return weight * kld
 
 def bce(recon_images, input_images, weights):
-
     return F.binary_cross_entropy(recon_images, input_images, reduction='sum')
-                                  #weight=weights, reduction='sum')# weights is incorrect dimension when batch size isn't 1
 
 
 def train_model(device, model, loader, max_epochs, learning_rate,
@@ -107,13 +105,11 @@ def train_model(device, model, loader, max_epochs, learning_rate,
     start_time = time.time()
     min_loss = 999999
     no_improvement = 0
-    loss_history = []
+    loss_history = np.zeros(max_epochs, dtype=np.float)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    logging.info('Max  memory usage:%s'%(utils.get_max_memory_usage()))
+    len_loader = len(loader)
     for epoch in range(max_epochs):
-        print('Max  memory usage:%d'%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
-        if not epoch%1:
-            print('Epoch: %i\tTime elapsed:%.2f sec'%(epoch, (time.time()-start_time)))
-        loss_history.append(0)
 
         if no_improvement > convergence_limit:
             print("convergence at %i iterations" % epoch)
@@ -131,14 +127,18 @@ def train_model(device, model, loader, max_epochs, learning_rate,
             loss.backward()
             optimizer.step()
 
-            loss=loss.detach()
-            loss_history[epoch] +=loss
-        loss_history[epoch] = loss_history[epoch]/len(loader)
+            loss_history[epoch] +=loss.item()
+        loss_history[epoch] /= len_loader
         if loss_history[epoch] < min_loss:
             min_loss = loss_history[epoch]
             no_improvement = 0
         else:
             no_improvement +=1 
+        if not epoch%1:
+            logging.info(
+                "Epoch: %i Loss: %.2f Time elapsed:%7.2f min, memory=%s" % (
+                    epoch, loss_history[epoch], (time.time()-start_time)/60,
+                    utils.get_max_memory_usage()))
 
     torch.save(model.state_dict(), model_fullpath)
     with open(loss_fullpath, 'wb') as fh:
@@ -150,7 +150,7 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
     model = VAE(input_length, hidden_layer_size, latent_layer_size, 
             activation_func, device)
     if os.path.exists(model_fullpath):
-        print("Loading saved model...")
+        logging.info("Loading saved model...")
         model.load_state_dict(torch.load(model_fullpath))
         # TODO: Do we need to run model.eval() here? see,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
@@ -172,8 +172,9 @@ def load_sampler(num_samples, config):
         weights = np.load(config.weights_fullpath)
         sampler = WeightedRandomSampler(weights=weights,
                                   num_samples=num_samples)
+        logging.info("Found weights! Will do weighted sampling.")
     else:
-        print("Weights do not exist. No weighted sampling will be done.")
+        logging.info("Weights do not exist. No weighted sampling will be done.")
     return sampler
 
 def train_and_save_model(config):
@@ -265,6 +266,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     config = Config(args.config_filename)
+    logging.basicConfig(level=getattr(logging, config.log_level))
 
     train_and_save_model(config)
 
