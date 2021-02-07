@@ -147,16 +147,19 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
         latent_layer_size, activation_func, device):
     model = VAE(input_length, hidden_layer_size, latent_layer_size, 
             activation_func, device)
-    if os.path.exists(model_fullpath):
-        logging.info("Loading saved model...")
+    if model_fullpath and os.path.exists(model_fullpath):
+        logging.info(f"Loading saved model from {model_fullpath}")
         model.load_state_dict(torch.load(model_fullpath))
         # TODO: Do we need to run model.eval() here? see,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
     model.to(device)
     return model
 
-def load_model_from_config(input_length, config):
-    model = load_model_from_path(model_fullpath = config.model_fullpath,
+def load_model_from_config(input_length, config, reload_saved_model=False):
+    model_fullpath = ""
+    if reload_saved_model:
+        model_fullpath = config.model_fullpath
+    model = load_model_from_path(model_fullpath = model_fullpath,
             input_length = input_length,
             hidden_layer_size = config.hidden_layer_size,
             latent_layer_size = config.latent_layer_size,
@@ -175,7 +178,7 @@ def load_sampler(num_samples, config):
         logging.info("Can't find weights. No weighted sampling will be done.")
     return sampler
 
-def train_vae_model_from_config(config):
+def train_vae_model_from_config(config, reload_saved_model=False):
     dataset = MSADataset(config.aligned_msa_fullpath,
             transform=OneHotTransform(21),
             convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
@@ -192,7 +195,7 @@ def train_vae_model_from_config(config):
     ret = train_vae_model(model=model, loader=loader, epochs=epochs, 
             learning_rate=learning_rate, device=config.device)
 
-    ret["model"]=model
+    ret["model"]=model # add model to return value
     return ret
 
 
@@ -211,8 +214,7 @@ def calc_latent_space(model, loader, device):
                 latent_vecs.append((m, v))
     return latent_vecs
 
-def calc_latent_space_from_config(dataset, config, 
-        batch_size = None):
+def calc_latent_space_from_config(dataset, config, batch_size = None):
     """Takes an MSADataset and config file and returns the latent space """
     input_length = utils.get_input_length(dataset)
     model = load_model_from_config(input_length=input_length, config=config)
@@ -253,12 +255,19 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("config_filename",
                     help="input config file in yaml format")
+    parser.add_argument("-r", "--reload_saved_model",
+                    help="Start training from previously saved model",
+                    action='store_true') # default is false
     args = parser.parse_args()
+
 
     config = Config(args.config_filename)
     logging.basicConfig(level=getattr(logging, config.log_level))
 
-    ret = train_vae_model_from_config(config)
+    reload_saved_model = args.reload_saved_model # default is false
+
+    ret = train_vae_model_from_config(config,
+            reload_saved_model=reload_saved_model)
     torch.save(ret["model"].state_dict(), config.model_fullpath)
     with open(config.loss_fullpath, 'wb') as fh:
         pickle.dump({'loss':ret["loss_history"]}, fh)
@@ -267,7 +276,7 @@ if __name__=='__main__':
     utils.plot_loss_curve(losses=ret["loss_history"],
             annotatation_str=str(ret["optimizer"]),
             save_fig_path = config.lossgraph_fullpath,
-            model_name= config.model_name)
+            model_name = config.model_name)
 
     #print ("Saving Latent space")
     # save_latent_space_from_config(config)
