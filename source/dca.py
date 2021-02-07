@@ -132,24 +132,6 @@ class DCA(torch.nn.Module):
         # Returns the function that will be called inside the train loop
         return train_step
 
-    def plot_loss_curve(losses, annotatation_str="", save_fig_path=None, 
-            model_name=""):
-        """ Save graph of loss curves 
-            FIXME: This function is quite generic and should live in utils or
-            somewhere else so that it can be merged with the VAE model plotting
-            code as well.
-        """
-        import matplotlib.pyplot as plt # hide this import here so we don't pollute
-        plt.plot(losses, "o-")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.title(f"Loss Curve :{model_name}")
-        bbox = dict(boxstyle="round", fc="0.8")
-        plt.annotate(annotatation_str, (0.5, 0.5), xycoords='axes fraction',
-                    bbox=bbox);
-        if save_fig_path is not None:
-            plt.savefig(save_fig_path)
-
 def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True,
         convert_unknown_aa_to_gap=True):
     weights = None
@@ -278,7 +260,7 @@ if __name__ == "__main__":
         pickle.dump({k:ret[k] for k in ["weights", "bias"]}, fh) 
 
     # plot loss curve
-    DCA.plot_loss_curve(losses=ret['losses'],  
+    utils.plot_loss_curve(losses=ret['losses'],  
             annotatation_str = str(ret['optimizer']),
             save_fig_path = config.lossgraph_fullpath,
             model_name= config.model_name)
