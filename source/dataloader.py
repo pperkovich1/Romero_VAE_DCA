@@ -150,9 +150,9 @@ class MSADataset(Dataset):
                 self.AA_enc[k] = gap_enc
         N = self.__len__()
         if weights is None:
-            logging.info("Weights are not specified in dataloader, "
-                         "setting equal weights.")
-            logging.info("Check to see if sampling is weighted")
+            logging.info("Weights are not specified in dataloader. "
+                         "Setting equal weights.")
+            logging.info("... [NOTE] Check to see if sampling is weighted")
             self.weights = np.ones(N, dtype=np.float);
         else:
             self.weights = np.array(np.load(weights)).astype(np.float).squeeze()

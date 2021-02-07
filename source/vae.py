@@ -97,19 +97,19 @@ def bce(recon_images, input_images, weights):
     return F.binary_cross_entropy(recon_images, input_images, reduction='sum')
 
 
-def train_model(device, model, loader, max_epochs, learning_rate,
-        model_fullpath, loss_fullpath, convergence_limit=99999):
+def train_vae_model(model, loader, epochs, learning_rate, device,
+        convergence_limit=99999):
     """ Convergence limit - place holder in case we want to train based on loss
         improvement
     """ 
     start_time = time.time()
     min_loss = 999999
     no_improvement = 0
-    loss_history = np.zeros(max_epochs, dtype=np.float)
+    loss_history = np.zeros(epochs, dtype=np.float)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    logging.info('Max  memory usage:%s'%(utils.get_max_memory_usage()))
+    logging.info('Max memory usage:%s'%(utils.get_max_memory_usage()))
     len_loader = len(loader)
-    for epoch in range(max_epochs):
+    for epoch in range(epochs):
 
         if no_improvement > convergence_limit:
             print("convergence at %i iterations" % epoch)
@@ -121,13 +121,13 @@ def train_model(device, model, loader, max_epochs, learning_rate,
             z_mean, z_log_var, encoded, recon_images = model(input_images)
             kld = kl_divergence(z_mean, z_log_var)
             bce_loss = bce(recon_images, input_images, weights)
-            loss = kld+bce_loss
+            loss = kld + bce_loss
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            loss_history[epoch] +=loss.item()
+            loss_history[epoch] += loss.item()
         loss_history[epoch] /= len_loader
         if loss_history[epoch] < min_loss:
             min_loss = loss_history[epoch]
@@ -139,10 +139,8 @@ def train_model(device, model, loader, max_epochs, learning_rate,
                 "Epoch: %i Loss: %.2f Time elapsed:%7.2f min, memory=%s" % (
                     epoch, loss_history[epoch], (time.time()-start_time)/60,
                     utils.get_max_memory_usage()))
-
-    torch.save(model.state_dict(), model_fullpath)
-    with open(loss_fullpath, 'wb') as fh:
-        pickle.dump({'loss':loss_history}, fh)
+    ret = {"loss_history":loss_history, "optimizer":optimizer}
+    return ret
 
 
 def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
@@ -170,14 +168,14 @@ def load_sampler(num_samples, config):
     sampler = None
     if config.weights_fullpath.is_file():
         weights = np.load(config.weights_fullpath)
+        logging.info("Found weights in sampler! Enabling weighted sampling.")
         sampler = WeightedRandomSampler(weights=weights,
-                                  num_samples=num_samples)
-        logging.info("Found weights! Will do weighted sampling.")
+                num_samples=num_samples)
     else:
-        logging.info("Weights do not exist. No weighted sampling will be done.")
+        logging.info("Can't find weights. No weighted sampling will be done.")
     return sampler
 
-def train_and_save_model(config):
+def train_vae_model_from_config(config):
     dataset = MSADataset(config.aligned_msa_fullpath,
             transform=OneHotTransform(21),
             convert_unknown_aa_to_gap=config.convert_unknown_aa_to_gap)
@@ -186,24 +184,16 @@ def train_and_save_model(config):
     model = load_model_from_config(input_length=input_length, config=config)
     batch_size = config.batch_size
     sampler = load_sampler(len(dataset), config)
-    loader = DataLoader(dataset=dataset, batch_size=batch_size, sampler=sampler)
+    loader = DataLoader(dataset=dataset, batch_size=batch_size,
+            sampler=sampler)
 
     learning_rate = config.learning_rate
     epochs = config.epochs
-    train_model(config.device, model, loader, epochs, learning_rate, 
-            config.model_fullpath, config.loss_fullpath)
-    return None
+    ret = train_vae_model(model=model, loader=loader, epochs=epochs, 
+            learning_rate=learning_rate, device=config.device)
 
-
-def graph_loss(config):
-    from matplotlib import pyplot as plt
-    with open(config.loss_fullpath, 'rb') as fh:
-        loss = pickle.load(fh)
-    plt.plot(loss['loss'])
-    plt.title("Training Loss")
-    plt.xlabel("Round Number")
-    plt.ylabel("Loss")
-    plt.savefig(config.lossgraph_fullpath, bbox_inches='tight')
+    ret["model"]=model
+    return ret
 
 
 def calc_latent_space(model, loader, device):
@@ -268,11 +258,17 @@ if __name__=='__main__':
     config = Config(args.config_filename)
     logging.basicConfig(level=getattr(logging, config.log_level))
 
-    train_and_save_model(config)
+    ret = train_vae_model_from_config(config)
+    torch.save(ret["model"].state_dict(), config.model_fullpath)
+    with open(config.loss_fullpath, 'wb') as fh:
+        pickle.dump({'loss':ret["loss_history"]}, fh)
 
     print ("Saving Graph of loss function")
-    # graph_loss(config)
+    utils.plot_loss_curve(losses=ret["loss_history"],
+            annotatation_str=str(ret["optimizer"]),
+            save_fig_path = config.lossgraph_fullpath,
+            model_name= config.model_name)
 
-    print ("Saving Latent space")
+    #print ("Saving Latent space")
     # save_latent_space_from_config(config)
 
