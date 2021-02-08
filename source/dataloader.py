@@ -152,7 +152,8 @@ class MSADataset(Dataset):
         if weights is None:
             logging.info("Weights are not specified in dataloader. "
                          "Setting equal weights.")
-            logging.info("... [NOTE] Check to see if sampling is weighted")
+            logging.info("... [NOTE] when training the model, Check to see if "
+                         "sampling is weighted")
             self.weights = np.ones(N, dtype=np.float);
         else:
             self.weights = np.array(np.load(weights)).astype(np.float).squeeze()

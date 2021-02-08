@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
 # local imports
-import examine_model
+import vae_latent_space
 import utils
 from dataloader import MSADataset, OneHotTransform
 
@@ -16,7 +16,7 @@ def save_latent_space_plot(config):
         raise ValueError(f"Latent space size must be 2 to plot. "
                          f"Got {config.latent_layer_size} instead")
     
-    mean, log_vars = examine_model.get_saved_latent_space_as_numpy(
+    mean, log_vars = vae_latent_space.get_saved_latent_space_as_numpy(
                             config.latent_fullpath)
     
     if (mean.shape[1] != 2):

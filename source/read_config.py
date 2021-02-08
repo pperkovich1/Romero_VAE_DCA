@@ -149,13 +149,7 @@ class Config:
     def latent_fullpath(self):
         """Complete path to the saved latent"""
         return self.working_dir / \
-                pathlib.Path(self.model_name + "_latent").with_suffix(".pkl")
-
-    @property
-    def reconstruction_identity_fullpath(self):
-        """Complete path to saved reconstruction identity"""
-        return self.working_dir /\
-                pathlib.Path(self.model_name+"_recon_ident").with_suffix(".pkl")
+                pathlib.Path(self.model_name + "_latent.pkl.gz")
 
     @property
     def loss_fullpath(self):
