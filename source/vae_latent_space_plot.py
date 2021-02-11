@@ -1,9 +1,9 @@
 import pickle
 import logging
 
-import torch
-
+import numpy as np
 import matplotlib.pyplot as plt
+import torch
 
 # local imports
 import vae_latent_space
