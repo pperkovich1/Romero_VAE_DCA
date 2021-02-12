@@ -17,11 +17,14 @@ The following commands are run on the group server and take around 30 minutes or
    # convert stockhom format to aligned fasta (afa) format
    /home/romeroroot/code/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-reformat -u -o mDHFR.afa afa mDHFR.sto 
    ```
-1. Filter the columns of the MSA. There are several extra columns in the output and we only want to keep those that correspond to our query sequence. 
+1. Filter the columns of the MSA. There are several extra columns in the output and we only want to keep those that correspond to our query sequence.
    ```shell
+   # Load up the pytorch-docker conda environment
    conda activate pytorch-docker
+   # Run the filtering script
    python3 last_record_filter.py -i mDHFR.afa -o mDHFR_clean.fasta 
    ```
+1. Now you should have a clean MSA file. It should have atleast a few thousand sequences in it before you can proceed to the next step.
    
 ### Building DCA model
 Here we use [`plmc`](https://github.com/debbiemarkslab/plmc) from the Marks lab to build a DCA model. 
