@@ -18,4 +18,15 @@ The following commands are run on the group server and take around 30 minutes or
    /home/romeroroot/code/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-reformat -u -o mDHFR.afa afa mDHFR.sto 
    ```
 1. Filter the columns of the MSA. There are several extra columns in the output and we only want to keep those that correspond to our query sequence. 
- 
+   ```shell
+   conda activate pytorch-docker
+   python3 last_record_filter.py -i mDHFR.afa -o mDHFR_clean.fasta 
+   ```
+   
+### Building DCA model
+Here we use [`plmc`](https://github.com/debbiemarkslab/plmc) from the Marks lab to build a DCA model. 
+1. Run `plmc` on the cleaned MSA file and save the model parameters
+   ```shell
+   ~romeroroot/code/plmc/bin/plmc -o mDHFR_params.bin -c mDHFR_couplings.txt mDHFR_clean.fasta
+   ```
+2. Use the plmc Matlab script `~romeroroot/code/plmc/scripts/read_params.m ` to read the parameters. 
