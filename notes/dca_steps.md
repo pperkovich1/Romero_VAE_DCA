@@ -17,7 +17,8 @@ The following commands are run on the group server and take around 30 minutes or
    # convert stockhom format to aligned fasta (afa) format
    /home/romeroroot/code/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-reformat -u -o mDHFR.afa afa mDHFR.sto 
    ```
-1. Filter the columns of the MSA. There are several extra columns in the output and we only want to keep those that correspond to our query sequence.
+1. Filter the columns of the MSA. There are several extra columns in the output and we only want to keep those that correspond to our query sequence. 
+For this step we use the [last_record_filter.py](../source/make_dataset/last_record_filter.py). Copy this file to your working directory.  
    ```shell
    # Load up the pytorch-docker conda environment
    conda activate pytorch-docker
