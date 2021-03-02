@@ -18,7 +18,6 @@ def calc_latent_space(model, loader, device):
     with torch.no_grad():
         for batch_id, (input_images, weights) in enumerate(loader):
             input_images = input_images.to(device)
-            weights = weights.to(device)
 
             z_mean, z_log_var, encoded, recon_images = model(input_images)
             #TODO: break up batches
@@ -29,7 +28,8 @@ def calc_latent_space(model, loader, device):
 def calc_latent_space_from_config(dataset, config, batch_size = None):
     """Takes an MSADataset and config file and returns the latent space """
     input_length = utils.get_input_length(dataset)
-    model = vae.load_model_from_config(input_length=input_length, config=config)
+    model = vae.load_model_from_config(input_length=input_length, config=config,
+                reload_saved_model=True)
 
     if batch_size is None:
         batch_size = config.batch_size

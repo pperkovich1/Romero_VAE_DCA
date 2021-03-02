@@ -109,6 +109,7 @@ def train_vae_model(model, loader, epochs, learning_rate, device,
     no_improvement = 0
     loss_history = np.zeros(epochs, dtype=np.float)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    print(model)
     logging.info('Max memory usage:%s'%(utils.get_max_memory_usage()))
     len_loader = len(loader)
     for epoch in range(epochs):
@@ -149,11 +150,17 @@ def load_model_from_path(model_fullpath, input_length, hidden_layer_size,
         latent_layer_size, activation_func, device):
     model = VAE(input_length, hidden_layer_size, latent_layer_size, 
             activation_func, device)
-    if model_fullpath and os.path.exists(model_fullpath):
+    if model_fullpath:
+        if not os.path.exists(model_fullpath):
+            raise FileNotFoundError(f"Cannot not find saved model"
+                                    f" : {model_fullpath}")
         logging.info(f"Loading saved model from {model_fullpath}")
         model.load_state_dict(torch.load(model_fullpath))
         # TODO: Do we need to run model.eval() here? see,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.htm
+    else:
+        logging.info(f"Loading new model") 
+
     model.to(device)
     return model
 
