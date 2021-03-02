@@ -1,14 +1,12 @@
 import pickle
+import logging
 
-import torch
-from torch.utils.data import DataLoader
-
+import numpy as np
 import matplotlib.pyplot as plt
+import torch
 
 # local imports
-import examine_model
-import utils
-from dataloader import MSADataset, OneHotTransform
+import vae_latent_space
 
 
 def save_latent_space_plot(config):
@@ -16,7 +14,7 @@ def save_latent_space_plot(config):
         raise ValueError(f"Latent space size must be 2 to plot. "
                          f"Got {config.latent_layer_size} instead")
     
-    mean, log_vars = examine_model.get_saved_latent_space_as_numpy(
+    mean, log_vars = vae_latent_space.get_saved_latent_space_as_numpy(
                             config.latent_fullpath)
     
     if (mean.shape[1] != 2):
@@ -24,19 +22,15 @@ def save_latent_space_plot(config):
                          f"Got dimension: {mean.shape[1]}")
     
     foreground_latent_space = None
-    if config.foreground_sequences_filename != "":
-        foreground_dataset = MSADataset(config.foreground_sequences_fullpath, 
-                                        transform=OneHotTransform(21),
-                                        convert_unknown_aa_to_gap = \
-                                            config.convert_unknown_aa_to_gap)
-        foreground_latent_space = examine_model.calc_latent_space_from_config(
-                dataset=foreground_dataset,
-                config=config,
-                batch_size= len(foreground_dataset))
-        foreground_means, foreground_logvars = \
-                examine_model.convert_torch_latent_space_to_numpy(
-                    foreground_latent_space)
+    foreground_means = None
+    if config.foreground_sequences_filename:
+        foreground_latent_space = \
+            vae_latent_space.get_latent_space_from_config(config,
+                input_filename=config.foreground_sequences_filename)
+        foreground_means = foreground_latent_space["means"]
+        foreground_logvars = foreground_latent_space["log_vars"]
     
+    logging.info("Plotting latent space")
     figsize=(12,12)
     plt.figure(figsize=figsize)
     plt.plot(mean[:, 0], 
@@ -69,6 +63,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = read_config.Config(args.config_filename)
+    logging.basicConfig(level=getattr(logging, config.log_level))
 
     print("Saving latent space plot")
     save_latent_space_plot(config)

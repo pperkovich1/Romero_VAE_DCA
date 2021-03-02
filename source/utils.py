@@ -1,48 +1,41 @@
-import torch.nn.functional as F
-import torch
+import resource
+import matplotlib.pyplot as plt
+
+def plot_loss_curve(losses, annotatation_str="", save_fig_path=None,
+        model_name="", ax=None, save_fig_kws={"dpi":300}, xlabel="Epoch",
+        ylabel="loss", title="", bbox= {"boxstyle":"round", "fc":"0.8"}):
+    """ Save graph of loss curves """
+    if ax is None:
+        ax = plt.figure().gca()
+    ax.plot(losses, "o-")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if not title: # (title is empty)
+        title = f"Loss Curve :{model_name}"
+    ax.set_title(title)
+    if annotatation_str != "":
+        ax.annotate(annotatation_str, (0.5, 0.5), xycoords='axes fraction',
+                bbox=bbox);
+    if save_fig_path is not None:
+        plt.savefig(save_fig_path, **save_fig_kws)
 
 def get_input_length(dataset):
     sample = dataset.__getitem__(0)[0]
     return len(sample)
 
-def vae_loss(input_image, recon_image, z_mean, z_log_var):
-    '''Calculates binary cross entropy + KLD for a reconstructed tensor.
+def sizeof_fmt(num, suffix='B'):
+    """ Copied from 
+    https://stackoverflow.com/questions/1094841/get-human-readable-version-of-file-size
+    """
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
 
-    Parameters:
-    input_image: tensor - input tensor
-    recon_image: tensor - reconstructed(estimated) tensor.
-    z_mean: tensor - mean tensor from latent space
-    z_log_var: tensor - variance vector from latent space.
-    '''
-    BCE = F.binary_cross_entropy(recon_image.float(),
-        input_image.float(),
-        reduction='sum')
-    return kl_divergence(z_mean, z_log_var) + BCE.float()
-
-def kl_divergence(z_mean, z_log_var, weight=1):
-    '''Computes the Kullback-Leibler divergence. Will return a
-    weighted divergence if the parameter is provided.
-
-    Parameters:
-    z_mean: tensor - mean tensor from latent space.
-    z_log_var: tensor - variance tensor from latent space.
-    weight: float - default=1 scales the KLD.
-    '''
-    kld = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - torch.exp(z_log_var))
-    return weight * kld.float()
-
-def bce(recon_images, input_images, weights):
-
-    return F.binary_cross_entropy(recon_images, input_images, reduction='sum')
-                                  #weight=weights, reduction='sum')# weights is incorrect dimension when batch size isn't 1
-
-def softmax(recon_images):
-    #each row of recon_images is a sequence
-    for seq in recon_images:
-        for i in range(len(seq)//21):
-            left = i*21
-            right = (i+1)*21
-            x, index = seq[left:right].max(0)
-            seq[left:right]= 0
-            seq[left+index] = 1
-    return recon_images
+def get_max_memory_usage(human_string=True):
+    """ Returns memory usage in kilobytes"""
+    ret = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    if human_string:
+        ret = sizeof_fmt(ret * 1024)
+    return ret

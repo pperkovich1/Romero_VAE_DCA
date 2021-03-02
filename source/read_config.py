@@ -43,7 +43,7 @@ class Config:
         pstr_list = ["{0}: {1}".format(p, getattr(self, p)) for p in properties]
         return "\n".join(pstr_list)
 
-    def safe_get_key(self, key, default=""):
+    def safe_get_key(self, key, default="", print_if_not_found=True):
         """Get a key from the yaml file but if it doesn't exist then set it to
             default
         """
@@ -51,7 +51,8 @@ class Config:
         try:
             ret = self.data[key]
         except KeyError:
-            print(f"Cannot get : {key}, setting default to : {default}")
+            if print_if_not_found:
+                print(f"Cannot get : {key}, setting default to : {default}")
             pass
         return (ret)
 
@@ -148,13 +149,7 @@ class Config:
     def latent_fullpath(self):
         """Complete path to the saved latent"""
         return self.working_dir / \
-                pathlib.Path(self.model_name + "_latent").with_suffix(".pkl")
-
-    @property
-    def reconstruction_identity_fullpath(self):
-        """Complete path to saved reconstruction identity"""
-        return self.working_dir /\
-                pathlib.Path(self.model_name+"_recon_ident").with_suffix(".pkl")
+                pathlib.Path(self.model_name + "_latent.pkl.gz")
 
     @property
     def loss_fullpath(self):
@@ -221,8 +216,13 @@ class Config:
 
     @property
     def convert_unknown_aa_to_gap(self):
-        return self.safe_get_key('convert_unknown_aa_to_gap', False)
+        return self.safe_get_key('convert_unknown_aa_to_gap', False, 
+                print_if_not_found=False)
 
+    @property
+    def log_level(self):
+        return self.safe_get_key('log_level', "INFO", 
+                print_if_not_found=False)
 
 def get_best_device():
     """Get the device to use for pytorch

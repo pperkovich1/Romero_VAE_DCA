@@ -4,5 +4,6 @@ stats/
 *.pt
 *.csv
 *.swp
+notes/
 .git/
 .ipynb_checkpoints/
