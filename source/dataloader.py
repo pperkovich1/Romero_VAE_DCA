@@ -155,7 +155,10 @@ class MSADataset(Dataset):
             logging.info("... [NOTE] when training the model, Check to see if "
                          "sampling is weighted")
             self.weights = np.ones(N, dtype=np.float);
+        elif isinstance(weights, np.ndarray):
+            self.weights = weights
         else:
+            logging.warning("Weights param should not be a filename")
             self.weights = np.array(np.load(weights)).astype(np.float).squeeze()
         assert(self.weights.shape[0]==N)
 

@@ -9,10 +9,14 @@
 
 """
 
+import logging
+
 import numpy as np # Used to import weights only
 import pandas as pd # Used to return the scores
 import torch
 from dataloader import MSADataset, OneHotTransform
+import utils
+
 
 class DCA(torch.nn.Module):
 
@@ -136,9 +140,9 @@ def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True,
         convert_unknown_aa_to_gap=True):
     weights = None
     if weights_path is None:
-        print(f"weights_path is none. Setting all weights to 1.")
+        logging.info("weights_path is none. Setting all weights to 1.")
     else:
-        print(f"Reading Weights from {str(weights_path)}")
+        logging.info(f"Reading Weights from {str(weights_path)}")
         weights = np.load(weights_path)
 
     dataset = MSADataset(msa_path, weights=weights,
@@ -154,8 +158,8 @@ def load_full_msa_with_weights(msa_path, weights_path=None, verbose=True,
         break
     
     if verbose:
-        print(f"Data.shape = {msa.shape}")
-        print(f"Weights.shape = {msa_weights.shape}")
+        logging.info(f"Data.shape = {msa.shape}")
+        logging.info(f"Weights.shape = {msa_weights.shape}")
     return msa, msa_weights
 
 def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate, 
@@ -178,7 +182,7 @@ def train_dca_model(device, msa, msa_weights, num_epochs, learning_rate,
         loss = train_step(x=msa, x_weights=msa_weights, x_cat=msa_cat)
         losses.append(loss)
         if verbose:
-            print(f"Epoch: {epoch:02d} Loss={loss:.2f}")
+            logging.info(f"Epoch: {epoch:02d} Loss={loss:.2f}")
     if ret_losses_only:
         ret = losses
     else:
@@ -241,6 +245,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = read_config.Config(args.config_filename)
+    logging.basicConfig(level=getattr(logging, config.log_level))
 
     start_time = time.time()
     msa, msa_weights = load_full_msa_with_weights(
