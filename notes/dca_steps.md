@@ -31,8 +31,8 @@ For this step we use the [last_record_filter.py](../source/make_dataset/last_rec
 ### Building DCA model
 Here we use `plmc` from the Marks lab to build a DCA model. 
 [The plmc github repository](https://github.com/debbiemarkslab/plmc) has information on using plmc and the output file formats  
-1. Run `plmc` on the cleaned MSA file and save the model parameters
+1. Run `plmc` on the cleaned MSA file and save the model parameters and coupling scores. This command below limits the number of iterations to 100 but that could be changed depending on whether the algorithm is converging or not. 
    ```shell
-   ~romeroroot/code/plmc/bin/plmc -o mDHFR_params.bin -c mDHFR_couplings.txt mDHFR_clean.fasta
+   ~romeroroot/code/plmc/bin/plmc -o mDHFR_params.bin -c mDHFR_couplings.txt -m 100 mDHFR_clean.fasta
    ```
 2. Use the plmc Matlab script `~romeroroot/code/plmc/scripts/read_params.m ` to read the parameters. 
