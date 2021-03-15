@@ -80,7 +80,8 @@ class DCA(torch.nn.Module):
             ret = self.lam_b * torch.sum(torch.mul(self.bias, self.bias))
         return ret
 
-    def create_dca_model(msa, msa_weights, *args, **kwargs):
+    @classmethod
+    def create_dca_model(cls, msa, msa_weights, *args, **kwargs):
         """Factory function to create a model with a pseudocount bias term"""
 
         with torch.no_grad():
@@ -95,7 +96,7 @@ class DCA(torch.nn.Module):
                     pseudo_count)
             b_ini = b_ini - torch.mean(b_ini, -1, keepdim=True)
 
-            return DCA(ncol=ncol, ncat=ncat, Neff=Neff, b_ini=b_ini, 
+            return cls(ncol=ncol, ncat=ncat, Neff=Neff, b_ini=b_ini, 
                                 *args, **kwargs)
 
     def create_loss_function():
