@@ -23,7 +23,7 @@ class DCA(torch.nn.Module):
     """Pseudo-likelihood method to estimate maximum entropy probability dist"""
 
     def __init__(self, ncol, ncat, Neff, lam_w=0.01, lam_b=0.01, b_ini=None,
-                regularization = "l2"):
+                regularization="l2"):
         super().__init__()
         # weights
         self.w = torch.nn.Parameter(torch.zeros((ncol, ncat, ncol, ncat),
@@ -44,6 +44,7 @@ class DCA(torch.nn.Module):
         self.lam_b = lam_b
         self.ncol = ncol # required to compute regularization loss
         self.ncat = ncat # not used but saved anyway
+        print(regularization)
         self.regularization = regularization
 
 
@@ -66,18 +67,21 @@ class DCA(torch.nn.Module):
 
     def calc_reg_w(self):
         if self.regularization == "l1":
-            ret = self.lam_w * self.weights.abs().sum()
+            ret = (self.lam_w * self.weights.abs()).sum()
         else: # l2 regularization
-            ret = self.lam_w * \
-                    torch.sum(torch.mul(self.weights, self.weights)) * \
+            ret = (self.lam_w * \
+                    torch.mul(self.weights, self.weights)).sum() * \
                     0.5 * (self.ncol-1) * 20.0
         return ret
 
     def calc_reg_b(self):
         if self.regularization == "l1":
-            ret = self.lam_b * self.bias.abs().sum() 
-        else: # l2 regularization
-            ret = self.lam_b * torch.sum(torch.mul(self.bias, self.bias))
+            ret = (self.lam_b * self.bias.abs()).sum() 
+        elif self.regularization == "l2": 
+            ret = (self.lam_b * torch.mul(self.bias, self.bias)).sum()
+        else:
+            raise ValueError(f"Regularization param must be l1 or l2",
+                             f" not : {self.regularization}")
         return ret
 
     @classmethod
