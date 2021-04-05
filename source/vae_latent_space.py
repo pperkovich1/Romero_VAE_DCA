@@ -12,7 +12,6 @@ import vae
 import utils
 
 def calc_latent_space(model, loader, device):
-    start_time = time.time()
     latent_vecs = []
 
     with torch.no_grad():

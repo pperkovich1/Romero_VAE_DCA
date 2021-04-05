@@ -26,7 +26,7 @@ def save_latent_space_plot(config):
     if config.foreground_sequences_filename:
         foreground_latent_space = \
             vae_latent_space.get_latent_space_from_config(config,
-                input_filename=config.foreground_sequences_filename)
+                input_filename=config.foreground_sequences_fullpath)
         foreground_means = foreground_latent_space["means"]
         foreground_logvars = foreground_latent_space["log_vars"]
     
