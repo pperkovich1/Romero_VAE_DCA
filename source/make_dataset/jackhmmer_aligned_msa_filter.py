@@ -17,6 +17,9 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input_msa_filename",
                     help="input msa in aligned fasta format",
                     required=True)
+    parser.add_argument("-q", "--query_fasta_filename",
+                    help="query sequence (WT) in fasta format",
+                    required=True)
     parser.add_argument("-o", "--output_msa_filename",
                     help="output msa in aligned fasta format",
                     required=True)
@@ -35,13 +38,27 @@ if __name__ == '__main__':
 
     fraction_cutoff =  args.fraction_cutoff
 
-    last_seq = msa[-1]
-    # last line should be the fasta sequence we did the query with
-    logging.info(f"Query sequence: {last_seq.name}")
-    logging.info(f"Query sequence length: {len(last_seq)}")
+    logging.info(f"Reading query fasta file")
+    query_fasta = Bio.AlignIO.read(args.query_fasta_filename, format="fasta")
+    query = query_fasta[0]
+    logging.info(str(query))
+
+    query_seq_msa = None # pointer to query sequence in the MSA
+    if query.seq == msa[-1].seq.ungap('-'):
+        logging.info(f"Found query sequence at last record of MSA")
+        query_seq_msa = msa[-1]
+    elif query.seq == msa[0].seq.ungap('-'):
+        logging.info(f"Found query sequence at first record of MSA")
+        query_seq_msa = msa[0]
+
+    if query_seq_msa is None:
+        raise SystemExit("Cannot find query sequence as first or last record in MSA")
+    logging.info(f"Query sequence in MSA: {query_seq_msa.name}")
+    logging.info(f"Query sequence length in MSA: {len(query_seq_msa)}")
+    logging.info(str(query_seq_msa))
 
     # Find amino acid positions in query sequence that are not gaps
-    match_idx = [i for i,a in enumerate( last_seq.seq ) if a != "-"]
+    match_idx = [i for i,a in enumerate( query_seq_msa.seq ) if a != "-"]
     prot_length = len(match_idx)
     logging.info(f"Number of columns saved: {prot_length}")
 
